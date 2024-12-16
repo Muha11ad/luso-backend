@@ -5,6 +5,5 @@ export class CreateCategoryDto {
   @IsString({ message: 'Name must be a string' })
   name: string;
 
-  @IsOptional()
-  imageUrl?: string;
+  imageUrl: string;
 }

@@ -39,13 +39,17 @@ export class CategoryService implements ICategoryService {
   }
 
   async createCategory(categoryDto: CreateCategoryDto): Promise<Category> {
-    const existingCategory = await this.databaseService.category.findUnique({
-      where: { name: categoryDto.name },
-    });
-    if (existingCategory) {
-      throw new ConflictException(ErrorTypes.ALREADY_EXISTS);
+    try {
+      const existingCategory = await this.databaseService.category.findUnique({
+        where: { name: categoryDto.name },
+      });
+      if (existingCategory) {
+        throw new ConflictException(ErrorTypes.ALREADY_EXISTS);
+      }
+      return this.databaseService.category.create({ data: categoryDto });
+    } catch (error) {
+      throw new Error(`Failed to create category: ${error.message}`);
     }
-    return this.databaseService.category.create({ data: categoryDto });
   }
 
   async updateCategory(id: string, categoryDto: UpdateCategoryDto): Promise<Category> {
