@@ -1,0 +1,123 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Product related models
+model Category {
+  id       String    @id @default(uuid())
+  name     String    @unique
+  imageUrl String?
+  products Product[]
+}
+
+model Product {
+  id                String          @id @default(uuid())
+  name              String          @unique
+  price             Int
+  imageUrl_1        String
+  imageUrl_2        String?
+  imageUrl_3        String?
+  available         Boolean
+  created_at        DateTime        @default(now())
+  instruction       String
+  description       String
+  category_id       String
+  characteristic_id String?
+  category          Category        @relation(fields: [category_id], references: [id])
+  Characteristic    Characteristic?
+  OrderDetails      OrderDetails[]
+}
+
+model Characteristic {
+  id                String  @id @default(uuid())
+  age               Int
+  brand             String
+  group             String
+  volume            String
+  formula           String
+  made_in           String
+  purpose           String
+  genders           Gender
+  skin_type         String
+  ingredients       String
+  classification    String
+  trademark_country String
+  application_time  String
+  product_id        String  @unique
+  product           Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
+}
+
+// People models
+model User {
+  telegram_id String  @id @default(uuid())
+  name        String
+  nickname    String  @unique
+  orders      Order[]
+}
+
+model Admin {
+  id       String @id @default(uuid())
+  email    String @unique
+  password String
+}
+
+// Order models 
+model Order {
+  id           String         @id @default(uuid())
+  user_id      String
+  created_at   DateTime       @default(now())
+  phone_number String
+  total_price  Int
+  first_name   String
+  region       Region
+  status       OrderStatus
+  user         User           @relation(fields: [user_id], references: [telegram_id])
+  OrderDetails OrderDetails[]
+}
+
+model OrderDetails {
+  id           String  @id @default(uuid())
+  order_id     String
+  quantity     Int
+  total_price  Int
+  product_id   String
+  product_name String
+  product      Product @relation(fields: [product_id], references: [id])
+  order        Order   @relation(fields: [order_id], references: [id], onDelete: Cascade)
+}
+
+// Enums 
+enum OrderStatus {
+  Accepted
+  Payed
+  Delivered
+  Canceled
+}
+
+enum Gender {
+  Male
+  Female
+  Both
+}
+
+enum Region {
+  Andijon
+  Buxoro
+  Fargona
+  Jizzax
+  Navoiy
+  Xorazm
+  Namangan
+  Sirdaryo
+  Toshkent
+  Samarqand
+  Qashqadaryo
+  Surxondaryo
+  Qoraqalpoghiston
+  Toshkent_viloyati
+}
