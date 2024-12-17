@@ -1,10 +1,11 @@
 import { IsString, IsOptional } from 'class-validator';
 
-export class UpdateCategoryDto {
+export class CategoryUpdateNameDto {
   @IsOptional()
   @IsString()
   name: string;
-
-  @IsOptional()
-  imageUrl?: string;
 }
+export type CategoryUpdateType = {
+  name?: string;
+  file?: Express.Multer.File;
+};

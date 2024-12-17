@@ -1,9 +1,11 @@
-import { IsString, IsOptional, IsNotEmpty } from 'class-validator';
+import { IsString, IsNotEmpty } from 'class-validator';
 
-export class CreateCategoryDto {
+export class CategoryCreateNameDto {
   @IsNotEmpty({ message: 'Name is required and cannot be empty' })
   @IsString({ message: 'Name must be a string' })
   name: string;
-
-  imageUrl: string;
 }
+export type CategoryCreateType = {
+  name: string;
+  file: Express.Multer.File;
+};

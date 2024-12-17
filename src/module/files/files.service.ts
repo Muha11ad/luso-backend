@@ -1,29 +1,55 @@
 import * as path from 'path';
+import { v4 as uuidv4 } from 'uuid';
 import { ErrorTypes } from '@/types';
-import { ensureDir, writeFile } from 'fs-extra';
+import { ensureDir, writeFile, unlink } from 'fs-extra';
 import { convertImageToWebP, pathToUpload } from '@/common/utils';
 import { BadGatewayException, Injectable } from '@nestjs/common';
 
-export enum ForderName {
+export enum ImageFolderName {
   category = 'category',
   product = 'product',
 }
 @Injectable()
 export class FilesService {
-  async saveFile(file: Express.Multer.File, folder: ForderName): Promise<string> {
+  private readonly baseUrl = 'http://localhost:3000/uploads';
+  async saveFile(file: Express.Multer.File, folder: ImageFolderName): Promise<string> {
     try {
-      const dateFolder = new Date().toISOString().split('T')[0];
       const uploadFolder = path.resolve(pathToUpload, folder);
+
       await ensureDir(uploadFolder);
+      const fileExtension = '.webp';
+      const uniqueFileName = `${uuidv4()}${fileExtension}`;
 
       const webpBuffer = await convertImageToWebP(file);
-      const webpFileName = `${file.originalname.split('.').slice(0, -1).join('.')}.webp`;
+      const filePath = path.join(uploadFolder, uniqueFileName);
+      await writeFile(filePath, webpBuffer);
 
-      await writeFile(`${uploadFolder}/${webpFileName}`, webpBuffer);
-
-      return `${dateFolder}/${webpFileName}`;
+      const relativePath = `${folder}/${uniqueFileName}`;
+      return `${this.baseUrl}/${relativePath}`;
     } catch (error) {
       throw new BadGatewayException(ErrorTypes.ERROR_SAVING_FILE);
+    }
+  }
+  async deleteFile(fileName: string, folder: ImageFolderName): Promise<void> {
+    try {
+      fileName = fileName.split('/').pop();
+      const filePath = path.resolve(pathToUpload, folder, fileName);
+      await unlink(filePath);
+    } catch (error) {
+      throw new BadGatewayException(ErrorTypes.ERROR_DELETING_FILE);
+    }
+  }
+
+  async updateFile(
+    file: Express.Multer.File,
+    folder: ImageFolderName,
+    oldFileName: string,
+  ): Promise<string> {
+    try {
+      await this.deleteFile(oldFileName, folder);
+      return await this.saveFile(file, folder);
+    } catch (error) {
+      throw new BadGatewayException(ErrorTypes.ERROR_UPDATING_FILE);
     }
   }
 }

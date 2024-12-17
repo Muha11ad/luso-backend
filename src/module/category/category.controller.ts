@@ -1,8 +1,8 @@
-import { FilesService, ForderName } from '../files';
-import { CreateCategoryDto, UpdateCategoryDto } from './';
+import { FilesService, ImageFolderName } from '../files';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CategoryService } from './service/category.service';
 import { Body, Controller, Get, Post } from '@nestjs/common';
+import { CategoryCreateNameDto, CategoryUpdateNameDto } from './dto';
 import { Param, Delete, Put, UseInterceptors, UploadedFile } from '@nestjs/common';
 
 @Controller('category')
@@ -18,12 +18,11 @@ export class CategoryController {
   @Post()
   @UseInterceptors(FileInterceptor('image'))
   async createCategory(
-    @Body() data: Pick<CreateCategoryDto, 'name'>,
+    @Body() data: CategoryCreateNameDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    const fileUrl = await this.fileService.saveFile(file, ForderName.category);
-    const categoryData = { name: data.name, imageUrl: fileUrl };
-    return this.categoryService.createCategory(categoryData);
+    const { name } = data;
+    return this.categoryService.createCategory({ name, file });
   }
   @Delete(':id')
   async deleteCategory(@Param('id') id: string) {
@@ -40,7 +39,12 @@ export class CategoryController {
   }
 
   @Put(':id')
-  async updateCategory(@Param('id') id: string, @Body() data: UpdateCategoryDto) {
-    return this.categoryService.updateCategory(id, data);
+  @UseInterceptors(FileInterceptor('image'))
+  async updateCategory(
+    @Param('id') id: string,
+    @Body() { name }: CategoryUpdateNameDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.categoryService.updateCategory(id, { name, file });
   }
 }

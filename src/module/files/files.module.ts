@@ -4,7 +4,7 @@ import { pathToUpload } from '@/common/utils';
 import { ServeStaticModule } from '@nestjs/serve-static';
 
 @Module({
-  imports: [ServeStaticModule.forRoot({ rootPath: pathToUpload })],
+  imports: [ServeStaticModule.forRoot({ rootPath: pathToUpload, serveRoot: '/uploads' })],
   providers: [FilesService],
   exports: [FilesService],
 })
