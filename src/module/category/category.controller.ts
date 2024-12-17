@@ -1,10 +1,9 @@
-import { Param, Delete, Put, UseInterceptors, UploadedFile, Req } from '@nestjs/common';
-import { CategoryService } from './service/category.service';
+import { FilesService, ForderName } from '../files';
 import { CreateCategoryDto, UpdateCategoryDto } from './';
-import { Body, Controller, Get, Post } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { FilesService } from '../files/files.service';
-import { log } from 'console';
+import { CategoryService } from './service/category.service';
+import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Param, Delete, Put, UseInterceptors, UploadedFile } from '@nestjs/common';
 
 @Controller('category')
 export class CategoryController {
@@ -22,7 +21,7 @@ export class CategoryController {
     @Body() data: Pick<CreateCategoryDto, 'name'>,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    const fileUrl = await this.fileService.saveFile(file);
+    const fileUrl = await this.fileService.saveFile(file, ForderName.category);
     const categoryData = { name: data.name, imageUrl: fileUrl };
     return this.categoryService.createCategory(categoryData);
   }

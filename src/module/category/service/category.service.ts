@@ -1,11 +1,11 @@
 import { ErrorTypes } from '@/types';
-import { Injectable } from '@nestjs/common';
-import { Category, Prisma } from '@prisma/client';
+import { Category } from '@prisma/client';
 import { DatabaseService } from '@/module/database';
 import { CreateCategoryDto } from '../dto/create-category.dto';
 import { UpdateCategoryDto } from '../dto/update-category.dto';
 import { ICategoryService } from './category.serivice.interface';
 import { NotFoundException, ConflictException } from '@nestjs/common';
+import { BadGatewayException, BadRequestException, Injectable } from '@nestjs/common';
 
 @Injectable()
 export class CategoryService implements ICategoryService {
@@ -39,16 +39,19 @@ export class CategoryService implements ICategoryService {
   }
 
   async createCategory(categoryDto: CreateCategoryDto): Promise<Category> {
+    const existingCategory = await this.databaseService.category.findUnique({
+      where: { name: categoryDto.name },
+    });
+    if (existingCategory !== null) {
+      throw new BadRequestException(ErrorTypes.ALREADY_EXISTS);
+    }
     try {
-      const existingCategory = await this.databaseService.category.findUnique({
-        where: { name: categoryDto.name },
-      });
-      if (existingCategory) {
-        throw new ConflictException(ErrorTypes.ALREADY_EXISTS);
-      }
       return this.databaseService.category.create({ data: categoryDto });
     } catch (error) {
-      throw new Error(`Failed to create category: ${error.message}`);
+      if (error instanceof ConflictException) {
+        throw error;
+      }
+      throw new BadGatewayException(`Failed to create category: ${error.message}`);
     }
   }
 
