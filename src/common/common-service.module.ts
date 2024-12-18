@@ -1,10 +1,11 @@
 import { pathToUpload } from './utils';
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { ServeStaticModule } from '@nestjs/serve-static';
-import { DatabaseService, EmailService, FilesService } from './services';
+import { CacheModule } from '@nestjs/cache-manager';
 import { MailerModule } from '@nestjs-modules/mailer';
-import { getMailerOptions } from './configs';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { getMailerOptions, redisOptions } from './configs';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { DatabaseService, EmailService, FilesService, RedisService } from './services';
 
 @Module({
   imports: [
@@ -15,8 +16,9 @@ import { getMailerOptions } from './configs';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => getMailerOptions(configService),
     }),
+    CacheModule.registerAsync(redisOptions),
   ],
-  providers: [EmailService, DatabaseService, FilesService],
-  exports: [EmailService, DatabaseService, FilesService],
+  providers: [EmailService, DatabaseService, FilesService, RedisService],
+  exports: [EmailService, DatabaseService, FilesService, RedisService],
 })
 export class CommonServiceModule {}

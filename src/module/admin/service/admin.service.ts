@@ -2,12 +2,13 @@ import { Admin } from '@prisma/client';
 import { ExceptionErrorTypes } from '@/types';
 import { AdminCreateDto, AdminUpdateDto } from '../dto';
 import { IAdminService } from './admin.serivice.interface';
-import { EmailService, DatabaseService } from '@/common/services';
-import { BadGatewayException, BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { EmailService, DatabaseService, RedisService } from '@/common/services';
+import { BadGatewayException, BadRequestException, Injectable } from '@nestjs/common';
 
 @Injectable()
 export class AdminService implements IAdminService {
   constructor(
+    private readonly redisService: RedisService,
     private readonly emailService: EmailService,
     private readonly databaseService: DatabaseService,
   ) {}
@@ -27,7 +28,9 @@ export class AdminService implements IAdminService {
     }
     try {
       await this.emailService.sendGmailToSuperAdmin('Welcome to the admin panel');
-      return await this.databaseService.admin.create({ data: admin });
+      const result = await this.databaseService.admin.create({ data: admin });
+      await this.redisService.set('admin', result);
+      return result;
     } catch (error) {
       throw new BadGatewayException(`Failed to create admin: ${error.message}`);
     }
@@ -67,7 +70,10 @@ export class AdminService implements IAdminService {
       if (admin === null) {
         throw new BadRequestException(ExceptionErrorTypes.NOT_FOUND);
       }
-      return await this.databaseService.admin.delete({ where: { id: adminId } });
+
+      const result = await this.databaseService.admin.delete({ where: { id: adminId } });
+      await this.redisService.del('admin');
+      return result;
     } catch (error) {
       throw new BadGatewayException(`Failed to delete admin: ${error.message}`);
     }
