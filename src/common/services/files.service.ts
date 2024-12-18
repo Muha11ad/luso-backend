@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { v4 as uuidv4 } from 'uuid';
-import { ErrorTypes } from '@/types';
+import { ExceptionErrorTypes } from '@/types';
 import { ensureDir, writeFile, unlink } from 'fs-extra';
 import { convertImageToWebP, pathToUpload } from '@/common/utils';
 import { BadGatewayException, Injectable } from '@nestjs/common';
@@ -27,7 +27,7 @@ export class FilesService {
       const relativePath = `${folder}/${uniqueFileName}`;
       return `${this.baseUrl}/${relativePath}`;
     } catch (error) {
-      throw new BadGatewayException(ErrorTypes.ERROR_SAVING_FILE);
+      throw new BadGatewayException(ExceptionErrorTypes.ERROR_SAVING_FILE);
     }
   }
   async deleteFile(fileName: string, folder: ImageFolderName): Promise<void> {
@@ -36,7 +36,7 @@ export class FilesService {
       const filePath = path.resolve(pathToUpload, folder, fileName);
       await unlink(filePath);
     } catch (error) {
-      throw new BadGatewayException(ErrorTypes.ERROR_DELETING_FILE);
+      throw new BadGatewayException(ExceptionErrorTypes.ERROR_DELETING_FILE);
     }
   }
 
@@ -49,7 +49,7 @@ export class FilesService {
       await this.deleteFile(oldFileName, folder);
       return await this.saveFile(file, folder);
     } catch (error) {
-      throw new BadGatewayException(ErrorTypes.ERROR_UPDATING_FILE);
+      throw new BadGatewayException(ExceptionErrorTypes.ERROR_UPDATING_FILE);
     }
   }
 }

@@ -1,1 +1,1 @@
-export { ErrorTypes } from './error-types';
+export { ExceptionErrorTypes, DtoErrorTypes } from './error-types';

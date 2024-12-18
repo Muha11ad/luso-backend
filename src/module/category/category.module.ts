@@ -1,11 +1,10 @@
-import { FilesModule } from '../files';
 import { Module } from '@nestjs/common';
-import { DatabaseModule } from '../database';
-import { CategoryService } from './service/category.service';
+import { CommonServiceModule } from '@/common';
 import { CategoryController } from './category.controller';
+import { CategoryService } from './service/category.service';
 
 @Module({
-  imports: [DatabaseModule, FilesModule],
+  imports: [CommonServiceModule],
   controllers: [CategoryController],
   providers: [CategoryService],
 })

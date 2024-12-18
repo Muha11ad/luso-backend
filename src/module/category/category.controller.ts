@@ -1,4 +1,3 @@
-import { FilesService, ImageFolderName } from '../files';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CategoryService } from './service/category.service';
 import { Body, Controller, Get, Post } from '@nestjs/common';
@@ -7,10 +6,7 @@ import { Param, Delete, Put, UseInterceptors, UploadedFile } from '@nestjs/commo
 
 @Controller('category')
 export class CategoryController {
-  constructor(
-    private readonly fileService: FilesService,
-    private readonly categoryService: CategoryService,
-  ) {}
+  constructor(private readonly categoryService: CategoryService) {}
   @Get()
   async getCategories() {
     return this.categoryService.findAllCategories();
