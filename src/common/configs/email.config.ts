@@ -1,6 +1,13 @@
-import { ConfigService } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { MailerAsyncOptions } from '@nestjs-modules/mailer/dist/interfaces/mailer-async-options.interface';
 
-export function getMailerOptions(configService: ConfigService) {
+export const mailOptions: MailerAsyncOptions = {
+  imports: [ConfigModule],
+  inject: [ConfigService],
+  useFactory: (configService: ConfigService) => getMailerConfigs(configService),
+};
+
+export function getMailerConfigs(configService: ConfigService) {
   return {
     transport: {
       service: 'gmail',

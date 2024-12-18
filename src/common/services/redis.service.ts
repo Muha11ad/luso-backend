@@ -6,11 +6,9 @@ import { BadGatewayException, Inject, Injectable } from '@nestjs/common';
 export class RedisService {
   constructor(@Inject(CACHE_MANAGER) private readonly cacheManager: Cache) {}
 
-  async get(key: string): Promise<any> {
+  async get<T>(key: string): Promise<T | null> {
     try {
-      const value = await this.cacheManager.get(key);
-      console.log('value', value);
-      return value;
+      return await this.cacheManager.get(key);
     } catch (error) {
       throw new BadGatewayException(error.message);
     }

@@ -1,22 +1,20 @@
 import { pathToUpload } from './utils';
 import { Module } from '@nestjs/common';
+import { JwtModule } from '@nestjs/jwt';
+import { ConfigModule } from '@nestjs/config';
 import { CacheModule } from '@nestjs/cache-manager';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { ServeStaticModule } from '@nestjs/serve-static';
-import { getMailerOptions, redisOptions } from './configs';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { jwtOptions, mailOptions, redisOptions } from './configs';
 import { DatabaseService, EmailService, FilesService, RedisService } from './services';
 
 @Module({
   imports: [
     ConfigModule,
-    ServeStaticModule.forRoot({ rootPath: pathToUpload, serveRoot: '/uploads' }),
-    MailerModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => getMailerOptions(configService),
-    }),
+    JwtModule.registerAsync(jwtOptions),
+    MailerModule.forRootAsync(mailOptions),
     CacheModule.registerAsync(redisOptions),
+    ServeStaticModule.forRoot({ rootPath: pathToUpload, serveRoot: '/uploads' }),
   ],
   providers: [EmailService, DatabaseService, FilesService, RedisService],
   exports: [EmailService, DatabaseService, FilesService, RedisService],
