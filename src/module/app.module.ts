@@ -5,6 +5,7 @@ import { CategoryModule } from './category';
 import { ConfigModule } from '@nestjs/config';
 import { CommonServiceModule } from '@/common';
 import { AuthGuard, AuthModule } from './auth';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
@@ -12,6 +13,12 @@ import { AuthGuard, AuthModule } from './auth';
     AdminModule,
     CategoryModule,
     CommonServiceModule,
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 30,
+      },
+    ]),
     ConfigModule.forRoot({ isGlobal: true }),
   ],
 })
