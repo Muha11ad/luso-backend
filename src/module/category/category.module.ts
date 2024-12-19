@@ -1,4 +1,4 @@
-import { AuthGuard } from '../auth';
+import { AuthGuard, AuthModule } from '../auth';
 import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { CommonServiceModule } from '@/common';
@@ -6,14 +6,8 @@ import { CategoryController } from './category.controller';
 import { CategoryService } from './service/category.service';
 
 @Module({
-  imports: [CommonServiceModule],
+  imports: [CommonServiceModule, AuthModule],
   controllers: [CategoryController],
-  providers: [
-    CategoryService,
-    {
-      provide: APP_GUARD,
-      useClass: AuthGuard,
-    },
-  ],
+  providers: [CategoryService],
 })
 export class CategoryModule {}
