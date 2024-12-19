@@ -1,13 +1,14 @@
-import { AuthGuard } from '../auth';
+import { AuthGuard } from '../../auth';
 import { FileValidatePipe } from '@/common/pipes';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { CategoryService } from './service/category.service';
-import { CategoryCreateNameDto, CategoryUpdateNameDto } from './dto';
+import { CategoryService } from '../service/category.service';
+import { CategoryCreateNameDto, CategoryUpdateNameDto } from '../dto';
+import { ICategoryController } from './category.controller.interface';
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { Param, Delete, Put, UseInterceptors, UploadedFile } from '@nestjs/common';
 
 @Controller('category')
-export class CategoryController {
+export class CategoryController implements ICategoryController {
   constructor(private readonly categoryService: CategoryService) {}
   @Get()
   async getCategories() {

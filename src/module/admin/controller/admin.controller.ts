@@ -1,10 +1,10 @@
 import { Admin } from '@prisma/client';
+import { AuthGuard } from '@/module/auth';
 import { AdminService } from '../service/admin.service';
 import { AdminCreateDto, AdminUpdateDto } from '../dto';
-import { Body, Delete, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { IAdminController } from './admin.controller.interface';
 import { Controller, HttpCode, HttpStatus } from '@nestjs/common';
-import { AuthGuard } from '@/module/auth';
+import { Body, Delete, Param, Post, Put, UseGuards } from '@nestjs/common';
 
 @Controller('admin')
 export class AdminController implements IAdminController {
@@ -24,7 +24,7 @@ export class AdminController implements IAdminController {
   }
 
   @Put(':id')
-  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard)
   async updateAdmin(
     @Param('id') id: string,
     @Body() adminUpdateDto: AdminUpdateDto,

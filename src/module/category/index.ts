@@ -5,5 +5,5 @@ export {
   CategoryCreateType,
 } from './dto';
 export { CategoryModule } from './category.module';
-export { CategoryController } from './category.controller';
+export { CategoryController } from './controller/category.controller';
 export { CategoryService } from './service/category.service';
