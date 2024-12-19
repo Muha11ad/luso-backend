@@ -11,12 +11,11 @@ import { DatabaseService, EmailService, FilesService, RedisService } from './ser
 @Module({
   imports: [
     ConfigModule,
-    JwtModule.registerAsync(jwtOptions),
     MailerModule.forRootAsync(mailOptions),
     CacheModule.registerAsync(redisOptions),
     ServeStaticModule.forRoot({ rootPath: pathToUpload, serveRoot: '/uploads' }),
   ],
-  providers: [EmailService, DatabaseService, FilesService, RedisService, JwtService],
-  exports: [EmailService, DatabaseService, FilesService, RedisService, JwtService],
+  providers: [EmailService, DatabaseService, FilesService, RedisService],
+  exports: [EmailService, DatabaseService, FilesService, RedisService],
 })
 export class CommonServiceModule {}
