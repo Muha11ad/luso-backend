@@ -1,7 +1,6 @@
-import { hash } from 'bcryptjs';
+import * as bcrypt from 'bcrypt';
 import { Admin } from '@prisma/client';
 import { ExceptionErrorTypes } from '@/types';
-import { ConfigService } from '@nestjs/config';
 import { AdminCreateDto, AdminUpdateDto } from '../dto';
 import { IAdminService } from './admin.serivice.interface';
 import { EmailService, DatabaseService, RedisService } from '@/common/services';
@@ -12,15 +11,14 @@ export class AdminService implements IAdminService {
   constructor(
     private readonly redisService: RedisService,
     private readonly emailService: EmailService,
-    private readonly configService: ConfigService,
     private readonly databaseService: DatabaseService,
   ) {}
 
-  private async findAdminByEmail(email: string): Promise<Admin | null> {
+  private findAdminByEmail(email: string): Promise<Admin | null> {
     return this.databaseService.admin.findUnique({ where: { email } });
   }
 
-  private async findAdminById(id: string): Promise<Admin | null> {
+  private findAdminById(id: string): Promise<Admin | null> {
     return this.databaseService.admin.findUnique({ where: { id } });
   }
 
@@ -31,23 +29,25 @@ export class AdminService implements IAdminService {
     }
 
     const verificationCode: string = Math.floor(1000 + Math.random() * 9000).toString();
-    const expirationTime = 60 * 2; // 2 minutes
+    const expirationTime = 6000 * 2;
 
     try {
-      await this.emailService.sendGmailToSuperAdmin(verificationCode);
-      await this.redisService.setex(verificationCode, adminDto, expirationTime);
+      this.emailService.sendGmailToSuperAdmin(verificationCode);
+      this.redisService.setex(verificationCode, adminDto, expirationTime);
     } catch (error) {
       throw new BadGatewayException(`Failed to send verification code: ${error.message}`);
     }
   }
   async verifyCreateCode(code: string): Promise<Admin> {
     const adminDto = await this.redisService.get<AdminCreateDto>(code);
+    console.log(adminDto);
     if (!adminDto) {
       throw new BadRequestException(ExceptionErrorTypes.INVALID_CODE);
     }
     try {
-      const salt = this.configService.get<string>('SALT');
-      const hashedPassword = await hash(adminDto.password, salt);
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(adminDto.password, salt);
+      await this.redisService.del(code);
       return this.databaseService.admin.create({
         data: {
           email: adminDto.email,

@@ -13,7 +13,6 @@ export class EmailService {
   async sendGmailToSuperAdmin(code: string): Promise<void> {
     const from = this.configService.get<string>('SENDER_EMAIL');
     const to = this.configService.get<string>('RECIEVER_EMAIL');
-    console.log('from', from + 'to', to);
     const mailOptions = {
       from,
       to,

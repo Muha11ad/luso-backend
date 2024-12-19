@@ -3,8 +3,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 
 export const jwtOptions: JwtModuleAsyncOptions = {
   imports: [ConfigModule],
-  useFactory: (configService: ConfigService) => ({
-    secret: configService.get<string>('JWT_SECRET'),
-  }),
   inject: [ConfigService],
+  useFactory: async (configService: ConfigService) => ({
+    secret: configService.get<string>('JWT_SECRET') || 'defaultSecret', 
+  }),
 };

@@ -8,7 +8,8 @@ export class RedisService {
 
   async get<T>(key: string): Promise<T | null> {
     try {
-      return await this.cacheManager.get(key);
+      const result = await this.cacheManager.get(key);
+      if (result) return JSON.parse(result as string);
     } catch (error) {
       throw new BadGatewayException(error.message);
     }
@@ -17,9 +18,7 @@ export class RedisService {
   async set<T>(key: string, value: T): Promise<any> {
     try {
       const jsonValue = JSON.stringify(value);
-      const result = await this.cacheManager.set(key, jsonValue);
-      console.log('result', result);
-      return result;
+      return await this.cacheManager.set(key, jsonValue);
     } catch (error) {
       throw new BadGatewayException(error.message);
     }
@@ -28,9 +27,7 @@ export class RedisService {
   async setex(key: string, value: any, ttl: number): Promise<any> {
     try {
       const jsonValue = JSON.stringify(value);
-      const result = await this.cacheManager.set(key, jsonValue, ttl);
-      console.log('result', result);
-      return result;
+      return await this.cacheManager.set(key, jsonValue, ttl);
     } catch (error) {
       throw new BadGatewayException(error.message);
     }
@@ -38,8 +35,7 @@ export class RedisService {
 
   async del(key: string): Promise<any> {
     try {
-      const result = await this.cacheManager.del(key);
-      return result;
+      return await this.cacheManager.del(key);
     } catch (error) {
       throw new BadGatewayException(error.message);
     }

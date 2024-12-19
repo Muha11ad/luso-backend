@@ -19,7 +19,7 @@ export class AdminController implements IAdminController {
   @Post('verify-code')
   @HttpCode(HttpStatus.OK)
   async verifyCreateCode(@Body('code') code: string): Promise<Admin> {
-    return await this.adminService.verifyCreateCode(code);
+    return this.adminService.verifyCreateCode(code);
   }
 
   @Put(':id')
@@ -34,6 +34,6 @@ export class AdminController implements IAdminController {
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteAdmin(@Param('id') id: string): Promise<Admin> {
-    return await this.adminService.deleteAdmin(id);
+    return this.adminService.deleteAdmin(id);
   }
 }

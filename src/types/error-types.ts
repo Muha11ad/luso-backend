@@ -3,6 +3,7 @@ export const ExceptionErrorTypes = {
   EMAIL_EXISTS: 'Email already exists',
   EMAIL_NOT_SENT: 'Failed to send email',
   NOT_FOUND: 'Requested resource not found',
+  INVALID_CREDENTIALS: 'Invalid credentials',
   ERROR_SAVING_FILE: 'Unexpected error while saving file',
   ERROR_DELETING_FILE: 'Unexpected error while deleting file',
   ERROR_UPDATING_FILE: 'Unexpected error while updating file',

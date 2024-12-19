@@ -1,3 +1,4 @@
+import { AuthModule } from './auth';
 import { AdminModule } from './admin';
 import { Module } from '@nestjs/common';
 import { CategoryModule } from './category';
@@ -6,6 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    AuthModule,
     AdminModule,
     CategoryModule,
     CommonServiceModule,
