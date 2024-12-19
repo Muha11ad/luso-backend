@@ -1,14 +1,22 @@
-import { PipeTransform, Injectable, BadRequestException } from '@nestjs/common';
-import { MaxFileSizeValidator, FileTypeValidator, ParseFilePipe } from '@nestjs/common';
+import { ExceptionErrorTypes } from '@/types';
+import { Injectable, PipeTransform, BadRequestException } from '@nestjs/common';
 
 @Injectable()
-export class FileValidatePipe extends ParseFilePipe {
-  constructor() {
-    super({
-      validators: [
-        new MaxFileSizeValidator({ maxSize: 8000 * 1024 }),
-        new FileTypeValidator({ fileType: /jpeg|jpg|png/ }),
-      ],
-    });
+export class FileValidatePipe implements PipeTransform {
+  transform(file: Express.Multer.File): Express.Multer.File {
+    if (!file) {
+      throw new BadRequestException(ExceptionErrorTypes.FILE_REQUIRED);
+    }
+    const allowedMimeTypes = ['image/jpeg', 'image/png'];
+    if (!allowedMimeTypes.includes(file.mimetype)) {
+      throw new BadRequestException(ExceptionErrorTypes.UNSUPPORTED_FILE_FORMAT);
+    }
+
+    const tenMb = 10000 * 1024;
+    if (file.size > tenMb) {
+      throw new BadRequestException(ExceptionErrorTypes.MAX_FILE_SIZE);
+    }
+
+    return file;
   }
 }

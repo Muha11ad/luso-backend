@@ -1,5 +1,5 @@
-import { LoginDto } from '../dto';
 import * as bcrypt from 'bcrypt';
+import { LoginDto } from '../dto';
 import { JwtService } from '@nestjs/jwt';
 import { ExceptionErrorTypes } from '@/types';
 import { DatabaseService } from '@/common/services';
@@ -28,7 +28,6 @@ export class AuthService implements IAuthService {
     try {
       return this.jwtService.sign({ email });
     } catch (error) {
-      console.log(error);
       throw new BadGatewayException(`Error while generating token: ${error.message}`);
     }
   }

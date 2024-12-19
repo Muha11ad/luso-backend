@@ -2,8 +2,8 @@ import { AuthGuard } from '../auth';
 import { FileValidatePipe } from '@/common/pipes';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CategoryService } from './service/category.service';
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { CategoryCreateNameDto, CategoryUpdateNameDto } from './dto';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { Param, Delete, Put, UseInterceptors, UploadedFile } from '@nestjs/common';
 
 @Controller('category')
@@ -13,8 +13,8 @@ export class CategoryController {
   async getCategories() {
     return this.categoryService.findAllCategories();
   }
-  @UseGuards(AuthGuard)
   @Post()
+  @UseGuards(AuthGuard)
   @UseInterceptors(FileInterceptor('image'))
   async createCategory(
     @Body() data: CategoryCreateNameDto,
@@ -43,7 +43,7 @@ export class CategoryController {
   async updateCategory(
     @Param('id') id: string,
     @Body() { name }: CategoryUpdateNameDto,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile(FileValidatePipe) file: Express.Multer.File,
   ) {
     return this.categoryService.updateCategory(id, { name, file });
   }

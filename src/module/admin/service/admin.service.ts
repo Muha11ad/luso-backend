@@ -40,7 +40,6 @@ export class AdminService implements IAdminService {
   }
   async verifyCreateCode(code: string): Promise<Admin> {
     const adminDto = await this.redisService.get<AdminCreateDto>(code);
-    console.log(adminDto);
     if (!adminDto) {
       throw new BadRequestException(ExceptionErrorTypes.INVALID_CODE);
     }

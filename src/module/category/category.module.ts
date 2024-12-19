@@ -1,6 +1,5 @@
-import { AuthGuard, AuthModule } from '../auth';
+import { AuthModule } from '../auth';
 import { Module } from '@nestjs/common';
-import { APP_GUARD } from '@nestjs/core';
 import { CommonServiceModule } from '@/common';
 import { CategoryController } from './category.controller';
 import { CategoryService } from './service/category.service';
