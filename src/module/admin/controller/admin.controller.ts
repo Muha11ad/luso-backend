@@ -1,9 +1,10 @@
 import { Admin } from '@prisma/client';
 import { AdminService } from '../service/admin.service';
 import { AdminCreateDto, AdminUpdateDto } from '../dto';
-import { Body, Delete, Param, Post, Put } from '@nestjs/common';
+import { Body, Delete, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { IAdminController } from './admin.controller.interface';
 import { Controller, HttpCode, HttpStatus } from '@nestjs/common';
+import { AuthGuard } from '@/module/auth';
 
 @Controller('admin')
 export class AdminController implements IAdminController {
@@ -30,8 +31,8 @@ export class AdminController implements IAdminController {
   ): Promise<Admin> {
     return this.adminService.updateAdmin(id, adminUpdateDto);
   }
-
   @Delete(':id')
+  @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteAdmin(@Param('id') id: string): Promise<Admin> {
     return this.adminService.deleteAdmin(id);

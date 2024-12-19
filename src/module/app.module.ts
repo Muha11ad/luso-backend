@@ -1,9 +1,10 @@
-import { AuthModule } from './auth';
 import { AdminModule } from './admin';
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import { CategoryModule } from './category';
-import { CommonServiceModule } from '@/common';
 import { ConfigModule } from '@nestjs/config';
+import { CommonServiceModule } from '@/common';
+import { AuthGuard, AuthModule } from './auth';
 
 @Module({
   imports: [
