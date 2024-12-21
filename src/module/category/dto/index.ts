@@ -1,2 +1,2 @@
-export { CategoryUpdateNameDto, CategoryUpdateType } from './update-category.dto';
-export { CategoryCreateType, CategoryCreateNameDto } from './create-category.dto';
+export { CategoryCreateDto } from './create-category.dto';
+export { CategoryUpdateDto } from './update-category.dto';

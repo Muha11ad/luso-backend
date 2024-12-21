@@ -1,11 +1,24 @@
-import { IsString, IsOptional } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsObject, IsOptional, IsString, ValidateNested } from 'class-validator';
 
-export class CategoryUpdateNameDto {
+class NameTranslations {
   @IsOptional()
-  @IsString()
-  name: string;
+  @IsString({ message: 'English name (en) must be a string' })
+  en?: string;
+
+  @IsOptional()
+  @IsString({ message: 'Russian name (ru) must be a string' })
+  ru?: string;
+
+  @IsOptional()
+  @IsString({ message: 'Uzbek name (uz) must be a string' })
+  uz?: string;
 }
-export type CategoryUpdateType = {
-  name?: string;
-  file?: Express.Multer.File;
-};
+
+export class CategoryUpdateDto {
+  @IsOptional()
+  @IsObject({ message: 'Name must be an object' })
+  @ValidateNested()
+  @Type(() => NameTranslations)
+  name?: NameTranslations;
+}

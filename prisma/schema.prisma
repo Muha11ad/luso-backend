@@ -11,7 +11,7 @@ datasource db {
 model Category {
   id       String    @id @default(uuid())
   name     Json      @unique
-  imageUrl String    @unique
+  imageUrl String?    @unique
   products Product[]
 }
 
@@ -19,7 +19,7 @@ model Product {
   id                String          @id @default(uuid())
   name              Json            @unique
   price             String
-  imageUrl_1        String
+  imageUrl_1        String?
   imageUrl_2        String?
   imageUrl_3        String?
   available         Boolean

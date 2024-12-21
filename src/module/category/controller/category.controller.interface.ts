@@ -1,10 +1,14 @@
-import { CategoryCreateNameDto, CategoryUpdateNameDto } from '../dto';
+import { FileType } from '@/types';
+import { IdDto } from '@/common/dto';
+import { Category } from '@prisma/client';
+import { CategoryCreateDto, CategoryUpdateDto } from '../dto';
 
 export interface ICategoryController {
-  getCategories(): Promise<any>;
-  deleteCategory(id: string): Promise<any>;
-  getCategoryById(id: string): Promise<any>;
-  getCategoryByName(name: string): Promise<any>;
-  createCategory(data: CategoryCreateNameDto, file: Express.Multer.File): Promise<any>;
-  updateCategory(id: string, data: CategoryUpdateNameDto, file: Express.Multer.File): Promise<any>;
+  getCategories(): Promise<Category[]>;
+  deleteCategory(id: IdDto): Promise<Category>;
+  getCategoryById(id: IdDto): Promise<Category>;
+  getCategoryByName(name: string): Promise<Category>;
+  uploadImage(id: IdDto, file: FileType): Promise<Category>;
+  createCategory(data: CategoryCreateDto): Promise<Category>;
+  updateCategory(id: IdDto, data: CategoryUpdateDto): Promise<Category>;
 }
