@@ -21,25 +21,20 @@ export class CategoryController implements ICategoryController {
   async getCategoryById(@Param('id') { id }: IdDto): Promise<Category> {
     return this.categoryService.findCategoryById(id);
   }
-  @Get('/name/:name')
-  async getCategoryByName(@Param('name') name: string): Promise<Category> {
-    return this.categoryService.findCategoryByName(name);
-  }
 
   @Post()
   @UseGuards(AuthGuard)
   async createCategory(@Body() data: CategoryCreateDto): Promise<Category> {
-    const { name } = data;
-    return this.categoryService.createCategory({ name });
+    return this.categoryService.createCategory(data);
   }
 
   @Put(':id')
   @UseGuards(AuthGuard)
   async updateCategory(
     @Param('id') { id }: IdDto,
-    @Body() { name }: CategoryUpdateDto,
+    @Body() data: CategoryUpdateDto,
   ): Promise<Category> {
-    return this.categoryService.updateCategory(id, { name });
+    return this.categoryService.updateCategory(id, data);
   }
   @Delete(':id')
   @UseGuards(AuthGuard)
@@ -49,10 +44,19 @@ export class CategoryController implements ICategoryController {
   @Post('upload/:id')
   @UseGuards(AuthGuard)
   @UseInterceptors(FileInterceptor('image'))
-  async uploadImage(
+  async saveImage(
     @Param('id') { id }: IdDto,
     @UploadedFile(FileValidatePipe) image: FileType,
   ): Promise<Category> {
-    return this.categoryService.uploadImage(id, image);
+    return this.categoryService.saveImage(id, image);
+  }
+  @Put('upload/:id')
+  @UseGuards(AuthGuard)
+  @UseInterceptors(FileInterceptor('image'))
+  async updateImage(
+    @Param('id') { id }: IdDto,
+    @UploadedFile(FileValidatePipe) image: FileType,
+  ): Promise<Category> {
+    return this.categoryService.updateImage(id, image);
   }
 }

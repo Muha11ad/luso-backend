@@ -7,8 +7,8 @@ export interface ICategoryController {
   getCategories(): Promise<Category[]>;
   deleteCategory(id: IdDto): Promise<Category>;
   getCategoryById(id: IdDto): Promise<Category>;
-  getCategoryByName(name: string): Promise<Category>;
-  uploadImage(id: IdDto, file: FileType): Promise<Category>;
+  saveImage(id: IdDto, file: FileType): Promise<Category>;
+  updateImage(id: IdDto, file: FileType): Promise<Category>;
   createCategory(data: CategoryCreateDto): Promise<Category>;
   updateCategory(id: IdDto, data: CategoryUpdateDto): Promise<Category>;
 }

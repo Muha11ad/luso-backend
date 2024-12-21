@@ -1,12 +1,13 @@
-import { Category } from '@prisma/client';
 import { FileType } from '@/types';
+import { Category } from '@prisma/client';
+import { CategoryCreateDto, CategoryUpdateDto } from '../dto';
 
 export interface ICategoryService {
   findAllCategories(): Promise<Category[]>;
   deleteCategory(id: string): Promise<Category>;
   findCategoryById(id: string): Promise<Category>;
-  createCategory(name: string): Promise<Category>;
-  findCategoryByName(name: string): Promise<Category>;
-  uploadImage(id: string, file: FileType): Promise<Category>;
-  updateCategory(id: string, name: string): Promise<Category>;
+  saveImage(id: string, file: FileType): Promise<Category>;
+  updateImage(id: string, file: FileType): Promise<Category>;
+  createCategory(data: CategoryCreateDto): Promise<Category>;
+  updateCategory(id: string, data: CategoryUpdateDto): Promise<Category>;
 }
