@@ -2,15 +2,12 @@
 CREATE TYPE "OrderStatus" AS ENUM ('Accepted', 'Payed', 'Delivered', 'Canceled');
 
 -- CreateEnum
-CREATE TYPE "Gender" AS ENUM ('Male', 'Female', 'Both');
-
--- CreateEnum
 CREATE TYPE "Region" AS ENUM ('Andijon', 'Buxoro', 'Fargona', 'Jizzax', 'Navoiy', 'Xorazm', 'Namangan', 'Sirdaryo', 'Toshkent', 'Samarqand', 'Qashqadaryo', 'Surxondaryo', 'Qoraqalpoghiston', 'Toshkent_viloyati');
 
 -- CreateTable
 CREATE TABLE "Category" (
     "id" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
+    "name" JSONB NOT NULL,
     "imageUrl" TEXT NOT NULL,
 
     CONSTRAINT "Category_pkey" PRIMARY KEY ("id")
@@ -19,15 +16,14 @@ CREATE TABLE "Category" (
 -- CreateTable
 CREATE TABLE "Product" (
     "id" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
-    "price" INTEGER NOT NULL,
+    "name" JSONB NOT NULL,
+    "price" TEXT NOT NULL,
     "imageUrl_1" TEXT NOT NULL,
     "imageUrl_2" TEXT,
     "imageUrl_3" TEXT,
     "available" BOOLEAN NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "instruction" TEXT NOT NULL,
-    "description" TEXT NOT NULL,
+    "description" JSONB NOT NULL,
     "category_id" TEXT NOT NULL,
     "characteristic_id" TEXT,
 
@@ -39,17 +35,17 @@ CREATE TABLE "Characteristic" (
     "id" TEXT NOT NULL,
     "age" INTEGER NOT NULL,
     "brand" TEXT NOT NULL,
-    "group" TEXT NOT NULL,
-    "volume" TEXT NOT NULL,
-    "formula" TEXT NOT NULL,
-    "made_in" TEXT NOT NULL,
-    "purpose" TEXT NOT NULL,
-    "genders" "Gender" NOT NULL,
-    "skin_type" TEXT NOT NULL,
-    "ingredients" TEXT NOT NULL,
-    "classification" TEXT NOT NULL,
-    "trademark_country" TEXT NOT NULL,
-    "application_time" TEXT NOT NULL,
+    "group" JSONB NOT NULL,
+    "volume" JSONB NOT NULL,
+    "formula" JSONB NOT NULL,
+    "made_in" JSONB NOT NULL,
+    "purpose" JSONB NOT NULL,
+    "genders" JSONB NOT NULL,
+    "skin_type" JSONB NOT NULL,
+    "ingredients" JSONB NOT NULL,
+    "classification" JSONB NOT NULL,
+    "trademark_country" JSONB NOT NULL,
+    "application_time" JSONB NOT NULL,
     "product_id" TEXT NOT NULL,
 
     CONSTRAINT "Characteristic_pkey" PRIMARY KEY ("id")

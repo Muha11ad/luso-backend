@@ -10,21 +10,21 @@ datasource db {
 // Product related models
 model Category {
   id       String    @id @default(uuid())
-  name     String    @unique
+  name     Json      @unique
   imageUrl String    @unique
   products Product[]
 }
 
 model Product {
   id                String          @id @default(uuid())
-  name              String          @unique
+  name              Json            @unique
   price             String
   imageUrl_1        String
   imageUrl_2        String?
   imageUrl_3        String?
   available         Boolean
   created_at        DateTime        @default(now())
-  description       String
+  description       Json
   category_id       String
   characteristic_id String?
   category          Category        @relation(fields: [category_id], references: [id])
@@ -36,17 +36,17 @@ model Characteristic {
   id                String  @id @default(uuid())
   age               Int
   brand             String
-  group             String
-  volume            String
-  formula           String
-  made_in           String
-  purpose           String
-  genders           Gender
-  skin_type         String
-  ingredients       String
-  classification    String
-  trademark_country String
-  application_time  String
+  group             Json
+  volume            Json
+  formula           Json
+  made_in           Json
+  purpose           Json
+  genders           Json
+  skin_type         Json
+  ingredients       Json
+  classification    Json
+  trademark_country Json
+  application_time  Json
   product_id        String  @unique
   product           Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
 }
@@ -96,12 +96,6 @@ enum OrderStatus {
   Payed
   Delivered
   Canceled
-}
-
-enum Gender {
-  Male
-  Female
-  Both
 }
 
 enum Region {
