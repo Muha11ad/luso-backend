@@ -11,7 +11,7 @@ datasource db {
 model Category {
   id       String    @id @default(uuid())
   name     Json      @unique
-  imageUrl String?    @unique
+  imageUrl String?   @unique
   products Product[]
 }
 
@@ -24,7 +24,7 @@ model Product {
   imageUrl_3        String?
   available         Boolean
   created_at        DateTime        @default(now())
-  description       Json
+  instruction       Json
   category_id       String
   characteristic_id String?
   category          Category        @relation(fields: [category_id], references: [id])

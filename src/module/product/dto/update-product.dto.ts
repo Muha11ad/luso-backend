@@ -1,33 +1,44 @@
-import { IsBoolean, IsDate, IsOptional, IsString } from 'class-validator';
+import { DtoErrorTypes } from '@/types';
+import { Type } from 'class-transformer';
+import { IsBoolean, IsObject, IsOptional, IsString, ValidateNested } from 'class-validator';
+
+class Translations {
+  @IsOptional()
+  @IsString({ message: DtoErrorTypes.MUST_BE_STRING })
+  en?: string;
+
+  @IsOptional()
+  @IsString({ message: DtoErrorTypes.MUST_BE_STRING })
+  ru?: string;
+
+  @IsOptional()
+  @IsString({ message: DtoErrorTypes.MUST_BE_STRING })
+  uz?: string;
+}
 
 export class ProductUpdateDto {
   @IsOptional()
-  @IsString({ message: 'Must be a string' })
-  name?: string;
+  @IsObject({ message: 'Name must be an object' })
+  @ValidateNested()
+  @Type(() => Translations)
+  name?: Translations;
 
   @IsOptional()
+  @IsString({ message: DtoErrorTypes.MUST_BE_STRING })
   price?: string;
 
   @IsOptional()
-  @IsString({ message: 'Must be a string' })
-  imageUrl_1?: string;
-
-  @IsOptional()
-  imageUrl_2?: string;
-
-  @IsOptional()
-  imageUrl_3?: string;
-
-  @IsOptional()
-  @IsBoolean({ message: 'Must be a boolean' })
+  @IsBoolean({ message: DtoErrorTypes.MUST_BE_BOOLEAN })
   available?: boolean;
 
   @IsOptional()
-  @IsString({ message: 'Must be a string' })
-  description?: string;
+  @IsObject({ message: 'Instruction must be an object' })
+  @ValidateNested()
+  @Type(() => Translations)
+  instruction?: Translations;
 
   @IsOptional()
-  @IsString({ message: 'Must be a string' })
+  @IsString({ message: DtoErrorTypes.MUST_BE_STRING })
   category_id?: string;
 
   @IsOptional()

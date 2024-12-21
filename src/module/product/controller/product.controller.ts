@@ -23,39 +23,6 @@ import { IdDto } from '@/common/dto';
 @Controller('product')
 export class ProductController implements IProductController {
   constructor(private readonly productService: ProductService) {}
-
-  @Post()
-  @UseGuards(AuthGuard)
-  @UseInterceptors(FilesInterceptor('image', 3))
-  async createProduct(@Body() data: any, @UploadedFiles() files: FilesType): Promise<Product> {
-    if (!files || files.length === 0 || !files[0]) {
-      throw new BadRequestException(ExceptionErrorTypes.IMAGE_REQUIRED);
-    }
-    const newData: ProductCreateDto = { ...data, available: true };
-    const product = await this.productService.create(newData, files);
-    return product;
-  }
-  @Put('/:id')
-  @UseGuards(AuthGuard)
-  @UseInterceptors(
-    FilesInterceptor('image_1'),
-    FilesInterceptor('image_2'),
-    FilesInterceptor('image_3'),
-  )
-  async update(
-    @Param('id') id: IdDto,
-    @Body() data: ProductUpdateDto,
-    @UploadedFiles() files?: FilesType,
-  ): Promise<Product> {
-    const product = await this.productService.update(id, data, files);
-    return product;
-  }
-  @Delete('/:id')
-  @UseGuards(AuthGuard)
-  async delete(@Param() id: IdDto): Promise<string> {
-    await this.productService.delete(id);
-    return 'Product deleted successfully';
-  }
   @Get()
   async getAllProducts(): Promise<Product[]> {
     return this.productService.findAll();
@@ -69,8 +36,33 @@ export class ProductController implements IProductController {
   async getProductByCategoryId(@Param('categoryId') categoryId: IdDto): Promise<Product[]> {
     return this.productService.findByCategoryId(categoryId);
   }
-  @Get('?name={name}')
-  async getProductByName(@Param('name') name: string): Promise<Product[]> {
-    return this.productService.findByName(name);
+  @Post()
+  @UseGuards(AuthGuard)
+  async createProduct(@Body() data: ProductCreateDto): Promise<Product> {
+    const product = await this.productService.create(data);
+    return product;
+  }
+  @Put('/:id')
+  @UseGuards(AuthGuard)
+  async updateProduct(@Param('id') id: IdDto, @Body() data: ProductUpdateDto): Promise<Product> {
+    return await this.productService.update(id, data);
+  }
+  @Delete('/:id')
+  @UseGuards(AuthGuard)
+  async delete(@Param() id: IdDto): Promise<Product> {
+    return this.productService.delete(id);
+  }
+  @Post('/upload/:id')
+  @UseGuards(AuthGuard)
+  @UseInterceptors(FilesInterceptor('images'))
+  async sageImages(@Param('id') id: IdDto, @UploadedFiles() files: FilesType): Promise<Product> {
+    return this.productService.saveImages(id, files);
+  }
+
+  @Put('/upload/:id')
+  @UseGuards(AuthGuard)
+  @UseInterceptors(FilesInterceptor('images'))
+  async updateImages(@Param('id') id: IdDto, @UploadedFiles() files: FilesType): Promise<Product> {
+    return this.productService.saveImages(id, files);
   }
 }

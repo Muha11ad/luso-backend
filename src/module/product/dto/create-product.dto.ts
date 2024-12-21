@@ -1,21 +1,52 @@
 import { DtoErrorTypes } from '@/types';
-import { IsBoolean, IsDate, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import {
+  IsBoolean,
+  IsNotEmpty,
+  IsObject,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
+
+class Translations {
+  @IsNotEmpty({ message: DtoErrorTypes.REQUIRED_INFO })
+  @IsString({ message: DtoErrorTypes.MUST_BE_STRING })
+  en: string;
+
+  @IsNotEmpty({ message: DtoErrorTypes.REQUIRED_INFO })
+  @IsString({ message: DtoErrorTypes.MUST_BE_STRING })
+  ru: string;
+
+  @IsNotEmpty({ message: DtoErrorTypes.REQUIRED_INFO })
+  @IsString({ message: DtoErrorTypes.MUST_BE_STRING })
+  uz: string;
+}
 
 export class ProductCreateDto {
-  @IsString({ message: DtoErrorTypes.MUST_BE_STRING })
   @IsNotEmpty({ message: DtoErrorTypes.REQUIRED_INFO })
-  name: string;
+  @IsObject({ message: 'Name must be an object' })
+  @ValidateNested()
+  @Type(() => Translations)
+  name: Translations;
+
   @IsNotEmpty({ message: DtoErrorTypes.REQUIRED_INFO })
   price: string;
+
   @IsNotEmpty({ message: DtoErrorTypes.REQUIRED_INFO })
   @IsBoolean({ message: DtoErrorTypes.MUST_BE_BOOLEAN })
   available: boolean;
+
   @IsNotEmpty({ message: DtoErrorTypes.REQUIRED_INFO })
-  @IsString({ message: DtoErrorTypes.MUST_BE_STRING })
-  description: string;
+  @IsObject({ message: 'Instruction must be an object' })
+  @ValidateNested()
+  @Type(() => Translations)
+  instruction: Translations;
+
   @IsNotEmpty({ message: DtoErrorTypes.REQUIRED_INFO })
   @IsString({ message: DtoErrorTypes.MUST_BE_STRING })
   category_id: string;
+
   @IsOptional()
   characteristic_id?: string;
 }
