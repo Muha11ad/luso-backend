@@ -18,13 +18,12 @@ model Category {
 model Product {
   id                String          @id @default(uuid())
   name              String          @unique
-  price             Int
+  price             String
   imageUrl_1        String
   imageUrl_2        String?
   imageUrl_3        String?
   available         Boolean
   created_at        DateTime        @default(now())
-  instruction       String
   description       String
   category_id       String
   characteristic_id String?

@@ -5,15 +5,20 @@ import { AdminCreateDto, AdminUpdateDto } from '../dto';
 import { IAdminService } from './admin.serivice.interface';
 import { EmailService, DatabaseService, RedisService } from '@/common/services';
 import { BadGatewayException, BadRequestException, Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AdminService implements IAdminService {
   constructor(
+    private readonly jwtService: JwtService,
     private readonly redisService: RedisService,
     private readonly emailService: EmailService,
     private readonly databaseService: DatabaseService,
   ) {}
-
+  private async hashPassword(password: string): Promise<string> {
+    const salt = await bcrypt.genSalt(10);
+    return bcrypt.hash(password, salt);
+  }
   private findAdminByEmail(email: string): Promise<Admin | null> {
     return this.databaseService.admin.findUnique({ where: { email } });
   }
@@ -38,21 +43,21 @@ export class AdminService implements IAdminService {
       throw new BadGatewayException(`Failed to send verification code: ${error.message}`);
     }
   }
-  async verifyCreateCode(code: string): Promise<Admin> {
+  async verifyCreateCode(code: string): Promise<string> {
     const adminDto = await this.redisService.get<AdminCreateDto>(code);
     if (!adminDto) {
       throw new BadRequestException(ExceptionErrorTypes.INVALID_CODE);
     }
     try {
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(adminDto.password, salt);
+      const hashedPassword = await this.hashPassword(adminDto.password);
       await this.redisService.del(code);
-      return this.databaseService.admin.create({
+      await this.databaseService.admin.create({
         data: {
           email: adminDto.email,
           password: hashedPassword,
         },
       });
+      return this.jwtService.sign({ email: adminDto.email });
     } catch (error) {
       throw new BadGatewayException(`Failed to create admin: ${error.message}`);
     }
@@ -70,10 +75,11 @@ export class AdminService implements IAdminService {
         throw new BadRequestException(ExceptionErrorTypes.EMAIL_EXISTS);
       }
     }
-
     const updateData = {
       ...(adminUpdateDto.email && { email: adminUpdateDto.email }),
-      ...(adminUpdateDto.password && { password: adminUpdateDto.password }),
+      ...(adminUpdateDto.password && {
+        password: await this.hashPassword(adminUpdateDto.password),
+      }),
     };
 
     try {

@@ -19,7 +19,7 @@ export class AdminController implements IAdminController {
 
   @Post('verify-code')
   @HttpCode(HttpStatus.OK)
-  async verifyCreateCode(@Body('code') code: string): Promise<Admin> {
+  async verifyCreateCode(@Body('code') code: string): Promise<string> {
     return this.adminService.verifyCreateCode(code);
   }
 

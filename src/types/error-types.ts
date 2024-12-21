@@ -1,10 +1,12 @@
 export const ExceptionErrorTypes = {
   INVALID_CODE: 'Invalid code',
-  EMAIL_EXISTS: 'Email already exists',
-  EMAIL_NOT_SENT: 'Failed to send email',
   FILE_REQUIRED: 'File is required',
+  EMAIL_EXISTS: 'Email already exists',
+  IMAGE_REQUIRED: 'image_1 is required',
+  EMAIL_NOT_SENT: 'Failed to send email',
   NOT_FOUND: 'Requested resource not found',
   INVALID_CREDENTIALS: 'Invalid credentials',
+  CATEGORY_DOES_EXISTS: 'Category does not exists',
   ERROR_SAVING_FILE: 'Unexpected error while saving file',
   ERROR_DELETING_FILE: 'Unexpected error while deleting file',
   ERROR_UPDATING_FILE: 'Unexpected error while updating file',
@@ -14,8 +16,10 @@ export const ExceptionErrorTypes = {
   UNSUPPORTED_FILE_FORMAT: 'Unsupported file format. Only JPEG and PNGare allowed.',
 };
 export const DtoErrorTypes = {
-  MUST_BE_STRING: 'This field must be a string',
   REQUIRED_INFO: 'This field is required',
+  MUST_BE_DATE: 'This field must be a date',
+  MUST_BE_STRING: 'This field must be a string',
   INVALID_EMAIL: 'Use your actual email address',
+  MUST_BE_BOOLEAN: 'This field must be a boolean',
   INVALID_PASSWORD: 'Password must be between 4 and 20 characters ',
 };

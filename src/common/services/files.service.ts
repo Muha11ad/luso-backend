@@ -2,8 +2,8 @@ import * as path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import { ExceptionErrorTypes } from '@/types';
 import { ensureDir, writeFile, unlink } from 'fs-extra';
-import { convertImageToWebP, pathToUpload } from '@/common/utils';
 import { BadGatewayException, Injectable } from '@nestjs/common';
+import { convertImageToWebP, pathToUpload } from '@/common/utils';
 
 export enum ImageFolderName {
   category = 'category',
@@ -50,6 +50,18 @@ export class FilesService {
       return await this.saveFile(file, folder);
     } catch (error) {
       throw new BadGatewayException(ExceptionErrorTypes.ERROR_UPDATING_FILE);
+    }
+  }
+
+  async saveMultipleFiles(
+    files: Express.Multer.File[],
+    folder: ImageFolderName,
+  ): Promise<string[]> {
+    try {
+      const promises = files.map((file) => this.saveFile(file, folder));
+      return await Promise.all(promises);
+    } catch (error) {
+      throw new BadGatewayException(ExceptionErrorTypes.ERROR_SAVING_FILE);
     }
   }
 }
