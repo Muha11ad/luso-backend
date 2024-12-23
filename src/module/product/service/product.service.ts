@@ -1,12 +1,12 @@
 import { IdDto } from '@/common/dto';
 import { Prisma, Product } from '@prisma/client';
-import { ExceptionErrorTypes, FilesType, FileType } from '@/types';
-import { ProductCreateDto, ProductNameTranslations, ProductUpdateDto } from '../dto';
-import { IProductService } from './product.service.interface';
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { DatabaseService, FilesService, ImageFolderName } from '@/common/services';
 import { ProductExceptionErrorTypes } from '../types';
 import { CategoryErrorTypes } from '@/module/category/types';
+import { IProductService } from './product.service.interface';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { ExceptionErrorTypes, FilesType, FileType } from '@/types';
+import { DatabaseService, FilesService, ImageFolderName } from '@/common/services';
+import { ParamsImageDto, ProductCreateDto, ProductUpdateDto } from '../dto';
 
 @Injectable()
 export class ProductService implements IProductService {
@@ -15,9 +15,9 @@ export class ProductService implements IProductService {
     private readonly filesService: FilesService,
   ) {}
 
-  private async checkNameAndExistsAndThrowException(name: ProductNameTranslations): Promise<void> {
-    const nameExists = await this.database.product.findFirst({
-      where: { name: name as Prisma.JsonFilter<'Product'> },
+  private async checkNameAndExistsAndThrowException(name: string): Promise<void> {
+    const nameExists = await this.database.product.findUnique({
+      where: { name },
     });
     if (nameExists) {
       throw new BadRequestException(ExceptionErrorTypes.ALREADY_EXISTS);
@@ -47,11 +47,6 @@ export class ProductService implements IProductService {
     try {
       const productData = {
         ...data,
-        name: {
-          uz: data.name.uz,
-          ru: data.name.ru,
-          en: data.name.en,
-        },
         instruction: {
           uz: data.instruction.uz,
           ru: data.instruction.ru,
@@ -73,14 +68,22 @@ export class ProductService implements IProductService {
       await this.checkCategoryIdExistsAndThrowException(data.category_id);
     }
     if (data['name']) {
-      await this.checkNameAndExistsAndThrowException(data.name as ProductNameTranslations);
+      await this.checkNameAndExistsAndThrowException(data.name);
     }
-
-    await this.checkIdExistsAndThrowException(id);
+    const exsitingProdcut = await this.checkIdExistsAndThrowException(id);
     try {
+      const newInstruction = {
+        ...(exsitingProdcut.instruction as object),
+        ...(data['instruction'] && data.instruction),
+      };
+      const newData = {
+        ...exsitingProdcut,
+        ...data,
+        instruction: newInstruction,
+      };
       return this.database.product.update({
         where: { id },
-        data: data as Prisma.ProductUpdateInput,
+        data: newData as Prisma.ProductUpdateInput,
       });
     } catch (error) {
       throw new BadRequestException(
@@ -91,7 +94,7 @@ export class ProductService implements IProductService {
 
   async findAll(): Promise<Product[]> {
     return this.database.product.findMany({
-      include: { Characteristic: true },
+      include: { Characteristic: true, Images: true },
     });
   }
 
@@ -117,10 +120,10 @@ export class ProductService implements IProductService {
     return product;
   }
 
-  async findByName(name: Pick<ProductCreateDto, 'name'>): Promise<Product> {
+  async findByName(name: string): Promise<Product> {
     try {
       return this.database.product.findFirst({
-        where: { name: name as Prisma.JsonFilter<'Product'> },
+        where: { name },
         include: { Characteristic: true },
       });
     } catch (error) {
@@ -139,6 +142,86 @@ export class ProductService implements IProductService {
     } catch (error) {
       throw new BadRequestException(
         `${ProductExceptionErrorTypes.ERROR_FINDING_BY_CATEGORY}: ${error.message}`,
+      );
+    }
+  }
+
+  async saveImages({ id }: IdDto, files: FileType[]): Promise<Product> {
+    const product = await this.checkIdExistsAndThrowException(id);
+    const images: string[] = await this.filesService.saveMultipleFiles(
+      files,
+      ImageFolderName.product,
+    );
+    try {
+      return this.database.product.update({
+        where: { id: product.id },
+        data: {
+          Images: {
+            createMany: { data: images.map((image) => ({ imageUrl: image })) },
+          },
+        },
+      });
+    } catch (error) {
+      await this.filesService.deleteMultipleFiles(images, ImageFolderName.product);
+      throw new BadRequestException(
+        `${ProductExceptionErrorTypes.ERROR_SAVING_IMAGES}: ${error.message}`,
+      );
+    }
+  }
+
+  async updateImage({ id, image_id }: ParamsImageDto, file: FileType): Promise<Product> {
+    const existingProduct = await this.checkIdExistsAndThrowException(id);
+    const image = await this.database.productImages.findFirst({
+      where: { id: image_id },
+    });
+    if (!image) {
+      throw new BadRequestException(ProductExceptionErrorTypes.IMAGE_NOT_FOUND);
+    }
+    const newImageLink: string = await this.filesService.updateFile(
+      file,
+      ImageFolderName.product,
+      image.imageUrl,
+    );
+    try {
+      return this.database.product.update({
+        where: { id: existingProduct.id },
+        data: {
+          Images: {
+            update: {
+              where: { id: image_id },
+              data: { imageUrl: newImageLink },
+            },
+          },
+        },
+      });
+    } catch (error) {
+      throw new BadRequestException(
+        `${ProductExceptionErrorTypes.ERROR_UPDATING_IMAGE}: ${error.message}`,
+      );
+    }
+  }
+
+  async deleteImage({ id, image_id }: ParamsImageDto): Promise<Product> {
+    const existingProduct = await this.checkIdExistsAndThrowException(id);
+    const image = await this.database.productImages.findFirst({
+      where: { id: image_id },
+    });
+    if (!image) {
+      throw new BadRequestException(ProductExceptionErrorTypes.IMAGE_NOT_FOUND);
+    }
+    try {
+      await this.filesService.deleteFile(image.imageUrl, ImageFolderName.product);
+      return this.database.product.update({
+        where: { id: existingProduct.id },
+        data: {
+          Images: {
+            delete: { id: image_id },
+          },
+        },
+      });
+    } catch (error) {
+      throw new BadRequestException(
+        `${ProductExceptionErrorTypes.ERROR_UPDATING_IMAGE}: ${error.message}`,
       );
     }
   }

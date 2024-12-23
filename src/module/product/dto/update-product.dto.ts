@@ -18,10 +18,8 @@ class Translations {
 
 export class ProductUpdateDto {
   @IsOptional()
-  @IsObject({ message: 'Name must be an object' })
-  @ValidateNested()
-  @Type(() => Translations)
-  name?: Translations;
+  @IsString()
+  name: string;
 
   @IsOptional()
   @IsString({ message: DtoErrorTypes.MUST_BE_STRING })

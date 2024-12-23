@@ -11,7 +11,6 @@ export enum ImageFolderName {
 }
 @Injectable()
 export class FilesService {
-
   private readonly baseUrl = 'http://localhost:3000/uploads';
 
   async saveFile(file: Express.Multer.File, folder: ImageFolderName): Promise<string> {
@@ -76,5 +75,4 @@ export class FilesService {
       throw new BadGatewayException(ExceptionErrorTypes.ERROR_DELETING_FILE);
     }
   }
-  
 }

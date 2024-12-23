@@ -6,7 +6,6 @@ import { ICategoryService } from './category.serivice.interface';
 import { BadGatewayException, Injectable } from '@nestjs/common';
 import { DatabaseService, FilesService, ImageFolderName } from '@/common/services';
 import { FileType } from '@/types';
-import { ProductNameTranslations } from '@/module/product/dto';
 import { InputJsonValue } from '@prisma/client/runtime/library';
 
 @Injectable()

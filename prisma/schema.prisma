@@ -17,7 +17,7 @@ model Category {
 
 model Product {
   id                String          @id @default(uuid())
-  name              Json            @unique
+  name              String          @unique
   price             String
   available         Boolean
   created_at        DateTime        @default(now())

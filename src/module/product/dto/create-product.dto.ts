@@ -9,7 +9,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 
-export class ProductNameTranslations {
+export class Translations {
   @IsNotEmpty({ message: DtoErrorTypes.REQUIRED_INFO })
   @IsString({ message: DtoErrorTypes.MUST_BE_STRING })
   en: string;
@@ -25,10 +25,8 @@ export class ProductNameTranslations {
 
 export class ProductCreateDto {
   @IsNotEmpty({ message: DtoErrorTypes.REQUIRED_INFO })
-  @IsObject({ message: 'Name must be an object' })
-  @ValidateNested()
-  @Type(() => ProductNameTranslations)
-  name: ProductNameTranslations;
+  @IsString()
+  name: string;
 
   @IsNotEmpty({ message: DtoErrorTypes.REQUIRED_INFO })
   price: string;
@@ -40,8 +38,8 @@ export class ProductCreateDto {
   @IsNotEmpty({ message: DtoErrorTypes.REQUIRED_INFO })
   @IsObject({ message: 'Instruction must be an object' })
   @ValidateNested()
-  @Type(() => ProductNameTranslations)
-  instruction: ProductNameTranslations;
+  @Type(() => Translations)
+  instruction: Translations;
 
   @IsNotEmpty({ message: DtoErrorTypes.REQUIRED_INFO })
   @IsString({ message: DtoErrorTypes.MUST_BE_STRING })
