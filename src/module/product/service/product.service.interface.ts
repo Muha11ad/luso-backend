@@ -9,8 +9,6 @@ export interface IProductService {
   findById: (id: IdDto) => Promise<Product>;
   create: (data: ProductCreateDto) => Promise<Product>;
   findByCategoryId: (categoryId: IdDto) => Promise<Product[]>;
-  saveImages: (id: IdDto, files: FilesType) => Promise<Product>;
-  updateImages: (id: IdDto, files: FilesType) => Promise<Product>;
   update: (id: IdDto, data: ProductUpdateDto) => Promise<Product>;
-  findByName: (name: ProductNameTranslations) => Promise<Product[]>;
+  findByName: (name: Pick<ProductCreateDto, 'name'>) => Promise<Product>;
 }

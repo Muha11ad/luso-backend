@@ -6,6 +6,8 @@ import { ICategoryService } from './category.serivice.interface';
 import { BadGatewayException, Injectable } from '@nestjs/common';
 import { DatabaseService, FilesService, ImageFolderName } from '@/common/services';
 import { FileType } from '@/types';
+import { ProductNameTranslations } from '@/module/product/dto';
+import { InputJsonValue } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class CategoryService implements ICategoryService {
@@ -43,9 +45,9 @@ export class CategoryService implements ICategoryService {
 
   async deleteCategory(id: string): Promise<Category> {
     const category = await this.checkIdExistsAndThrowException(id);
-    try {
+    if (category.imageUrl)
       await this.fileService.deleteFile(category.imageUrl, ImageFolderName.category);
-
+    try {
       return this.databaseService.category.delete({ where: { id } });
     } catch (error) {
       throw new BadGatewayException(`${CategoryErrorTypes.ERROR_DELETING}: ${error.message}`);
@@ -71,20 +73,19 @@ export class CategoryService implements ICategoryService {
   }
 
   async updateCategory(id: string, data: CategoryUpdateDto): Promise<Category> {
-    await this.checkIdExistsAndThrowException(id);
+    const existingCategory = await this.checkIdExistsAndThrowException(id);
     await this.checkNameExistsAndThrowException(data.name);
+
     try {
-      function getUpdatedName({ name }: CategoryUpdateDto): Partial<CategoryNameType> {
-        const updatedName = {};
-        if (name['uz']) updatedName['uz'] = name['uz'];
-        if (name['ru']) updatedName['ru'] = name['ru'];
-        if (name['en']) updatedName['en'] = name['en'];
-        return updatedName;
-      }
+      const updatePayload: InputJsonValue = {
+        ...(existingCategory.name as object),
+        ...data.name,
+      };
+
       return this.databaseService.category.update({
         where: { id },
         data: {
-          name: getUpdatedName(data),
+          name: updatePayload,
         },
       });
     } catch (error) {

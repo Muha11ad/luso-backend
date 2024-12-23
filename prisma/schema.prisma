@@ -19,9 +19,6 @@ model Product {
   id                String          @id @default(uuid())
   name              Json            @unique
   price             String
-  imageUrl_1        String?
-  imageUrl_2        String?
-  imageUrl_3        String?
   available         Boolean
   created_at        DateTime        @default(now())
   instruction       Json
@@ -30,6 +27,14 @@ model Product {
   category          Category        @relation(fields: [category_id], references: [id])
   Characteristic    Characteristic?
   OrderDetails      OrderDetails[]
+  Images            ProductImages[]
+}
+
+model ProductImages {
+  id         String  @id @default(uuid())
+  imageUrl   String
+  product_id String
+  product    Product @relation(fields: [product_id], references: [id])
 }
 
 model Characteristic {

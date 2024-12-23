@@ -40,8 +40,8 @@ export class ProductCreateDto {
   @IsNotEmpty({ message: DtoErrorTypes.REQUIRED_INFO })
   @IsObject({ message: 'Instruction must be an object' })
   @ValidateNested()
-  @Type(() => Translations)
-  instruction: Translations;
+  @Type(() => ProductNameTranslations)
+  instruction: ProductNameTranslations;
 
   @IsNotEmpty({ message: DtoErrorTypes.REQUIRED_INFO })
   @IsString({ message: DtoErrorTypes.MUST_BE_STRING })

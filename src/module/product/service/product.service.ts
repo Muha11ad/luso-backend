@@ -1,6 +1,6 @@
 import { IdDto } from '@/common/dto';
 import { Prisma, Product } from '@prisma/client';
-import { ExceptionErrorTypes, FilesType } from '@/types';
+import { ExceptionErrorTypes, FilesType, FileType } from '@/types';
 import { ProductCreateDto, ProductNameTranslations, ProductUpdateDto } from '../dto';
 import { IProductService } from './product.service.interface';
 import { BadRequestException, Injectable } from '@nestjs/common';
@@ -40,19 +40,6 @@ export class ProductService implements IProductService {
       throw new BadRequestException(CategoryErrorTypes.NOT_FOUND);
     }
   }
-  private getImageUrls = (product: Product): string[] => {
-    const images: string[] = [];
-    if (product.imageUrl_1) {
-      images.push(product.imageUrl_1);
-    }
-    if (product.imageUrl_2) {
-      images.push(product.imageUrl_2);
-    }
-    if (product.imageUrl_3) {
-      images.push(product.imageUrl_3);
-    }
-    return images;
-  };
 
   async create(data: ProductCreateDto): Promise<Product> {
     await this.checkCategoryIdExistsAndThrowException(data.category_id);
@@ -110,8 +97,6 @@ export class ProductService implements IProductService {
 
   async delete({ id }: IdDto): Promise<Product> {
     const product = await this.checkIdExistsAndThrowException(id);
-    const images = this.getImageUrls(product);
-    await this.filesService.deleteMultipleFiles(images, ImageFolderName.product);
     try {
       return this.database.product.delete({ where: { id } });
     } catch (error) {
@@ -132,9 +117,9 @@ export class ProductService implements IProductService {
     return product;
   }
 
-  async findByName(name: ProductNameTranslations): Promise<Product[]> {
+  async findByName(name: Pick<ProductCreateDto, 'name'>): Promise<Product> {
     try {
-      return this.database.product.findMany({
+      return this.database.product.findFirst({
         where: { name: name as Prisma.JsonFilter<'Product'> },
         include: { Characteristic: true },
       });
@@ -154,55 +139,6 @@ export class ProductService implements IProductService {
     } catch (error) {
       throw new BadRequestException(
         `${ProductExceptionErrorTypes.ERROR_FINDING_BY_CATEGORY}: ${error.message}`,
-      );
-    }
-  }
-
-  async saveImages({ id }: IdDto, files: FilesType): Promise<Product> {
-    await this.checkIdExistsAndThrowException(id);
-    try {
-      const linkToImages: string[] = await this.filesService.saveMultipleFiles(
-        files,
-        ImageFolderName.product,
-      );
-      const images = {
-        imageUrl_1: linkToImages[0],
-        ...(linkToImages[1] && { imageUrl_2: linkToImages[1] }),
-        ...(linkToImages[2] && { imageUrl_3: linkToImages[2] }),
-      };
-      return this.database.product.update({
-        where: { id },
-        data: images,
-      });
-    } catch (error) {
-      throw new BadRequestException(
-        `${ProductExceptionErrorTypes.ERROR_SAVING_IMAGES}: ${error.message}`,
-      );
-    }
-  }
-// fix
-  async updateImages({ id }: IdDto, files: FilesType): Promise<Product> {
-    const product = await this.checkIdExistsAndThrowException(id);
-    const oldImageUrls : string[]  = this.getImageUrls(product);
-    const newImageUrls: string[] = await this.filesService.saveMultipleFiles(
-      files,
-      ImageFolderName.product,
-    );
-    const newImageUrl
-    if()
-    try {
-      const images = {
-        imageUrl_1: linkToImages[0],
-        ...(linkToImages[1] && { imageUrl_2: linkToImages[1] }),
-        ...(linkToImages[2] && { imageUrl_3: linkToImages[2] }),
-      };
-      return this.database.product.update({
-        where: { id },
-        data: images,
-      });
-    } catch (error) {
-      throw new BadRequestException(
-        `${ProductExceptionErrorTypes.ERROR_SAVING_IMAGES}: ${error.message}`,
       );
     }
   }

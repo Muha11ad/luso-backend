@@ -1,24 +1,24 @@
-import { FilesInterceptor } from '@nestjs/platform-express';
-import { ProductService } from '../service/product.service';
 import {
   Body,
   Controller,
   Post,
   UploadedFiles,
   UseInterceptors,
-  BadRequestException,
   UseGuards,
   Put,
   Param,
   Delete,
   Get,
+  UploadedFile,
 } from '@nestjs/common';
-import { ProductCreateDto, ProductUpdateDto } from '../dto';
-import { AuthGuard } from '@/module/auth';
-import { ExceptionErrorTypes, FilesType } from '@/types';
-import { Product } from '@prisma/client';
-import { IProductController } from './product.controller.interface';
 import { IdDto } from '@/common/dto';
+import { Product } from '@prisma/client';
+import { AuthGuard } from '@/module/auth';
+import { FilesType, FileType } from '@/types';
+import { ProductService } from '../service/product.service';
+import { ProductCreateDto, ProductUpdateDto } from '../dto';
+import { IProductController } from './product.controller.interface';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 
 @Controller('product')
 export class ProductController implements IProductController {
@@ -36,6 +36,10 @@ export class ProductController implements IProductController {
   async getProductByCategoryId(@Param('categoryId') categoryId: IdDto): Promise<Product[]> {
     return this.productService.findByCategoryId(categoryId);
   }
+  @Get('/name/:name')
+  async getProductByName(@Param('name') name: Pick<ProductCreateDto, 'name'>): Promise<Product> {
+    return this.productService.findByName(name);
+  }
   @Post()
   @UseGuards(AuthGuard)
   async createProduct(@Body() data: ProductCreateDto): Promise<Product> {
@@ -49,20 +53,7 @@ export class ProductController implements IProductController {
   }
   @Delete('/:id')
   @UseGuards(AuthGuard)
-  async delete(@Param() id: IdDto): Promise<Product> {
+  async deleteProduct(@Param() id: IdDto): Promise<Product> {
     return this.productService.delete(id);
-  }
-  @Post('/upload/:id')
-  @UseGuards(AuthGuard)
-  @UseInterceptors(FilesInterceptor('images'))
-  async sageImages(@Param('id') id: IdDto, @UploadedFiles() files: FilesType): Promise<Product> {
-    return this.productService.saveImages(id, files);
-  }
-
-  @Put('/upload/:id')
-  @UseGuards(AuthGuard)
-  @UseInterceptors(FilesInterceptor('images'))
-  async updateImages(@Param('id') id: IdDto, @UploadedFiles() files: FilesType): Promise<Product> {
-    return this.productService.saveImages(id, files);
   }
 }
