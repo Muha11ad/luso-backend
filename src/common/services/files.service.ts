@@ -11,7 +11,9 @@ export enum ImageFolderName {
 }
 @Injectable()
 export class FilesService {
+
   private readonly baseUrl = 'http://localhost:3000/uploads';
+
   async saveFile(file: Express.Multer.File, folder: ImageFolderName): Promise<string> {
     try {
       const uploadFolder = path.resolve(pathToUpload, folder);
@@ -30,6 +32,7 @@ export class FilesService {
       throw new BadGatewayException(ExceptionErrorTypes.ERROR_SAVING_FILE);
     }
   }
+
   async deleteFile(fileName: string, folder: ImageFolderName): Promise<void> {
     try {
       fileName = fileName.split('/').pop();
@@ -64,4 +67,14 @@ export class FilesService {
       throw new BadGatewayException(ExceptionErrorTypes.ERROR_SAVING_FILE);
     }
   }
+
+  async deleteMultipleFiles(fileNames: string[], folder: ImageFolderName): Promise<void> {
+    try {
+      const promises = fileNames.map((fileName) => this.deleteFile(fileName, folder));
+      await Promise.all(promises);
+    } catch (error) {
+      throw new BadGatewayException(ExceptionErrorTypes.ERROR_DELETING_FILE);
+    }
+  }
+  
 }

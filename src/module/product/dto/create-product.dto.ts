@@ -9,7 +9,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 
-class Translations {
+export class ProductNameTranslations {
   @IsNotEmpty({ message: DtoErrorTypes.REQUIRED_INFO })
   @IsString({ message: DtoErrorTypes.MUST_BE_STRING })
   en: string;
@@ -27,8 +27,8 @@ export class ProductCreateDto {
   @IsNotEmpty({ message: DtoErrorTypes.REQUIRED_INFO })
   @IsObject({ message: 'Name must be an object' })
   @ValidateNested()
-  @Type(() => Translations)
-  name: Translations;
+  @Type(() => ProductNameTranslations)
+  name: ProductNameTranslations;
 
   @IsNotEmpty({ message: DtoErrorTypes.REQUIRED_INFO })
   price: string;

@@ -1,10 +1,12 @@
 import { IdDto } from '@/common/dto';
 import { Prisma, Product } from '@prisma/client';
 import { ExceptionErrorTypes, FilesType } from '@/types';
-import { ProductCreateDto, ProductUpdateDto } from '../dto';
+import { ProductCreateDto, ProductNameTranslations, ProductUpdateDto } from '../dto';
 import { IProductService } from './product.service.interface';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { DatabaseService, FilesService, ImageFolderName } from '@/common/services';
+import { ProductExceptionErrorTypes } from '../types';
+import { CategoryErrorTypes } from '@/module/category/types';
 
 @Injectable()
 export class ProductService implements IProductService {
@@ -13,87 +15,112 @@ export class ProductService implements IProductService {
     private readonly filesService: FilesService,
   ) {}
 
-  private async checkExistsAndThrowException(
-    data: ProductCreateDto | ProductUpdateDto,
-  ): Promise<void> {
-    if (data['name'] !== undefined) {
-      const nameExists = await this.database.product.findFirst({ where: { name: data.name } });
-      if (nameExists) {
-        throw new BadRequestException(ExceptionErrorTypes.ALREADY_EXISTS);
-      }
+  private async checkNameAndExistsAndThrowException(name: ProductNameTranslations): Promise<void> {
+    const nameExists = await this.database.product.findFirst({
+      where: { name: name as Prisma.JsonFilter<'Product'> },
+    });
+    if (nameExists) {
+      throw new BadRequestException(ExceptionErrorTypes.ALREADY_EXISTS);
     }
-    if (data['categoryId'] !== undefined) {
-      const categoryExists = await this.database.category.findFirst({
-        where: { id: data.category_id },
+  }
+  private async checkIdExistsAndThrowException(id: string): Promise<Product> {
+    const productExists = await this.database.product.findFirst({
+      where: { id },
+    });
+    if (productExists === null) {
+      throw new BadRequestException(CategoryErrorTypes.NOT_FOUND);
+    }
+    return productExists;
+  }
+  private async checkCategoryIdExistsAndThrowException(category_id: string): Promise<void> {
+    const categoryExists = await this.database.category.findFirst({
+      where: { id: category_id },
+    });
+    if (categoryExists === null) {
+      throw new BadRequestException(CategoryErrorTypes.NOT_FOUND);
+    }
+  }
+  private getImageUrls = (product: Product): string[] => {
+    const images: string[] = [];
+    if (product.imageUrl_1) {
+      images.push(product.imageUrl_1);
+    }
+    if (product.imageUrl_2) {
+      images.push(product.imageUrl_2);
+    }
+    if (product.imageUrl_3) {
+      images.push(product.imageUrl_3);
+    }
+    return images;
+  };
+
+  async create(data: ProductCreateDto): Promise<Product> {
+    await this.checkCategoryIdExistsAndThrowException(data.category_id);
+    await this.checkNameAndExistsAndThrowException(data.name);
+    try {
+      const productData = {
+        ...data,
+        name: {
+          uz: data.name.uz,
+          ru: data.name.ru,
+          en: data.name.en,
+        },
+        instruction: {
+          uz: data.instruction.uz,
+          ru: data.instruction.ru,
+          en: data.instruction.en,
+        },
+      };
+      return this.database.product.create({
+        data: productData,
       });
-      if (categoryExists === null) {
-        throw new BadRequestException(ExceptionErrorTypes.CATEGORY_DOES_EXISTS);
-      }
+    } catch (error) {
+      throw new BadRequestException(
+        `${ProductExceptionErrorTypes.ERROR_CREATING}: ${error.message}`,
+      );
     }
   }
 
-  async create(data: ProductCreateDto, files: FilesType): Promise<Product> {
-    await this.checkExistsAndThrowException(data);
+  async update({ id }: IdDto, data: ProductUpdateDto): Promise<Product> {
+    if (data['category_id']) {
+      await this.checkCategoryIdExistsAndThrowException(data.category_id);
+    }
+    if (data['name']) {
+      await this.checkNameAndExistsAndThrowException(data.name as ProductNameTranslations);
+    }
+
+    await this.checkIdExistsAndThrowException(id);
     try {
-      const savedFiles: string[] = await this.filesService.saveMultipleFiles(
-        files,
-        ImageFolderName.product,
-      );
-      const productData = {
-        ...data,
-        imageUrl_1: savedFiles[0],
-        ...(savedFiles[1] && { imageUrl_2: savedFiles[1] }),
-        ...(savedFiles[2] && { imageUrl_3: savedFiles[2] }),
-      };
-      return this.database.product.create({
-        data: {
-          ...productData,
-          category_id: data.category_id,
-        } as Prisma.ProductUncheckedCreateInput,
+      return this.database.product.update({
+        where: { id },
+        data: data as Prisma.ProductUpdateInput,
       });
     } catch (error) {
-      throw new BadRequestException(`Error while creating product: ${error.message}`);
+      throw new BadRequestException(
+        `${ProductExceptionErrorTypes.ERROR_UPDATING}: ${error.message}`,
+      );
     }
   }
-  async update({ id }: IdDto, data: ProductUpdateDto, files?: FilesType): Promise<Product> {
-    await this.checkExistsAndThrowException(data);
-    const product = await this.database.product.findFirst({ where: { id } });
-    if (!product) {
-      throw new BadRequestException(ExceptionErrorTypes.NOT_FOUND);
-    }
-    try {
-      if (files && files.length > 0) {
-        const savedFiles: string[] = await this.filesService.saveMultipleFiles(
-          files,
-          ImageFolderName.product,
-        );
-        const productData = {
-          ...data,
-          ...(savedFiles[0] && { imageUrl_1: savedFiles[0] }),
-          ...(savedFiles[1] && { imageUrl_2: savedFiles[1] }),
-          ...(savedFiles[2] && { imageUrl_3: savedFiles[2] }),
-        };
-        return this.database.product.update({
-          where: { id },
-          data: productData,
-        });
-      }
-    } catch (error) {
-      throw new BadRequestException(`Error while updating product: ${error.message}`);
-    }
-  }
+
   async findAll(): Promise<Product[]> {
     return this.database.product.findMany({
       include: { Characteristic: true },
     });
   }
+
   async delete({ id }: IdDto): Promise<Product> {
-    const product = await this.database.product.findFirst({ where: { id } });
-    if (!product) {
-      throw new BadRequestException(ExceptionErrorTypes.NOT_FOUND);
+    const product = await this.checkIdExistsAndThrowException(id);
+    const images = this.getImageUrls(product);
+    await this.filesService.deleteMultipleFiles(images, ImageFolderName.product);
+    try {
+      return this.database.product.delete({ where: { id } });
+    } catch (error) {
+      throw new BadRequestException(
+        `${ProductExceptionErrorTypes.ERROR_DELETING}: ${error.message}`,
+      );
     }
-    return this.database.product.delete({ where: { id } });
   }
+
   async findById({ id }: IdDto): Promise<Product> {
     const product = await this.database.product.findFirst({
       where: { id },
@@ -104,16 +131,79 @@ export class ProductService implements IProductService {
     }
     return product;
   }
-  async findByName(name: string): Promise<Product[]> {
-    return this.database.product.findMany({
-      where: { name: { contains: name } },
-      include: { Characteristic: true },
-    });
+
+  async findByName(name: ProductNameTranslations): Promise<Product[]> {
+    try {
+      return this.database.product.findMany({
+        where: { name: name as Prisma.JsonFilter<'Product'> },
+        include: { Characteristic: true },
+      });
+    } catch (error) {
+      throw new BadRequestException(
+        `${ProductExceptionErrorTypes.ERROR_FINDING_BY_NAME}: ${error.message}`,
+      );
+    }
   }
+
   async findByCategoryId({ id }: IdDto): Promise<Product[]> {
-    return this.database.product.findMany({
-      where: { category_id: id },
-      include: { Characteristic: true },
-    });
+    try {
+      return this.database.product.findMany({
+        where: { category_id: id },
+        include: { Characteristic: true },
+      });
+    } catch (error) {
+      throw new BadRequestException(
+        `${ProductExceptionErrorTypes.ERROR_FINDING_BY_CATEGORY}: ${error.message}`,
+      );
+    }
+  }
+
+  async saveImages({ id }: IdDto, files: FilesType): Promise<Product> {
+    await this.checkIdExistsAndThrowException(id);
+    try {
+      const linkToImages: string[] = await this.filesService.saveMultipleFiles(
+        files,
+        ImageFolderName.product,
+      );
+      const images = {
+        imageUrl_1: linkToImages[0],
+        ...(linkToImages[1] && { imageUrl_2: linkToImages[1] }),
+        ...(linkToImages[2] && { imageUrl_3: linkToImages[2] }),
+      };
+      return this.database.product.update({
+        where: { id },
+        data: images,
+      });
+    } catch (error) {
+      throw new BadRequestException(
+        `${ProductExceptionErrorTypes.ERROR_SAVING_IMAGES}: ${error.message}`,
+      );
+    }
+  }
+// fix
+  async updateImages({ id }: IdDto, files: FilesType): Promise<Product> {
+    const product = await this.checkIdExistsAndThrowException(id);
+    const oldImageUrls : string[]  = this.getImageUrls(product);
+    const newImageUrls: string[] = await this.filesService.saveMultipleFiles(
+      files,
+      ImageFolderName.product,
+    );
+    const newImageUrl
+    if()
+    try {
+      const images = {
+        imageUrl_1: linkToImages[0],
+        ...(linkToImages[1] && { imageUrl_2: linkToImages[1] }),
+        ...(linkToImages[2] && { imageUrl_3: linkToImages[2] }),
+      };
+      return this.database.product.update({
+        where: { id },
+        data: images,
+      });
+    } catch (error) {
+      throw new BadRequestException(
+        `${ProductExceptionErrorTypes.ERROR_SAVING_IMAGES}: ${error.message}`,
+      );
+    }
   }
 }
