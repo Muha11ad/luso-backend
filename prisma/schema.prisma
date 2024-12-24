@@ -58,9 +58,9 @@ model Characteristic {
 
 // People models
 model User {
-  telegram_id String  @id @default(uuid())
+  telegram_id Int     @id @unique
   name        String
-  nickname    String  @unique
+  username    String?  @unique
   orders      Order[]
 }
 
@@ -73,7 +73,7 @@ model Admin {
 // Order models 
 model Order {
   id           String         @id @default(uuid())
-  user_id      String
+  user_id      Int
   created_at   DateTime       @default(now())
   phone_number String
   total_price  Int
