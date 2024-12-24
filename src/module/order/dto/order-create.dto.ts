@@ -9,8 +9,8 @@ export class OrderDetails {
   @IsNumber()
   quantity: number;
   @IsNotEmpty()
-  @IsString()
-  total_price: string;
+  @IsNumber()
+  product_price: number;
   @IsNotEmpty()
   @IsString()
   product_id: string;
@@ -27,8 +27,8 @@ export class OrderCreateDto {
   @IsString()
   phone_number: string;
   @IsNotEmpty()
-  @IsString()
-  total_price: string;
+  @IsNumber()
+  product_price: number;
   @IsNotEmpty()
   @IsString()
   first_name: string;

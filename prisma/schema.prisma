@@ -60,7 +60,7 @@ model Characteristic {
 model User {
   telegram_id Int     @id @unique
   name        String
-  username    String?  @unique
+  username    String? @unique
   orders      Order[]
 }
 
@@ -85,19 +85,20 @@ model Order {
 }
 
 model OrderDetails {
-  id           String  @id @default(uuid())
-  order_id     String
-  quantity     Int
-  total_price  Int
-  product_id   String
-  product_name String
-  product      Product @relation(fields: [product_id], references: [id])
-  order        Order   @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  id            String  @id @default(uuid())
+  order_id      String
+  product_price Int
+  quantity      Int
+  total_price   Int
+  product_id    String
+  product_name  String
+  product       Product @relation(fields: [product_id], references: [id])
+  order         Order   @relation(fields: [order_id], references: [id], onDelete: Cascade)
 }
 
 // Enums 
 enum OrderStatus {
-  Accepted 
+  Accepted
   Payed
   Delivered
   Canceled

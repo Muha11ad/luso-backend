@@ -1,14 +1,19 @@
-import { Order, OrderStatus } from '@prisma/client';
-import { OrderCreateDto } from '../dto';
+import {
+  OrderCreateDto,
+  OrderDetailsUpdateDto,
+  OrderStatusUpdateDto,
+  OrderUpdateDto,
+} from '../dto';
 import { IdDto } from '@/common/dto';
+import { Order } from '@prisma/client';
 
 export interface IOrderService {
-  getOrders(): Promise<Order[]>;
-  deleteOrder: (id: IdDto) => Promise<Order>;
-  getOrderById: (id: IdDto) => Promise<Order>;
+  findAll(): Promise<Order[]>;
+  delete: (param: IdDto) => Promise<Order>;
+  findById: (param: IdDto) => Promise<Order>;
   create: (data: OrderCreateDto) => Promise<Order>;
-  getOrdersByUserId(userId: number): Promise<Order[]>;
-  updateOrderStatus: (id: IdDto, status: OrderStatus) => Promise<Order>;
-  updateOrder: (id: IdDto, data: OrderCreateDto) => Promise<Order>;
-  updateOrderDetails: (id: IdDto, data: OrderCreateDto) => Promise<Order>;
+  findByUserId(userId: number): Promise<Order[]>;
+  updateOrder: (param: IdDto, data: OrderUpdateDto) => Promise<Order>;
+  updateOrderStatus: (param: IdDto, status: OrderStatusUpdateDto) => Promise<Order>;
+  updateOrderDetails: (param: IdDto, data: OrderDetailsUpdateDto) => Promise<Order>;
 }

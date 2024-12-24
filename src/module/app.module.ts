@@ -1,6 +1,7 @@
 import { AuthModule } from './auth';
 import { UserModule } from './user';
 import { AdminModule } from './admin';
+import { OrderModule } from './order';
 import { Module } from '@nestjs/common';
 import { CategoryModule } from './category';
 import { ConfigModule } from '@nestjs/config';
@@ -10,6 +11,7 @@ import { ProductModule } from './product/product.module';
 
 @Module({
   imports: [
+    OrderModule,
     AuthModule,
     UserModule,
     AdminModule,
