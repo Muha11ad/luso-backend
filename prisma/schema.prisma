@@ -97,7 +97,7 @@ model OrderDetails {
 
 // Enums 
 enum OrderStatus {
-  Accepted
+  Accepted 
   Payed
   Delivered
   Canceled
