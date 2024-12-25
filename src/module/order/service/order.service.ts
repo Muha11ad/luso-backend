@@ -61,6 +61,7 @@ export class OrderService implements IOrderService {
     });
   }
 
+  // check product exists
   async create(data: OrderCreateDto): Promise<Order> {
     const userExist = await this.database.user.findUnique({
       where: {
@@ -150,7 +151,14 @@ export class OrderService implements IOrderService {
     }
 
     try {
-      const updatedOrderDetailsTotalPrice = data.product_price * data.quantity;
+      let updatedOrderDetailsTotalPrice = 0;
+      if (data['quantity'] && data['product_price']) {
+        updatedOrderDetailsTotalPrice = data.quantity * data.product_price;
+      } else if (data['quantity']) {
+        updatedOrderDetailsTotalPrice = data.quantity * existingOrderDetails.product_price;
+      } else if (data['product_price']) {
+        updatedOrderDetailsTotalPrice = existingOrderDetails.quantity * data.product_price;
+      }
 
       const updatedOrderDetails = await this.database.orderDetails.update({
         where: { id },

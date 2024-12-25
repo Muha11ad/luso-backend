@@ -3,9 +3,6 @@ import { IsArray, IsEnum, IsNotEmpty, IsNumber, IsString, IsUUID } from 'class-v
 
 export class OrderDetails {
   @IsNotEmpty()
-  @IsUUID()
-  order_id: string;
-  @IsNotEmpty()
   @IsNumber()
   quantity: number;
   @IsNotEmpty()
@@ -26,9 +23,6 @@ export class OrderCreateDto {
   @IsNotEmpty()
   @IsString()
   phone_number: string;
-  @IsNotEmpty()
-  @IsNumber()
-  product_price: number;
   @IsNotEmpty()
   @IsString()
   first_name: string;

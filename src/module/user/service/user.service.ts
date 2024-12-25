@@ -14,13 +14,24 @@ export class UserService implements IUserService {
       where: {
         telegram_id,
       },
+      include: {
+        orders: {
+          include: {
+            OrderDetails: true,
+          },
+        },
+      },
     });
   }
 
   async findAll() {
     return this.database.user.findMany({
       include: {
-        orders: true,
+        orders: {
+          include: {
+            OrderDetails: true,
+          },
+        },
       },
     });
   }

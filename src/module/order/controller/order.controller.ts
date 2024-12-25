@@ -10,6 +10,7 @@ import {
   OrderStatusUpdateDto,
   OrderUpdateDto,
 } from '../dto';
+import { TelegramIdDto } from '@/module/user/dto';
 
 @Controller('order')
 export class OrderController implements IOrderController {
@@ -26,9 +27,9 @@ export class OrderController implements IOrderController {
     return this.orderService.findById(param);
   }
 
-  @Get('user/:id')
-  async getByUserId(@Param() param: IdDto): Promise<Order[]> {
-    return this.orderService.findByUserId(Number(param.id));
+  @Get('user/:telegram_id')
+  async getByUserId(@Param() param: TelegramIdDto): Promise<Order[]> {
+    return this.orderService.findByUserId(Number(param.telegram_id));
   }
 
   @Post()
