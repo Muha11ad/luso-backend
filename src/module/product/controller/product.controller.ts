@@ -11,7 +11,7 @@ import {
   Get,
   UploadedFile,
 } from '@nestjs/common';
-import { IdDto } from '@/common/dto';
+import { IdDto, NameDto } from '@/common/dto';
 import { Product } from '@prisma/client';
 import { AuthGuard } from '@/module/auth';
 import { FilesType, FileType } from '@/types';
@@ -30,19 +30,18 @@ export class ProductController implements IProductController {
   }
 
   @Get('/:id')
-  async getProductById(@Param('id') id: IdDto): Promise<Product> {
-    console.log('id', id);
+  async getProductById(@Param() id: IdDto): Promise<Product> {
     return this.productService.findById(id);
   }
 
-  @Get('/byCategory/:categoryId')
-  async getProductByCategoryId(@Param('categoryId') categoryId: IdDto): Promise<Product[]> {
-    return this.productService.findByCategoryId(categoryId);
+  @Get('/byCategory/:name')
+  async getProductByCategoryName(@Param() param: NameDto): Promise<Product[]> {
+    return this.productService.findByCategoryName(param.name);
   }
 
   @Get('/name/:name')
-  async getProductByName(@Param() name: string): Promise<Product> {
-    return this.productService.findByName(name);
+  async getProductByName(@Param() param: NameDto): Promise<Product> {
+    return this.productService.findByName(param.name);
   }
 
   @Post()
