@@ -11,6 +11,6 @@ export function getCorsOptions(): CorsOptions {
         callback(new Error('Not allowed by CORS'));
     }
     },
-    optionsSuccessStatus: 200,
+    optionsSuccessStatus: 401,
   };
 }

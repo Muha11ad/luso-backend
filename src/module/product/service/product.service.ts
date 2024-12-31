@@ -112,7 +112,7 @@ export class ProductService implements IProductService {
   async findById({ id }: IdDto): Promise<Product> {
     const product = await this.database.product.findFirst({
       where: { id },
-      include: { Characteristic: true },
+      include: { Characteristic: true, Images: true },
     });
     if (!product) {
       throw new BadRequestException(ExceptionErrorTypes.NOT_FOUND);
@@ -124,7 +124,7 @@ export class ProductService implements IProductService {
     try {
       return this.database.product.findFirst({
         where: { name },
-        include: { Characteristic: true },
+        include: { Characteristic: true, Images: true },
       });
     } catch (error) {
       throw new BadRequestException(
@@ -133,11 +133,23 @@ export class ProductService implements IProductService {
     }
   }
 
-  async findByCategoryId({ id }: IdDto): Promise<Product[]> {
+  async findByCategoryName(name: string): Promise<Product[]> {
+    const category = await this.database.category.findFirst({
+      where: {
+        name: {
+          path: ['en'],
+          equals: name,
+        },
+      },
+    });
+
+    if (!category) {
+      throw new BadRequestException(CategoryErrorTypes.NOT_FOUND);
+    }
     try {
       return this.database.product.findMany({
-        where: { category_id: id },
-        include: { Characteristic: true },
+        where: { category_id: category.id },
+        include: { Characteristic: true, Images: true },
       });
     } catch (error) {
       throw new BadRequestException(

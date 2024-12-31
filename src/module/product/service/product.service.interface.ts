@@ -8,8 +8,8 @@ export interface IProductService {
   delete: (id: IdDto) => Promise<Product>;
   findById: (id: IdDto) => Promise<Product>;
   findByName: (name: string) => Promise<Product>;
-  findByCategoryId: (id: IdDto) => Promise<Product[]>;
   create: (data: ProductCreateDto) => Promise<Product>;
+  findByCategoryName: (name: string) => Promise<Product[]>;
   update: (id: IdDto, data: ProductUpdateDto) => Promise<Product>;
 
   deleteImage: (params: ParamsImageDto) => Promise<Product>;

@@ -9,7 +9,7 @@ export interface IProductController {
   getProductById: (id: IdDto) => Promise<Product>;
   getProductByName: (param: NameDto) => Promise<Product>;
   createProduct: (data: ProductCreateDto) => Promise<Product>;
-  getProductByCategoryId: (param: IdDto) => Promise<Product[]>;
+  getProductByCategoryName: (param: NameDto) => Promise<Product[]>;
   updateProduct: (id: IdDto, data: ProductUpdateDto) => Promise<Product>;
 
   deleteImage: (params: ParamsImageDto) => Promise<Product>;
