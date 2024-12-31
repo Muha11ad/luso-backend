@@ -34,9 +34,9 @@ export class ProductController implements IProductController {
     return this.productService.findById(id);
   }
 
-  @Get('/byCategory/:name')
-  async getProductByCategoryName(@Param() param: NameDto): Promise<Product[]> {
-    return this.productService.findByCategoryName(param.name);
+  @Get('/byCategory/:id')
+  async getProductByCategoryId(@Param() param: IdDto): Promise<Product[]> {
+    return this.productService.findByCategoryId(param);
   }
 
   @Get('/name/:name')

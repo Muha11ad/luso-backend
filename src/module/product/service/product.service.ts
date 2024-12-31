@@ -1,7 +1,7 @@
 import { IdDto } from '@/common/dto';
 import { Prisma, Product } from '@prisma/client';
 import { ProductExceptionErrorTypes } from '../types';
-import { ExceptionErrorTypes,FileType } from '@/types';
+import { ExceptionErrorTypes, FileType } from '@/types';
 import { CategoryErrorTypes } from '@/module/category/types';
 import { IProductService } from './product.service.interface';
 import { BadRequestException, Injectable } from '@nestjs/common';
@@ -133,16 +133,10 @@ export class ProductService implements IProductService {
     }
   }
 
-  async findByCategoryName(name: string): Promise<Product[]> {
-    const category = await this.database.category.findUnique({
-      where: { name },
-    });
-    if (!category) {
-      throw new BadRequestException(CategoryErrorTypes.NOT_FOUND);
-    }
+  async findByCategoryId({ id }: IdDto): Promise<Product[]> {
     try {
       return this.database.product.findMany({
-        where: { category_id: category.id },
+        where: { category_id: id },
         include: { Characteristic: true },
       });
     } catch (error) {
