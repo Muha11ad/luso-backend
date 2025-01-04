@@ -1,10 +1,11 @@
 import { IdDto } from '@/common/dto';
 import { Prisma, Product } from '@prisma/client';
 import { ProductExceptionErrorTypes } from '../types';
-import { ExceptionErrorTypes, FileType } from '@/types';
 import { CategoryErrorTypes } from '@/module/category/types';
 import { IProductService } from './product.service.interface';
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { createTranslation, updateTranslation } from '@/common/utils';
+import { ExceptionErrorTypes, FileType, TranslationType } from '@/types';
 import { ParamsImageDto, ProductCreateDto, ProductUpdateDto } from '../dto';
 import { DatabaseService, FilesService, ImageFolderName } from '@/common/services';
 
@@ -47,11 +48,7 @@ export class ProductService implements IProductService {
     try {
       const productData = {
         ...data,
-        instruction: {
-          uz: data.instruction.uz,
-          ru: data.instruction.ru,
-          en: data.instruction.en,
-        },
+        instruction: createTranslation(data.instruction),
       };
       return this.database.product.create({
         data: productData,
@@ -72,14 +69,14 @@ export class ProductService implements IProductService {
     }
     const exsitingProdcut = await this.checkIdExistsAndThrowException(id);
     try {
-      const newInstruction = {
-        ...(exsitingProdcut.instruction as object),
-        ...(data['instruction'] && data.instruction),
-      };
       const newData = {
-        ...exsitingProdcut,
         ...data,
-        instruction: newInstruction,
+        ...(data['instruction'] && {
+          instruction: updateTranslation(
+            exsitingProdcut.instruction as TranslationType,
+            data.instruction,
+          ),
+        }),
       };
       return this.database.product.update({
         where: { id },
@@ -99,7 +96,7 @@ export class ProductService implements IProductService {
   }
 
   async delete({ id }: IdDto): Promise<Product> {
-    const product = await this.checkIdExistsAndThrowException(id);
+    await this.checkIdExistsAndThrowException(id);
     try {
       return this.database.product.delete({ where: { id } });
     } catch (error) {
@@ -120,10 +117,16 @@ export class ProductService implements IProductService {
     return product;
   }
 
-  async findByName(name: string): Promise<Product> {
+  async findByName(name: string): Promise<Product[]> {
     try {
-      return this.database.product.findFirst({
-        where: { name },
+      return this.database.product.findMany({
+        where: {
+          name: {
+            contains: name,
+            mode: 'insensitive',
+          },
+        },
+
         include: { Characteristic: true, Images: true },
       });
     } catch (error) {

@@ -1,5 +1,3 @@
-import { DtoErrorTypes } from '@/types';
-import { Type } from 'class-transformer';
 import {
   IsBoolean,
   IsNotEmpty,
@@ -9,43 +7,30 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
-
-export class Translations {
-  @IsNotEmpty({ message: DtoErrorTypes.REQUIRED_INFO })
-  @IsString({ message: DtoErrorTypes.MUST_BE_STRING })
-  en: string;
-
-  @IsNotEmpty({ message: DtoErrorTypes.REQUIRED_INFO })
-  @IsString({ message: DtoErrorTypes.MUST_BE_STRING })
-  ru: string;
-
-  @IsNotEmpty({ message: DtoErrorTypes.REQUIRED_INFO })
-  @IsString({ message: DtoErrorTypes.MUST_BE_STRING })
-  uz: string;
-}
+import { DtoErrorTypes } from '@/types';
+import { Type } from 'class-transformer';
+import { TranslationsDto } from '@/common/dto';
 
 export class ProductCreateDto {
-  @IsNotEmpty({ message: DtoErrorTypes.REQUIRED_INFO })
+  @IsNotEmpty()
   @IsString()
   name: string;
+
   @IsNumber()
-  @IsNotEmpty({ message: DtoErrorTypes.REQUIRED_INFO })
+  @IsNotEmpty()
   price: number;
 
-  @IsNotEmpty({ message: DtoErrorTypes.REQUIRED_INFO })
-  @IsBoolean({ message: DtoErrorTypes.MUST_BE_BOOLEAN })
+  @IsNotEmpty()
+  @IsBoolean()
   available: boolean;
 
-  @IsNotEmpty({ message: DtoErrorTypes.REQUIRED_INFO })
-  @IsObject({ message: 'Instruction must be an object' })
+  @IsNotEmpty()
+  @IsObject()
   @ValidateNested()
-  @Type(() => Translations)
-  instruction: Translations;
+  @Type(() => TranslationsDto)
+  instruction: TranslationsDto;
 
-  @IsNotEmpty({ message: DtoErrorTypes.REQUIRED_INFO })
-  @IsString({ message: DtoErrorTypes.MUST_BE_STRING })
+  @IsNotEmpty()
+  @IsString()
   category_id: string;
-
-  @IsOptional()
-  characteristic_id?: string;
 }

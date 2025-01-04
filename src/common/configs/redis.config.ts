@@ -5,16 +5,23 @@ import { CacheModuleAsyncOptions } from '@nestjs/cache-manager';
 export const redisOptions: CacheModuleAsyncOptions = {
   imports: [ConfigModule],
   useFactory: async (configService: ConfigService) => {
-    const store = await redisStore({
-      socket: {
-        host: configService.get<string>('REDIS_HOST'),
-        port: parseInt(configService.get<string>('REDIS_PORT')!, 10),
-      },
-    });
+    try {
+      const store = await redisStore({
+        socket: {
+          host: configService.get<string>('REDIS_HOST'),
+          port: parseInt(configService.get<string>('REDIS_PORT'), 10),
+          reconnectStrategy: (retries) => Math.min(retries * 50, 2000),
+          connectTimeout: 10000, 
+        },
+      });
 
-    return {
-      store,
-    };
+      return {
+        store,
+      };
+    } catch (error) {
+      console.error('Error connecting to Redis:', error);
+      throw error;
+    }
   },
   inject: [ConfigService],
 };

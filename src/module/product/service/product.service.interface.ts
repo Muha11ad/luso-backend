@@ -7,7 +7,7 @@ export interface IProductService {
   findAll: () => Promise<Product[]>;
   delete: (id: IdDto) => Promise<Product>;
   findById: (id: IdDto) => Promise<Product>;
-  findByName: (name: string) => Promise<Product>;
+  findByName: (name: string) => Promise<Product[]>;
   create: (data: ProductCreateDto) => Promise<Product>;
   findByCategoryName: (name: string) => Promise<Product[]>;
   update: (id: IdDto, data: ProductUpdateDto) => Promise<Product>;
