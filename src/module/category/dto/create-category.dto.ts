@@ -1,41 +1,15 @@
 import { Type } from 'class-transformer';
-import { IsNotEmpty, IsObject, IsString } from 'class-validator';
-
-class NameTranslations {
-  @IsNotEmpty()
-  @IsString()
-  en: string;
-
-  @IsNotEmpty()
-  @IsString()
-  ru: string;
-
-  @IsNotEmpty()
-  @IsString()
-  uz: string;
-}
-class DescriptionTranslations {
-  @IsNotEmpty()
-  @IsString()
-  en: string;
-
-  @IsNotEmpty()
-  @IsString()
-  ru: string;
-
-  @IsNotEmpty()
-  @IsString()
-  uz: string;
-}
+import { TranslationsDto } from '@/common/dto';
+import { IsNotEmpty, IsObject } from 'class-validator';
 
 export class CategoryCreateDto {
   @IsNotEmpty()
   @IsObject()
-  @Type(() => NameTranslations)
-  name: NameTranslations;
+  @Type(() => TranslationsDto)
+  name: TranslationsDto;
 
   @IsNotEmpty()
   @IsObject()
-  @Type(() => DescriptionTranslations)
-  description: DescriptionTranslations;
+  @Type(() => TranslationsDto)
+  description: TranslationsDto;
 }

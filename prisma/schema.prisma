@@ -17,25 +17,24 @@ model Category {
 }
 
 model Product {
-  id                String          @id @default(uuid())
-  name              String          @unique
-  price             Int
-  available         Boolean
-  created_at        DateTime        @default(now())
-  instruction       Json
-  category_id       String
-  characteristic_id String?
-  category          Category        @relation(fields: [category_id], references: [id])
-  Characteristic    Characteristic?
-  OrderDetails      OrderDetails[]
-  Images            ProductImages[]
+  id             String          @id @default(uuid())
+  name           String          @unique
+  price          Int
+  available      Boolean
+  created_at     DateTime        @default(now())
+  instruction    Json
+  category_id    String
+  category       Category        @relation(fields: [category_id], references: [id])
+  Characteristic Characteristic?
+  OrderDetails   OrderDetails[]
+  Images         ProductImages[]
 }
 
 model ProductImages {
   id         String  @id @default(uuid())
   imageUrl   String
   product_id String
-  product    Product @relation(fields: [product_id], references: [id])
+  product    Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
 }
 
 model Characteristic {
@@ -44,7 +43,7 @@ model Characteristic {
   brand            String
   caution          Json?
   expiration_date  DateTime
-  volume           Json
+  volume           String
   made_in          Json
   purpose          Json
   gender           Json
