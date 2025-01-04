@@ -12,8 +12,8 @@ export function updateTranslation(
   data: Partial<TranslationType>,
 ): TranslationType {
   return {
-    uz: data.uz || translation?.uz,
-    ru: data.ru || translation?.ru,
-    en: data.en || translation?.en,
+    uz: data?.uz || translation.uz,
+    ru: data?.ru || translation.ru,
+    en: data?.en || translation.en,
   };
 }

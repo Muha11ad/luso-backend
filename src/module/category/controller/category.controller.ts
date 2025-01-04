@@ -15,28 +15,28 @@ export class CategoryController implements ICategoryController {
   constructor(private readonly categoryService: CategoryService) {}
   @Get()
   async getCategories(): Promise<Category[]> {
-    return this.categoryService.findAllCategories();
+    return this.categoryService.findAll();
   }
   @Get(':id')
   async getCategoryById(@Param() param: IdDto): Promise<Category> {
-    return this.categoryService.findCategoryById(param.id);
+    return this.categoryService.findById(param.id);
   }
 
   @Post()
   @UseGuards(AuthGuard)
   async createCategory(@Body() data: CategoryCreateDto): Promise<Category> {
-    return this.categoryService.createCategory(data);
+    return this.categoryService.create(data);
   }
 
   @Put(':id')
   @UseGuards(AuthGuard)
   async updateCategory(@Param() param: IdDto, @Body() data: CategoryUpdateDto): Promise<Category> {
-    return this.categoryService.updateCategory(param.id, data);
+    return this.categoryService.update(param.id, data);
   }
   @Delete(':id')
   @UseGuards(AuthGuard)
   async deleteCategory(@Param() param: IdDto): Promise<Category> {
-    return this.categoryService.deleteCategory(param.id);
+    return this.categoryService.delete(param.id);
   }
   @Post('upload/:id')
   @UseGuards(AuthGuard)

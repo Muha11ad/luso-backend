@@ -1,7 +1,7 @@
 import { BadGatewayException, Injectable, NotFoundException } from '@nestjs/common';
 import { IOrderService } from './order.serivce.interface';
 import { DatabaseService } from '@/common/services';
-import { Order } from '@prisma/client';
+import { Order, Prisma } from '@prisma/client';
 import { IdDto } from '@/common/dto';
 import { OrderExceptionErrorType } from '../types';
 import {
@@ -81,12 +81,13 @@ export class OrderService implements IOrderService {
       return this.database.$transaction(async (tx) => {
         const createdOrder = await tx.order.create({
           data: {
-            user_id: Number(orderData.user_id),
+            user_id: userExist.telegram_id,
             phone_number: orderData.phone_number,
             total_price: totalPrice,
             first_name: orderData.first_name,
             region: orderData.region,
             status: orderData.status,
+            delivery_fee: 20000,
           },
         });
         const detailsWithOrderId = completedOrderDetails.map((detail) => ({
