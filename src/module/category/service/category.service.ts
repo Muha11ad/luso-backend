@@ -1,12 +1,12 @@
 import { Category } from '@prisma/client';
+import { CategoryErrorTypes } from '../types';
 import { NotFoundException } from '@nestjs/common';
+import { FileType, TranslationType } from '@/types';
 import { CategoryCreateDto, CategoryUpdateDto } from '../dto';
-import { CategoryErrorTypes, CategoryNameType } from '../types';
 import { ICategoryService } from './category.serivice.interface';
 import { BadGatewayException, Injectable } from '@nestjs/common';
+import { createTranslation, updateTranslation } from '@/common/utils';
 import { DatabaseService, FilesService, ImageFolderName } from '@/common/services';
-import { FileType } from '@/types';
-import { InputJsonValue } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class CategoryService implements ICategoryService {
@@ -23,7 +23,7 @@ export class CategoryService implements ICategoryService {
     return category;
   }
 
-  private async checkNameExistsAndThrowException(name: Partial<CategoryNameType>): Promise<void> {
+  private async checkNameExistsAndThrowException(name: Partial<TranslationType>): Promise<void> {
     const category = await this.databaseService.category.findUnique({
       where: {
         name,
@@ -34,17 +34,17 @@ export class CategoryService implements ICategoryService {
     }
   }
 
-  async findAllCategories(): Promise<Category[]> {
+  async findAll(): Promise<Category[]> {
     return this.databaseService.category.findMany();
   }
 
-  async findCategoryById(id: string): Promise<Category> {
+  async findById(id: string): Promise<Category> {
     return this.checkIdExistsAndThrowException(id);
   }
 
-  async deleteCategory(id: string): Promise<Category> {
+  async delete(id: string): Promise<Category> {
     const category = await this.checkIdExistsAndThrowException(id);
-    if (category.imageUrl)
+    if (category?.imageUrl)
       await this.fileService.deleteFile(category.imageUrl, ImageFolderName.category);
     try {
       return this.databaseService.category.delete({ where: { id } });
@@ -53,17 +53,13 @@ export class CategoryService implements ICategoryService {
     }
   }
 
-  async createCategory(data: CategoryCreateDto): Promise<Category> {
+  async create(data: CategoryCreateDto): Promise<Category> {
     await this.checkNameExistsAndThrowException(data.name);
     try {
-      const { uz, ru, en }: CategoryNameType = data.name;
       return this.databaseService.category.create({
         data: {
-          name: {
-            uz,
-            ru,
-            en,
-          },
+          name: createTranslation(data.name),
+          description: createTranslation(data.description),
         },
       });
     } catch (error) {
@@ -71,20 +67,18 @@ export class CategoryService implements ICategoryService {
     }
   }
 
-  async updateCategory(id: string, data: CategoryUpdateDto): Promise<Category> {
+  async update(id: string, data: CategoryUpdateDto): Promise<Category> {
     const existingCategory = await this.checkIdExistsAndThrowException(id);
     await this.checkNameExistsAndThrowException(data.name);
-
     try {
-      const updatePayload: InputJsonValue = {
-        ...(existingCategory.name as object),
-        ...data.name,
-      };
-
       return this.databaseService.category.update({
         where: { id },
         data: {
-          name: updatePayload,
+          name: updateTranslation(existingCategory.name as TranslationType, data.name),
+          description: updateTranslation(
+            existingCategory.description as TranslationType,
+            data.description,
+          ),
         },
       });
     } catch (error) {
@@ -93,7 +87,7 @@ export class CategoryService implements ICategoryService {
   }
 
   async saveImage(id: string, file: FileType): Promise<Category> {
-    const category = await this.checkIdExistsAndThrowException(id);
+    await this.checkIdExistsAndThrowException(id);
     try {
       const imageUrl = await this.fileService.saveFile(file, ImageFolderName.category);
       return this.databaseService.category.update({

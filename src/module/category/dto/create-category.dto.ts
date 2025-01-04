@@ -1,24 +1,41 @@
 import { Type } from 'class-transformer';
-import { IsNotEmpty, IsObject, IsString, ValidateNested } from 'class-validator';
+import { IsNotEmpty, IsObject, IsString } from 'class-validator';
 
 class NameTranslations {
-  @IsNotEmpty({ message: 'English name (en) is required' })
-  @IsString({ message: 'English name (en) must be a string' })
+  @IsNotEmpty()
+  @IsString()
   en: string;
 
-  @IsNotEmpty({ message: 'Russian name (ru) is required' })
-  @IsString({ message: 'Russian name (ru) must be a string' })
+  @IsNotEmpty()
+  @IsString()
   ru: string;
 
-  @IsNotEmpty({ message: 'Uzbek name (uz) is required' })
-  @IsString({ message: 'Uzbek name (uz) must be a string' })
+  @IsNotEmpty()
+  @IsString()
+  uz: string;
+}
+class DescriptionTranslations {
+  @IsNotEmpty()
+  @IsString()
+  en: string;
+
+  @IsNotEmpty()
+  @IsString()
+  ru: string;
+
+  @IsNotEmpty()
+  @IsString()
   uz: string;
 }
 
 export class CategoryCreateDto {
-  @IsNotEmpty({ message: 'Name is required and cannot be empty' })
-  @IsObject({ message: 'Name must be an object' })
-  @ValidateNested()
+  @IsNotEmpty()
+  @IsObject()
   @Type(() => NameTranslations)
   name: NameTranslations;
+
+  @IsNotEmpty()
+  @IsObject()
+  @Type(() => DescriptionTranslations)
+  description: DescriptionTranslations;
 }

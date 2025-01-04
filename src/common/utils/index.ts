@@ -1,3 +1,5 @@
-export { projectRoot } from './paths';
-export { pathToUpload } from './paths';
+export { projectRoot, pathToUpload } from './paths';
+
 export { convertImageToWebP } from './imageConverter';
+
+export { createTranslation, updateTranslation } from './translationFormater';

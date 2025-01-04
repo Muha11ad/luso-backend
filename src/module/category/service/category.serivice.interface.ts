@@ -3,11 +3,13 @@ import { Category } from '@prisma/client';
 import { CategoryCreateDto, CategoryUpdateDto } from '../dto';
 
 export interface ICategoryService {
-  findAllCategories(): Promise<Category[]>;
-  deleteCategory(id: string): Promise<Category>;
-  findCategoryById(id: string): Promise<Category>;
+  findAll(): Promise<Category[]>;
+  findById(id: string): Promise<Category>;
+
   saveImage(id: string, file: FileType): Promise<Category>;
   updateImage(id: string, file: FileType): Promise<Category>;
-  createCategory(data: CategoryCreateDto): Promise<Category>;
-  updateCategory(id: string, data: CategoryUpdateDto): Promise<Category>;
+
+  delete(id: string): Promise<Category>;
+  create(data: CategoryCreateDto): Promise<Category>;
+  update(id: string, data: CategoryUpdateDto): Promise<Category>;
 }

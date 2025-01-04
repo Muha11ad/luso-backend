@@ -9,16 +9,17 @@ datasource db {
 
 // Product related models
 model Category {
-  id       String    @id @default(uuid())
-  name     Json      @unique
-  imageUrl String?   @unique
-  products Product[]
+  id          String    @id @default(uuid())
+  name        Json      @unique
+  imageUrl    String?   @unique
+  description Json
+  products    Product[]
 }
 
 model Product {
   id                String          @id @default(uuid())
   name              String          @unique
-  price             String
+  price             Int
   available         Boolean
   created_at        DateTime        @default(now())
   instruction       Json
@@ -38,22 +39,20 @@ model ProductImages {
 }
 
 model Characteristic {
-  id                String  @id @default(uuid())
-  age               Int
-  brand             String
-  group             Json
-  volume            Json
-  formula           Json
-  made_in           Json
-  purpose           Json
-  genders           Json
-  skin_type         Json
-  ingredients       Json
-  classification    Json
-  trademark_country Json
-  application_time  Json
-  product_id        String  @unique
-  product           Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  id               String   @id @default(uuid())
+  age              String
+  brand            String
+  caution          Json?
+  expiration_date  DateTime
+  volume           Json
+  made_in          Json
+  purpose          Json
+  gender           Json
+  skin_type        Json
+  ingredients      Json
+  application_time Json
+  product_id       String   @unique
+  product          Product  @relation(fields: [product_id], references: [id], onDelete: Cascade)
 }
 
 // People models
@@ -77,6 +76,7 @@ model Order {
   created_at   DateTime       @default(now())
   phone_number String
   total_price  Int
+  delivery_fee Int
   first_name   String
   region       Region
   status       OrderStatus

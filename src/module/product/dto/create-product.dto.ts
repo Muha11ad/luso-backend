@@ -3,6 +3,7 @@ import { Type } from 'class-transformer';
 import {
   IsBoolean,
   IsNotEmpty,
+  IsNumber,
   IsObject,
   IsOptional,
   IsString,
@@ -27,9 +28,9 @@ export class ProductCreateDto {
   @IsNotEmpty({ message: DtoErrorTypes.REQUIRED_INFO })
   @IsString()
   name: string;
-
+  @IsNumber()
   @IsNotEmpty({ message: DtoErrorTypes.REQUIRED_INFO })
-  price: string;
+  price: number;
 
   @IsNotEmpty({ message: DtoErrorTypes.REQUIRED_INFO })
   @IsBoolean({ message: DtoErrorTypes.MUST_BE_BOOLEAN })

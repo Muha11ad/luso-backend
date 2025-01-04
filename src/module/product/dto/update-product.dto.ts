@@ -1,6 +1,13 @@
 import { DtoErrorTypes } from '@/types';
 import { Type } from 'class-transformer';
-import { IsBoolean, IsObject, IsOptional, IsString, ValidateNested } from 'class-validator';
+import {
+  IsBoolean,
+  IsNumber,
+  IsObject,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 
 class Translations {
   @IsOptional()
@@ -21,9 +28,9 @@ export class ProductUpdateDto {
   @IsString()
   name: string;
 
+  @IsNumber()
   @IsOptional()
-  @IsString({ message: DtoErrorTypes.MUST_BE_STRING })
-  price?: string;
+  price?: number;
 
   @IsOptional()
   @IsBoolean({ message: DtoErrorTypes.MUST_BE_BOOLEAN })
