@@ -7,7 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Product related models
 model Category {
   id          String            @id @default(uuid())
   name        Json              @unique
@@ -62,7 +61,6 @@ model Characteristic {
   product          Product  @relation(fields: [product_id], references: [id], onDelete: Cascade)
 }
 
-// People models
 model User {
   telegram_id Int     @id @unique
   name        String
@@ -76,14 +74,13 @@ model Admin {
   password String
 }
 
-// Order models 
 model Order {
   id           String         @id @default(uuid())
   user_id      Int
   created_at   DateTime       @default(now())
   phone_number String
   total_price  Int
-  delivery_fee Int
+  delivery_fee Int            @default(0)
   first_name   String
   region       Region
   status       OrderStatus

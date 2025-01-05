@@ -1,4 +1,4 @@
-import { Order } from '@prisma/client';
+import { Order, User } from '@prisma/client';
 import { OrderCreateDto } from '../dto';
 import { OrderExceptionErrorType } from '../types';
 import { OrderBaseService } from './order.base.service';
@@ -7,22 +7,48 @@ import { BadGatewayException, Injectable, NotFoundException } from '@nestjs/comm
 
 @Injectable()
 export class OrderLifecycleService extends OrderBaseService {
-  async create(data: OrderCreateDto): Promise<Order> {
+  private async checkUserExist(id: number | string): Promise<User> {
     const userExist = await this.database.user.findUnique({
       where: {
-        telegram_id: Number(data.user_id),
+        telegram_id: Number(id),
       },
     });
     if (userExist === null) {
       throw new NotFoundException(UserExceptionErrorTypes.NOT_FOUND);
     }
+    return userExist;
+  }
+
+  private async checkProductExists(orderDetails): Promise<void> {
+    for (const detail of orderDetails) {
+      const productExist = await this.database.product.findUnique({
+        where: {
+          id: detail.product_id,
+        },
+      });
+      if (!productExist) {
+        throw new NotFoundException(`Product with ID ${detail.product_id} not found`);
+      }
+    }
+  }
+
+  private complateOrderDetails(orderDetails) {
+    return orderDetails.map((detail) => ({
+      ...detail,
+      total_price: detail.product_price * detail.quantity,
+    }));
+  }
+
+  async create(data: OrderCreateDto): Promise<Order> {
+    const userExist = await this.checkUserExist(data.user_id);
+    await this.checkProductExists(data.orderDetails);
     try {
       const { orderDetails, ...orderData } = data;
-      const completedOrderDetails = orderDetails.map((detail) => ({
-        ...detail,
-        total_price: detail.product_price * detail.quantity,
-      }));
+
+      const completedOrderDetails = this.complateOrderDetails(orderDetails);
+
       const totalPrice = completedOrderDetails.reduce((acc, detail) => acc + detail.total_price, 0);
+
       return this.database.$transaction(async (tx) => {
         const createdOrder = await tx.order.create({
           data: {
@@ -32,9 +58,10 @@ export class OrderLifecycleService extends OrderBaseService {
             first_name: orderData.first_name,
             region: orderData.region,
             status: orderData.status,
-            delivery_fee: 20000,
+            delivery_fee: orderData.delivery_fee,
           },
         });
+
         const detailsWithOrderId = completedOrderDetails.map((detail) => ({
           ...detail,
           order_id: createdOrder.id,
