@@ -1,6 +1,6 @@
 import { Category } from '@prisma/client';
 import { CategoryErrorTypes } from '../types';
-import { ProductToCategoryDto } from '../dto';
+import { AddProductToCategoryDto } from '../dto';
 import { NotFoundException } from '@nestjs/common';
 import { CategoryBaseService } from './category.base.service';
 import { ProductExceptionErrorTypes } from '@/module/product/types';
@@ -32,7 +32,7 @@ export class CategoryProductService extends CategoryBaseService {
     return category;
   }
 
-  public async addProductToCategory(id: string, data: ProductToCategoryDto): Promise<Category> {
+  public async addProductToCategory(id: string, data: AddProductToCategoryDto): Promise<Category> {
     const category = await this.checkCategoryAndProductsExist(id, data.productIds);
 
     const existingProductIds: string[] = await this.databaseService.productCategory

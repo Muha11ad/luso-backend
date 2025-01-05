@@ -10,4 +10,5 @@ export const ProductExceptionErrorTypes = {
   ERROR_ADDING_CATEGORY: 'Error while adding category',
   ERROR_FINDING_BY_CATEGORY: 'Error while finding product',
   ERROR_FINDING_BY_NAME: 'Error while finding product by name',
+  ERROR_DELETING_CATEGORY_FROM_PRODUCT: 'Error while deleting category from product',
 };

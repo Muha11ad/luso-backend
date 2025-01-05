@@ -11,79 +11,85 @@ import {
   Get,
   UploadedFile,
 } from '@nestjs/common';
+import {
+  ProductCategoryService,
+  ProductCrudService,
+  ProductFindService,
+  ProductImageService,
+} from '../service';
 import { IdDto, NameDto } from '@/common/dto';
 import { Product } from '@prisma/client';
 import { AuthGuard } from '@/module/auth';
 import { FilesType, FileType } from '@/types';
-import { ProductService } from '../service/product.service';
-import { ParamsImageDto, ProductCreateDto, ProductUpdateDto } from '../dto';
 import { IProductController } from './product.controller.interface';
+import {
+  ParamsImageDto,
+  ProductCreateDto,
+  ProductUpdateDto,
+  DeleteCategoryFromProductDto,
+} from '../dto';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { AddCategoryToProductDto } from '../dto/add-category-to-product.dto';
 
 @Controller('product')
 export class ProductController implements IProductController {
-  constructor(private readonly productService: ProductService) {}
+  constructor(
+    private readonly findService: ProductFindService,
+    private readonly crudService: ProductCrudService,
+    private readonly imageService: ProductImageService,
+    private readonly productCategoryService: ProductCategoryService,
+  ) {}
 
   @Get()
   async getAllProducts(): Promise<Product[]> {
-    return this.productService.findAll();
+    return this.findService.findAll();
   }
 
   @Get('/:id')
   async getProductById(@Param() id: IdDto): Promise<Product> {
-    return this.productService.findById(id);
+    return this.findService.findById(id);
   }
 
   @Get('/byCategory/:name')
   async getProductByCategoryName(@Param() param: NameDto): Promise<Product[]> {
-    return await this.productService.findByCategoryName(param.name);
+    return await this.findService.findByCategoryName(param.name);
   }
 
   @Get('/name/:name')
   async getProductByName(@Param() param: NameDto): Promise<Product[]> {
-    return this.productService.findByName(param.name);
+    return this.findService.findByName(param.name);
   }
 
   @Post()
   @UseGuards(AuthGuard)
   async createProduct(@Body() data: ProductCreateDto): Promise<Product> {
-    const product = await this.productService.create(data);
+    const product = await this.crudService.create(data);
     return product;
   }
 
   @Put('/:id')
   @UseGuards(AuthGuard)
   async updateProduct(@Param() id: IdDto, @Body() data: ProductUpdateDto): Promise<Product> {
-    return await this.productService.update(id, data);
+    return await this.crudService.update(id, data);
   }
 
   @Delete('/:id')
   @UseGuards(AuthGuard)
   async deleteProduct(@Param() id: IdDto): Promise<Product> {
-    return this.productService.delete(id);
+    return this.crudService.delete(id);
   }
 
   @Delete('/:id/image/:image_id')
   @UseGuards(AuthGuard)
   async deleteImage(@Param() params: ParamsImageDto): Promise<Product> {
-    return this.productService.deleteImage(params);
-  }
-
-  @Post(':id')
-  @UseGuards(AuthGuard)
-  async addCategoryToProduct(
-    @Param() param: IdDto,
-    @Body() data: AddCategoryToProductDto,
-  ): Promise<Product> {
-    return this.productService.addCategoryToProduct(param.id, data);
+    return this.imageService.deleteImage(params);
   }
 
   @Post('/image/:id')
   @UseGuards(AuthGuard)
   @UseInterceptors(FilesInterceptor('image'))
   async saveImages(@Param() id: IdDto, @UploadedFiles() files: FilesType): Promise<Product> {
-    return this.productService.saveImages(id, files);
+    return this.imageService.saveImages(id, files);
   }
 
   @Put('/:id/image/:image_id')
@@ -93,6 +99,23 @@ export class ProductController implements IProductController {
     @Param() params: ParamsImageDto,
     @UploadedFile() file: FileType,
   ): Promise<Product> {
-    return this.productService.updateImage(params, file);
+    return this.imageService.updateImage(params, file);
+  }
+
+  @Post(':id')
+  @UseGuards(AuthGuard)
+  async addCategoryToProduct(
+    @Param() param: IdDto,
+    @Body() data: AddCategoryToProductDto,
+  ): Promise<Product> {
+    return this.productCategoryService.addCategoryToProduct(param.id, data);
+  }
+  @Delete('category/:id')
+  @UseGuards(AuthGuard)
+  async deleteCategoryToProduct(
+    @Param() param: IdDto,
+    @Body() data: DeleteCategoryFromProductDto,
+  ): Promise<Product> {
+    return this.productCategoryService.deleteCategoryFromProduct(param.id, data.categorytId);
   }
 }

@@ -1,0 +1,38 @@
+import { Product } from '@prisma/client';
+import { ProductExceptionErrorTypes } from '../types';
+import { ProductBaseService } from './product.base.service';
+import { AddCategoryToProductDto } from '../dto/add-category-to-product.dto';
+
+export class ProductCategoryService extends ProductBaseService {
+  public async addCategoryToProduct(
+    product_id: string,
+    data: AddCategoryToProductDto,
+  ): Promise<Product> {
+    await Promise.all(data.categoryIds.map(this.checkCategoryExists.bind(this)));
+    const product = await this.getProductById(product_id);
+    await this.handleDatabaseOperation(
+      () =>
+        this.database.productCategory.createMany({
+          data: data.categoryIds.map((c_id: string) => ({ category_id: c_id, product_id })),
+        }),
+      ProductExceptionErrorTypes.ERROR_ADDING_CATEGORY,
+    );
+    return product;
+  }
+
+  public async deleteCategoryFromProduct(
+    product_id: string,
+    category_id: string,
+  ): Promise<Product> {
+    await this.checkCategoryExists(category_id);
+    const product = await this.getProductById(product_id);
+    await this.handleDatabaseOperation(
+      () =>
+        this.database.productCategory.deleteMany({
+          where: { category_id, product_id },
+        }),
+      ProductExceptionErrorTypes.ERROR_DELETING_CATEGORY_FROM_PRODUCT,
+    );
+    return product;
+  }
+}
