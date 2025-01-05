@@ -1,46 +1,56 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
-import { OrderService } from '../service/order.service';
-import { IOrderController } from './order.controller.interface';
-import { AuthGuard } from '@/module/auth';
-import { IdDto } from '@/common/dto';
-import { Order } from '@prisma/client';
 import {
   OrderCreateDto,
-  OrderDetailsUpdateDto,
-  OrderStatusUpdateDto,
   OrderUpdateDto,
+  OrderStatusUpdateDto,
+  OrderDetailsUpdateDto,
 } from '../dto';
+import { IdDto } from '@/common/dto';
+import { Order } from '@prisma/client';
+import { AuthGuard } from '@/module/auth';
 import { TelegramIdDto } from '@/module/user/dto';
+import { IOrderController } from './order.controller.interface';
+import { OrderFindService, OrderLifecycleService, OrderUpdateService } from '../service';
+import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
 
 @Controller('order')
 export class OrderController implements IOrderController {
-  constructor(private readonly orderService: OrderService) {}
+  constructor(
+    private readonly findService: OrderFindService,
+    private readonly updateService: OrderUpdateService,
+    private readonly lifecycleService: OrderLifecycleService,
+  ) {}
   @Get()
   @UseGuards(AuthGuard)
   async getAllOrders(): Promise<Order[]> {
-    return this.orderService.findAll();
+    return this.findService.findAll();
   }
 
   @Get(':id')
   @UseGuards(AuthGuard)
   async getById(@Param() param: IdDto): Promise<Order> {
-    return this.orderService.findById(param);
+    return this.findService.findById(param.id);
   }
 
   @Get('user/:telegram_id')
   async getByUserId(@Param() param: TelegramIdDto): Promise<Order[]> {
-    return this.orderService.findByUserId(Number(param.telegram_id));
+    return this.findService.findByUserId(Number(param.telegram_id));
   }
 
   @Post()
   async createOrder(@Body() data: OrderCreateDto): Promise<Order> {
-    return this.orderService.create(data);
+    return this.lifecycleService.create(data);
+  }
+
+  @Delete(':id')
+  @UseGuards(AuthGuard)
+  async deleteOrder(@Param() param: IdDto): Promise<Order> {
+    return this.lifecycleService.delete(param.id);
   }
 
   @Put(':id')
   @UseGuards(AuthGuard)
   async updateOrder(@Param() param: IdDto, @Body() data: OrderUpdateDto): Promise<Order> {
-    return this.orderService.updateOrder(param, data);
+    return this.updateService.updateOrder(param, data);
   }
 
   @Put(':id/status')
@@ -49,7 +59,7 @@ export class OrderController implements IOrderController {
     @Param() param: IdDto,
     @Body() data: OrderStatusUpdateDto,
   ): Promise<Order> {
-    return this.orderService.updateOrderStatus(param, data);
+    return this.updateService.updateOrderStatus(param, data);
   }
 
   @Put(':id/details')
@@ -58,12 +68,6 @@ export class OrderController implements IOrderController {
     @Param() param: IdDto,
     @Body() data: OrderDetailsUpdateDto,
   ): Promise<Order> {
-    return this.orderService.updateOrderDetails(param, data);
-  }
-
-  @Delete(':id')
-  @UseGuards(AuthGuard)
-  async deleteOrder(@Param() param: IdDto): Promise<Order> {
-    return this.orderService.delete(param);
+    return this.updateService.updateOrderDetails(param, data);
   }
 }

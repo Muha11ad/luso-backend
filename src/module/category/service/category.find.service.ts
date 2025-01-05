@@ -1,11 +1,13 @@
 import { Category } from '@prisma/client';
+import { Injectable } from '@nestjs/common';
 import { CategoryBaseService } from './category.base.service';
 
+@Injectable()
 export class CategoryFindService extends CategoryBaseService {
   async findAll(): Promise<Category[]> {
     return this.databaseService.category.findMany({
       include: {
-        products: true,
+        Products: true,
       },
     });
   }
@@ -16,7 +18,7 @@ export class CategoryFindService extends CategoryBaseService {
         id,
       },
       include: {
-        products: true,
+        Products: true,
       },
     });
   }

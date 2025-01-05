@@ -9,21 +9,21 @@ datasource db {
 
 // Product related models
 model Category {
-  id          String    @id @default(uuid())
-  name        Json      @unique
-  imageUrl    String?   @unique
+  id          String            @id @default(uuid())
+  name        Json              @unique
+  imageUrl    String?           @unique
   description Json
-  products    ProductCategory[]
+  Products    ProductCategory[]
 }
 
 model Product {
-  id             String          @id @default(uuid())
-  name           String          @unique
+  id             String            @id @default(uuid())
+  name           String            @unique
   price          Int
   available      Boolean
-  created_at     DateTime        @default(now())
+  created_at     DateTime          @default(now())
   instruction    Json
-  categories     ProductCategory[]
+  Categories     ProductCategory[]
   Characteristic Characteristic?
   OrderDetails   OrderDetails[]
   Images         ProductImages[]
@@ -32,11 +32,12 @@ model Product {
 model ProductCategory {
   product_id  String
   category_id String
-  product     Product  @relation(fields: [product_id], references: [id])
-  category    Category @relation(fields: [category_id], references: [id])
+  product     Product  @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  category    Category @relation(fields: [category_id], references: [id], onDelete: Cascade)
 
   @@id([product_id, category_id])
 }
+
 model ProductImages {
   id         String  @id @default(uuid())
   imageUrl   String

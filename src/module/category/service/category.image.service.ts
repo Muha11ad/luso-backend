@@ -1,9 +1,11 @@
 import { FileType } from '@/types';
 import { Category } from '@prisma/client';
+import { Injectable } from '@nestjs/common';
 import { CategoryErrorTypes } from '../types';
 import { ImageFolderName } from '@/common/services';
 import { CategoryBaseService } from './category.base.service';
 
+@Injectable()
 export class CategoryImageService extends CategoryBaseService {
   async saveImage(id: string, file: FileType): Promise<Category> {
     await this.checkIdExistsAndThrowException(id);

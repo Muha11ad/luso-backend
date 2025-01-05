@@ -5,7 +5,9 @@ import { ImageFolderName } from '@/common/services';
 import { CategoryCreateDto, CategoryUpdateDto } from '../dto';
 import { CategoryBaseService } from './category.base.service';
 import { createTranslation, updateTranslation } from '@/common/utils';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class CategoryCrudService extends CategoryBaseService {
   async delete(id: string): Promise<Category> {
     const category = await this.checkIdExistsAndThrowException(id);

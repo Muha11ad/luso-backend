@@ -1,11 +1,13 @@
 import { IdDto } from '@/common/dto';
 import { TranslationType } from '@/types';
+import { Injectable } from '@nestjs/common';
 import { Product, Prisma } from '@prisma/client';
 import { ProductExceptionErrorTypes } from '../types';
 import { ProductCreateDto, ProductUpdateDto } from '../dto';
 import { ProductBaseService } from './product.base.service';
 import { createTranslation, updateTranslation } from '@/common/utils';
 
+@Injectable()
 export class ProductCrudService extends ProductBaseService {
   private buildUpdateData(
     existingProduct: Product,

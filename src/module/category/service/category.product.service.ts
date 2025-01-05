@@ -1,10 +1,11 @@
 import { Category } from '@prisma/client';
 import { CategoryErrorTypes } from '../types';
 import { AddProductToCategoryDto } from '../dto';
-import { NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CategoryBaseService } from './category.base.service';
 import { ProductExceptionErrorTypes } from '@/module/product/types';
 
+@Injectable()
 export class CategoryProductService extends CategoryBaseService {
   private async checkCategoryAndProductsExist(id: string, productIds: string[]): Promise<Category> {
     const category = await this.checkIdExistsAndThrowException(id);

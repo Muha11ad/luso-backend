@@ -1,12 +1,12 @@
-import { FileType } from '@/types';
-import { IdDto } from '@/common/dto';
-import { Category } from '@prisma/client';
 import {
   AddProductToCategoryDto,
   CategoryCreateDto,
   CategoryUpdateDto,
   DeleteProductFromCategoryDto,
 } from '../dto';
+import { FileType } from '@/types';
+import { IdDto } from '@/common/dto';
+import { Category } from '@prisma/client';
 
 export interface ICategoryController {
   getCategories(): Promise<Category[]>;

@@ -1,8 +1,10 @@
 import { Product } from '@prisma/client';
+import { Injectable } from '@nestjs/common';
 import { ProductExceptionErrorTypes } from '../types';
 import { ProductBaseService } from './product.base.service';
 import { AddCategoryToProductDto } from '../dto/add-category-to-product.dto';
 
+@Injectable()
 export class ProductCategoryService extends ProductBaseService {
   public async addCategoryToProduct(
     product_id: string,
