@@ -1,12 +1,24 @@
+import {
+  CategoryBaseService,
+  CategoryCrudService,
+  CategoryFindService,
+  CategoryImageService,
+  CategoryProductService,
+} from './service';
 import { AuthModule } from '../auth';
 import { Module } from '@nestjs/common';
 import { CommonServiceModule } from '@/common';
-import { CategoryController } from './controller/category.controller';
-import { CategoryService } from './service/category.service';
+import { CategoryController } from './controller';
 
 @Module({
   imports: [CommonServiceModule, AuthModule],
   controllers: [CategoryController],
-  providers: [CategoryService],
+  providers: [
+    CategoryBaseService,
+    CategoryCrudService,
+    CategoryImageService,
+    CategoryFindService,
+    CategoryProductService,
+  ],
 })
 export class CategoryModule {}

@@ -1,7 +1,12 @@
 import { FileType } from '@/types';
 import { IdDto } from '@/common/dto';
 import { Category } from '@prisma/client';
-import { AddProductToCategoryDto, CategoryCreateDto, CategoryUpdateDto } from '../dto';
+import {
+  AddProductToCategoryDto,
+  CategoryCreateDto,
+  CategoryUpdateDto,
+  DeleteProductFromCategoryDto,
+} from '../dto';
 
 export interface ICategoryController {
   getCategories(): Promise<Category[]>;
@@ -13,5 +18,7 @@ export interface ICategoryController {
   deleteCategory(id: IdDto): Promise<Category>;
   createCategory(data: CategoryCreateDto): Promise<Category>;
   updateCategory(id: IdDto, data: CategoryUpdateDto): Promise<Category>;
+
   addProductToCategory(id: IdDto, data: AddProductToCategoryDto): Promise<Category>;
+  DeleteProductFromCategory(id: IdDto, data: DeleteProductFromCategoryDto): Promise<Category>;
 }
