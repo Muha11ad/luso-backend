@@ -7,12 +7,14 @@ import { CategoryErrorTypes } from '@/module/category/types';
 
 export class ProductFindService extends ProductBaseService {
   async findAll(): Promise<Product[]> {
-    return this.database.product.findMany({ include: { Characteristic: true, Images: true } });
+    return this.database.product.findMany({
+      include: { Characteristic: true, Images: true, categories: true },
+    });
   }
   async findById({ id }: IdDto): Promise<Product> {
     const product = await this.database.product.findFirst({
       where: { id },
-      include: { Characteristic: true, Images: true },
+      include: { Characteristic: true, Images: true, categories: true },
     });
     if (!product) {
       throw new BadRequestException(ProductExceptionErrorTypes.NOT_FOUND);
@@ -25,7 +27,7 @@ export class ProductFindService extends ProductBaseService {
       () =>
         this.database.product.findMany({
           where: { name: { contains: name, mode: 'insensitive' } },
-          include: { Characteristic: true, Images: true },
+          include: { Characteristic: true, Images: true, categories: true },
         }),
       ProductExceptionErrorTypes.ERROR_FINDING_BY_NAME,
     );
@@ -43,7 +45,7 @@ export class ProductFindService extends ProductBaseService {
       () =>
         this.database.product.findMany({
           where: { categories: { some: { category_id: category.id } } },
-          include: { Characteristic: true, Images: true },
+          include: { Characteristic: true, Images: true, categories: true },
         }),
       ProductExceptionErrorTypes.ERROR_FINDING_BY_CATEGORY,
     );

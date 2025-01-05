@@ -3,18 +3,18 @@ import { UserModule } from './user';
 import { AdminModule } from './admin';
 import { OrderModule } from './order';
 import { Module } from '@nestjs/common';
+import { ProductModule } from './product';
 import { CategoryModule } from './category';
 import { ConfigModule } from '@nestjs/config';
 import { CommonServiceModule } from '@/common';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { ProductModule } from './product/product.module';
 
 @Module({
   imports: [
-    OrderModule,
     AuthModule,
     UserModule,
     AdminModule,
+    OrderModule,
     ProductModule,
     CategoryModule,
     CommonServiceModule,

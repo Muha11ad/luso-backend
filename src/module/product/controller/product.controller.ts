@@ -116,6 +116,6 @@ export class ProductController implements IProductController {
     @Param() param: IdDto,
     @Body() data: DeleteCategoryFromProductDto,
   ): Promise<Product> {
-    return this.productCategoryService.deleteCategoryFromProduct(param.id, data.categorytId);
+    return this.productCategoryService.deleteCategoryFromProduct(param.id, data.categoryId);
   }
 }
