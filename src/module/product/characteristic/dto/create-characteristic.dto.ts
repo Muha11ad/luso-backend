@@ -6,23 +6,30 @@ export class CharacteristicCreateDto {
   @IsNotEmpty()
   @IsString()
   age: string;
+
   @IsNotEmpty()
   @IsString()
   brand: string;
+
   @IsOptional()
   @IsObject()
   @Type(() => TranslationsDto)
   caution: TranslationsDto;
+
   @IsNotEmpty()
   @IsDate()
+  @Type(() => Date)
   expiration_date: Date;
+
   @IsNotEmpty()
   @IsString()
   volume: string;
+
   @IsNotEmpty()
   @IsObject()
   @Type(() => TranslationsDto)
   made_in: TranslationsDto;
+
   @IsNotEmpty()
   @IsObject()
   @Type(() => TranslationsDto)

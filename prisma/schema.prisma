@@ -13,7 +13,7 @@ model Category {
   name        Json      @unique
   imageUrl    String?   @unique
   description Json
-  products    Product[]
+  products    ProductCategory[]
 }
 
 model Product {
@@ -23,13 +23,20 @@ model Product {
   available      Boolean
   created_at     DateTime        @default(now())
   instruction    Json
-  category_id    String
-  category       Category        @relation(fields: [category_id], references: [id])
+  categories     ProductCategory[]
   Characteristic Characteristic?
   OrderDetails   OrderDetails[]
   Images         ProductImages[]
 }
 
+model ProductCategory {
+  product_id  String
+  category_id String
+  product     Product  @relation(fields: [product_id], references: [id])
+  category    Category @relation(fields: [category_id], references: [id])
+
+  @@id([product_id, category_id])
+}
 model ProductImages {
   id         String  @id @default(uuid())
   imageUrl   String

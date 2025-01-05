@@ -41,6 +41,7 @@ export class CharacteristicService implements ICharacteristicService {
       purpose: createTranslation(data.purpose),
       gender: createTranslation(data.gender),
       skin_type: createTranslation(data.skin_type),
+      expiration_date: new Date(data.expiration_date),
       ingredients: createTranslation(data.ingredients),
       application_time: createTranslation(data.application_time),
     };
@@ -79,10 +80,10 @@ export class CharacteristicService implements ICharacteristicService {
     };
   }
 
-  async create(product_id: string, data: CharacteristicCreateDto): Promise<Characteristic> {
-    await this.checkProductExistsOrThrowException(product_id);
+  async create(data: CharacteristicCreateDto): Promise<Characteristic> {
+    await this.checkProductExistsOrThrowException(data.product_id);
     try {
-      const characteristicData = this.createCharacteristicData(data, product_id);
+      const characteristicData = this.createCharacteristicData(data, data.product_id);
       return this.database.characteristic.create({
         data: characteristicData as Prisma.CharacteristicUncheckedCreateInput,
       });
@@ -96,7 +97,7 @@ export class CharacteristicService implements ICharacteristicService {
 
   async update(id: string, data: CharacteristicUpdateDto): Promise<Characteristic> {
     const characteristicExists = await this.checkCharacteristicExistsOrThrowException(id);
-    if (data.product_id) {
+    if (data['product_id']) {
       await this.checkProductExistsOrThrowException(data.product_id);
     }
     try {

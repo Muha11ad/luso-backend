@@ -1,12 +1,12 @@
 import { Category } from '@prisma/client';
 import { CategoryErrorTypes } from '../types';
-import { NotFoundException } from '@nestjs/common';
 import { FileType, TranslationType } from '@/types';
-import { CategoryCreateDto, CategoryUpdateDto } from '../dto';
 import { ICategoryService } from './category.serivice.interface';
-import { BadGatewayException, Injectable } from '@nestjs/common';
+import { ProductExceptionErrorTypes } from '@/module/product/types';
 import { createTranslation, updateTranslation } from '@/common/utils';
 import { DatabaseService, FilesService, ImageFolderName } from '@/common/services';
+import { NotFoundException, BadGatewayException, Injectable } from '@nestjs/common';
+import { AddProductToCategoryDto, CategoryCreateDto, CategoryUpdateDto } from '../dto';
 
 @Injectable()
 export class CategoryService implements ICategoryService {
@@ -24,13 +24,17 @@ export class CategoryService implements ICategoryService {
   }
 
   private async checkNameExistsAndThrowException(name: Partial<TranslationType>): Promise<void> {
-    const category = await this.databaseService.category.findUnique({
-      where: {
-        name,
-      },
-    });
+    const category = await this.databaseService.category.findUnique({ where: { name } });
     if (category) {
       throw new BadGatewayException(CategoryErrorTypes.NAME_ALREADY_EXISTS);
+    }
+  }
+
+  private async handleDatabaseOperation<T>(operation: () => Promise<T>, errorMessage: string): Promise<T> {
+    try {
+      return await operation();
+    } catch (error) {
+      throw new BadGatewayException(`${errorMessage}: ${error.message}`);
     }
   }
 
@@ -44,72 +48,85 @@ export class CategoryService implements ICategoryService {
 
   async delete(id: string): Promise<Category> {
     const category = await this.checkIdExistsAndThrowException(id);
-    if (category?.imageUrl)
+    if (category?.imageUrl) {
       await this.fileService.deleteFile(category.imageUrl, ImageFolderName.category);
-    try {
-      return this.databaseService.category.delete({ where: { id } });
-    } catch (error) {
-      throw new BadGatewayException(`${CategoryErrorTypes.ERROR_DELETING}: ${error.message}`);
     }
+    return this.handleDatabaseOperation(
+      () => this.databaseService.category.delete({ where: { id } }),
+      CategoryErrorTypes.ERROR_DELETING
+    );
   }
 
   async create(data: CategoryCreateDto): Promise<Category> {
     await this.checkNameExistsAndThrowException(data.name);
-    try {
-      return this.databaseService.category.create({
+    return this.handleDatabaseOperation(
+      () => this.databaseService.category.create({
         data: {
           name: createTranslation(data.name),
           description: createTranslation(data.description),
         },
-      });
-    } catch (error) {
-      throw new BadGatewayException(`${CategoryErrorTypes.ERROR_CREATING}: ${error.message}`);
-    }
+      }),
+      CategoryErrorTypes.ERROR_CREATING
+    );
   }
 
   async update(id: string, data: CategoryUpdateDto): Promise<Category> {
     const existingCategory = await this.checkIdExistsAndThrowException(id);
     await this.checkNameExistsAndThrowException(data.name);
-    try {
-      return this.databaseService.category.update({
+    return this.handleDatabaseOperation(
+      () => this.databaseService.category.update({
         where: { id },
         data: {
           name: updateTranslation(existingCategory.name as TranslationType, data.name),
-          description: updateTranslation(
-            existingCategory.description as TranslationType,
-            data.description,
-          ),
+          description: updateTranslation(existingCategory.description as TranslationType, data.description),
         },
-      });
-    } catch (error) {
-      throw new BadGatewayException(`${CategoryErrorTypes.ERROR_UPDATING}: ${error.message}`);
+      }),
+      CategoryErrorTypes.ERROR_UPDATING
+    );
+  }
+
+  async addProductToCategory(id: string, data: AddProductToCategoryDto): Promise<Category> {
+    const category = await this.checkIdExistsAndThrowException(id);
+    for (const p_id of data.productIds) {
+      const product = await this.databaseService.product.findUnique({ where: { id: p_id } });
+      if (!product) {
+        throw new NotFoundException(ProductExceptionErrorTypes.NOT_FOUND);
+      }
     }
+    await this.handleDatabaseOperation(
+      () => this.databaseService.productCategory.createMany({
+        data: data.productIds.map((p_id) => ({
+          product_id: p_id,
+          category_id: id,
+        })),
+      }),
+      CategoryErrorTypes.ERROR_ADDING_PRODUCT
+    );
+    return category;
   }
 
   async saveImage(id: string, file: FileType): Promise<Category> {
     await this.checkIdExistsAndThrowException(id);
-    try {
-      const imageUrl = await this.fileService.saveFile(file, ImageFolderName.category);
-      return this.databaseService.category.update({
+    const imageUrl = await this.fileService.saveFile(file, ImageFolderName.category);
+    return this.handleDatabaseOperation(
+      () => this.databaseService.category.update({
         where: { id },
         data: { imageUrl },
-      });
-    } catch (error) {
-      throw new BadGatewayException(`${CategoryErrorTypes.ERROR_SAVING_IMAGE}: ${error.message}`);
-    }
+      }),
+      CategoryErrorTypes.ERROR_SAVING_IMAGE
+    );
   }
 
   async updateImage(id: string, file: FileType): Promise<Category> {
     const category = await this.checkIdExistsAndThrowException(id);
-    try {
-      await this.fileService.deleteFile(category.imageUrl, ImageFolderName.category);
-      const imageUrl = await this.fileService.saveFile(file, ImageFolderName.category);
-      return this.databaseService.category.update({
+    await this.fileService.deleteFile(category.imageUrl, ImageFolderName.category);
+    const imageUrl = await this.fileService.saveFile(file, ImageFolderName.category);
+    return this.handleDatabaseOperation(
+      () => this.databaseService.category.update({
         where: { id },
         data: { imageUrl },
-      });
-    } catch (error) {
-      throw new BadGatewayException(`${CategoryErrorTypes.ERROR_UPDATING_IMAGE}: ${error.message}`);
-    }
+      }),
+      CategoryErrorTypes.ERROR_UPDATING_IMAGE
+    );
   }
 }

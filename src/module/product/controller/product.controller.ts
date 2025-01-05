@@ -19,6 +19,7 @@ import { ProductService } from '../service/product.service';
 import { ParamsImageDto, ProductCreateDto, ProductUpdateDto } from '../dto';
 import { IProductController } from './product.controller.interface';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { AddCategoryToProductDto } from '../dto/add-category-to-product.dto';
 
 @Controller('product')
 export class ProductController implements IProductController {
@@ -40,7 +41,7 @@ export class ProductController implements IProductController {
   }
 
   @Get('/name/:name')
-  async getProductByName(@Param() param: NameDto): Promise<Product> {
+  async getProductByName(@Param() param: NameDto): Promise<Product[]> {
     return this.productService.findByName(param.name);
   }
 
@@ -67,6 +68,15 @@ export class ProductController implements IProductController {
   @UseGuards(AuthGuard)
   async deleteImage(@Param() params: ParamsImageDto): Promise<Product> {
     return this.productService.deleteImage(params);
+  }
+
+  @Post(':id')
+  @UseGuards(AuthGuard)
+  async addCategoryToProduct(
+    @Param() param: IdDto,
+    @Body() data: AddCategoryToProductDto,
+  ): Promise<Product> {
+    return this.productService.addCategoryToProduct(param.id, data);
   }
 
   @Post('/image/:id')

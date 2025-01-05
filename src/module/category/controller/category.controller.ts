@@ -5,7 +5,7 @@ import { Category } from '@prisma/client';
 import { FileValidatePipe } from '@/common/pipes';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CategoryService } from '../service/category.service';
-import { CategoryCreateDto, CategoryUpdateDto } from '../dto';
+import { AddProductToCategoryDto, CategoryCreateDto, CategoryUpdateDto } from '../dto';
 import { ICategoryController } from './category.controller.interface';
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { Param, Delete, Put, UseInterceptors, UploadedFile } from '@nestjs/common';
@@ -32,6 +32,14 @@ export class CategoryController implements ICategoryController {
   @UseGuards(AuthGuard)
   async updateCategory(@Param() param: IdDto, @Body() data: CategoryUpdateDto): Promise<Category> {
     return this.categoryService.update(param.id, data);
+  }
+  @Post(':id')
+  @UseGuards(AuthGuard)
+  async addProductToCategory(
+    @Param() param: IdDto,
+    @Body() data: AddProductToCategoryDto,
+  ): Promise<Category> {
+    return this.categoryService.addProductToCategory(param.id, data);
   }
   @Delete(':id')
   @UseGuards(AuthGuard)
