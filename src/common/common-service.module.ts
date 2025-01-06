@@ -16,6 +16,6 @@ import { DatabaseService, EmailService, FilesService, RedisService } from './ser
     ServeStaticModule.forRoot({ rootPath: pathToUpload, serveRoot: '/uploads' }),
   ],
   providers: [EmailService, DatabaseService, FilesService, RedisService],
-  exports: [EmailService, DatabaseService, FilesService, RedisService],
+  exports: [EmailService, DatabaseService, FilesService, RedisService, CacheModule],
 })
 export class CommonServiceModule {}

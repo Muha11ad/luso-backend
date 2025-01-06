@@ -40,4 +40,11 @@ export class RedisService {
       throw new BadGatewayException(error.message);
     }
   }
+  async delAll(): Promise<any> {
+    try {
+      return await this.cacheManager.reset();
+    } catch (error) {
+      throw new BadGatewayException(error.message);
+    }
+  }
 }

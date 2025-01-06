@@ -4,21 +4,23 @@ import {
   CategoryImageService,
   CategoryProductService,
 } from '../service';
-import { FileType } from '@/types';
-import { IdDto } from '@/common/dto';
-import { AuthGuard } from '../../auth';
-import { Category } from '@prisma/client';
-import { FileValidatePipe } from '@/common/pipes';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { ICategoryController } from './category.controller.interface';
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import {
   AddProductToCategoryDto,
   CategoryCreateDto,
   CategoryUpdateDto,
   DeleteProductFromCategoryDto,
 } from '../dto';
+import { FileType } from '@/types';
+import { IdDto } from '@/common/dto';
+import { AuthGuard } from '../../auth';
+import { Category } from '@prisma/client';
+import { FileValidatePipe } from '@/common/pipes';
+import { CacheInterceptor } from '@nestjs/cache-manager';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ICategoryController } from './category.controller.interface';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { Param, Delete, Put, UseInterceptors, UploadedFile } from '@nestjs/common';
+
 
 @Controller('category')
 export class CategoryController implements ICategoryController {
@@ -29,10 +31,12 @@ export class CategoryController implements ICategoryController {
     private readonly categoryProductService: CategoryProductService,
   ) {}
   @Get()
+  @UseInterceptors(CacheInterceptor)
   async getCategories(): Promise<Category[]> {
     return this.findService.findAll();
   }
   @Get(':id')
+  @UseInterceptors(CacheInterceptor)
   async getCategoryById(@Param() param: IdDto): Promise<Category> {
     return this.findService.findById(param.id);
   }

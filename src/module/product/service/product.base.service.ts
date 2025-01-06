@@ -2,12 +2,13 @@ import { Product } from '@prisma/client';
 import { ExceptionErrorTypes } from '@/types';
 import { CategoryErrorTypes } from '@/module/category/types';
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { DatabaseService, FilesService } from '@/common/services';
+import { DatabaseService, FilesService, RedisService } from '@/common/services';
 
 @Injectable()
 export class ProductBaseService {
   constructor(
     public database: DatabaseService,
+    public redisService: RedisService,
     public filesService: FilesService,
   ) {}
 
@@ -19,7 +20,10 @@ export class ProductBaseService {
   }
 
   public async getProductById(id: string): Promise<Product> {
-    const product = await this.database.product.findFirst({ where: { id } });
+    const product = await this.database.product.findFirst({
+      where: { id },
+      include: { Categories: true },
+    });
     if (!product) {
       throw new BadRequestException(CategoryErrorTypes.NOT_FOUND);
     }
@@ -39,6 +43,7 @@ export class ProductBaseService {
     rollback?: () => Promise<void>,
   ): Promise<T> {
     try {
+      await this.redisService.delAll();
       return await operation();
     } catch (error) {
       if (rollback) {

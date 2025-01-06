@@ -41,22 +41,25 @@ export class ProductCrudService extends ProductBaseService {
   }
 
   public async update({ id }: IdDto, data: ProductUpdateDto): Promise<Product> {
-    if (data.name) {
+    if (data['name']) {
       await this.checkNameExists(data.name);
     }
     const existingProduct = await this.getProductById(id);
     const newData = this.buildUpdateData(existingProduct, data);
-    return this.handleDatabaseOperation(
-      () =>
-        this.database.product.update({ where: { id }, data: newData as Prisma.ProductUpdateInput }),
+    return await this.handleDatabaseOperation(
+      async () =>
+        await this.database.product.update({
+          where: { id },
+          data: newData as Prisma.ProductUpdateInput,
+        }),
       ProductExceptionErrorTypes.ERROR_UPDATING,
     );
   }
 
   public async delete({ id }: IdDto): Promise<Product> {
-    await this.getProductById(id);
+    const existingProduct = await this.getProductById(id);
     return this.handleDatabaseOperation(
-      () => this.database.product.delete({ where: { id } }),
+      async () => await this.database.product.delete({ where: { id } }),
       ProductExceptionErrorTypes.ERROR_DELETING,
     );
   }

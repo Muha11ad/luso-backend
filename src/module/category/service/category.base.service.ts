@@ -1,13 +1,14 @@
 import { Category } from '@prisma/client';
 import { TranslationType } from '@/types';
 import { CategoryErrorTypes } from '../types';
-import { DatabaseService, FilesService } from '@/common/services';
+import { DatabaseService, FilesService, RedisService } from '@/common/services';
 import { NotFoundException, BadGatewayException, Injectable } from '@nestjs/common';
 
 @Injectable()
 export class CategoryBaseService {
   constructor(
     public readonly fileService: FilesService,
+    public readonly redisService: RedisService,
     public readonly databaseService: DatabaseService,
   ) {}
 
@@ -29,8 +30,13 @@ export class CategoryBaseService {
   public async handleDatabaseOperation<T>(
     operation: () => Promise<T>,
     errorMessage: string,
+    id?: string | undefined,
   ): Promise<T> {
     try {
+      if (id) {
+        await this.redisService.del(`/api/category/${id}`);
+      }
+      await this.redisService.del('/api/category');
       return await operation();
     } catch (error) {
       throw new BadGatewayException(`${errorMessage}: ${error.message}`);

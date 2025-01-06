@@ -17,6 +17,7 @@ export class CategoryCrudService extends CategoryBaseService {
     return this.handleDatabaseOperation(
       () => this.databaseService.category.delete({ where: { id } }),
       CategoryErrorTypes.ERROR_DELETING,
+      id,
     );
   }
 
@@ -36,20 +37,28 @@ export class CategoryCrudService extends CategoryBaseService {
 
   async update(id: string, data: CategoryUpdateDto): Promise<Category> {
     const existingCategory = await this.checkIdExistsAndThrowException(id);
-    await this.checkNameExistsAndThrowException(data.name);
+    if (data['name']) {
+      await this.checkNameExistsAndThrowException(data.name);
+    }
+    const newData = {
+      ...(data.name && {
+        name: updateTranslation(existingCategory.name as TranslationType, data.name),
+      }),
+      ...(data.description && {
+        description: updateTranslation(
+          existingCategory.description as TranslationType,
+          data.description,
+        ),
+      }),
+    };
     return this.handleDatabaseOperation(
       () =>
         this.databaseService.category.update({
           where: { id },
-          data: {
-            name: updateTranslation(existingCategory.name as TranslationType, data.name),
-            description: updateTranslation(
-              existingCategory.description as TranslationType,
-              data.description,
-            ),
-          },
+          data: newData,
         }),
       CategoryErrorTypes.ERROR_UPDATING,
+      id,
     );
   }
 }

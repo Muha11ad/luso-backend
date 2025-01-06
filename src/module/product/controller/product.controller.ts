@@ -17,17 +17,18 @@ import {
   ProductFindService,
   ProductImageService,
 } from '../service';
-import { IdDto, NameDto } from '@/common/dto';
-import { Product } from '@prisma/client';
-import { AuthGuard } from '@/module/auth';
-import { FilesType, FileType } from '@/types';
-import { IProductController } from './product.controller.interface';
 import {
   ParamsImageDto,
   ProductCreateDto,
   ProductUpdateDto,
   DeleteCategoryFromProductDto,
 } from '../dto';
+import { Product } from '@prisma/client';
+import { AuthGuard } from '@/module/auth';
+import { IdDto, NameDto } from '@/common/dto';
+import { FilesType, FileType } from '@/types';
+import { CacheInterceptor } from '@nestjs/cache-manager';
+import { IProductController } from './product.controller.interface';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { AddCategoryToProductDto } from '../dto/add-category-to-product.dto';
 
@@ -40,21 +41,23 @@ export class ProductController implements IProductController {
     private readonly productCategoryService: ProductCategoryService,
   ) {}
 
+  @UseInterceptors(CacheInterceptor)
   @Get()
   async getAllProducts(): Promise<Product[]> {
     return this.findService.findAll();
   }
 
   @Get('/:id')
+  @UseInterceptors(CacheInterceptor)
   async getProductById(@Param() id: IdDto): Promise<Product> {
     return this.findService.findById(id);
   }
-
+  @UseInterceptors(CacheInterceptor)
   @Get('/byCategory/:name')
   async getProductByCategoryName(@Param() param: NameDto): Promise<Product[]> {
     return await this.findService.findByCategoryName(param.name);
   }
-
+  @UseInterceptors(CacheInterceptor)
   @Get('/name/:name')
   async getProductByName(@Param() param: NameDto): Promise<Product[]> {
     return this.findService.findByName(param.name);
