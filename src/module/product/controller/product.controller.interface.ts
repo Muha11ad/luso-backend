@@ -10,13 +10,13 @@ export interface IProductController {
   getProductByCategoryName: (param: NameDto) => Promise<Product[]>;
   getProductByName: (param: NameDto) => Promise<Product[]>;
 
-  addCategoryToProduct: (param: IdDto, data: AddCategoryToProductDto) => Promise<Product>;
+  addCategoryToProduct: (param: IdDto, data: AddCategoryToProductDto) => Promise<string>;
 
-  deleteProduct: (id: IdDto) => Promise<Product>;
-  createProduct: (data: ProductCreateDto) => Promise<Product>;
-  updateProduct: (id: IdDto, data: ProductUpdateDto) => Promise<Product>;
+  deleteProduct: (id: IdDto) => Promise<string>;
+  createProduct: (data: ProductCreateDto) => Promise<string>;
+  updateProduct: (id: IdDto, data: ProductUpdateDto) => Promise<string>;
 
-  deleteImage: (params: ParamsImageDto) => Promise<Product>;
-  saveImages: (id: IdDto, files: FilesType) => Promise<Product>;
-  updateImage: (params: ParamsImageDto, file: FileType) => Promise<Product>;
+  deleteImage: (params: ParamsImageDto) => Promise<string>;
+  saveImages: (id: IdDto, files: FilesType) => Promise<string>;
+  updateImage: (params: ParamsImageDto, file: FileType) => Promise<string>;
 }

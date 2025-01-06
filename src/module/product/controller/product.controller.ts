@@ -1,21 +1,21 @@
 import {
-  Body,
-  Controller,
-  Post,
-  UploadedFiles,
-  UseInterceptors,
-  UseGuards,
   Put,
+  Get,
+  Body,
+  Post,
   Param,
   Delete,
-  Get,
+  UseGuards,
+  Controller,
+  UploadedFiles,
+  UseInterceptors,
   UploadedFile,
 } from '@nestjs/common';
 import {
-  ProductCategoryService,
   ProductCrudService,
   ProductFindService,
   ProductImageService,
+  ProductCategoryService,
 } from '../service';
 import {
   ParamsImageDto,
@@ -25,6 +25,7 @@ import {
 } from '../dto';
 import { Product } from '@prisma/client';
 import { AuthGuard } from '@/module/auth';
+import { SUCCESS_MESSAGES } from '../types';
 import { IdDto, NameDto } from '@/common/dto';
 import { FilesType, FileType } from '@/types';
 import { CacheInterceptor } from '@nestjs/cache-manager';
@@ -65,34 +66,38 @@ export class ProductController implements IProductController {
 
   @Post()
   @UseGuards(AuthGuard)
-  async createProduct(@Body() data: ProductCreateDto): Promise<Product> {
-    const product = await this.crudService.create(data);
-    return product;
+  async createProduct(@Body() data: ProductCreateDto): Promise<string> {
+    await this.crudService.create(data);
+    return SUCCESS_MESSAGES.PRODUCT_CREATED;
   }
 
   @Put('/:id')
   @UseGuards(AuthGuard)
-  async updateProduct(@Param() id: IdDto, @Body() data: ProductUpdateDto): Promise<Product> {
-    return await this.crudService.update(id, data);
+  async updateProduct(@Param() id: IdDto, @Body() data: ProductUpdateDto): Promise<string> {
+    await this.crudService.update(id, data);
+    return SUCCESS_MESSAGES.PRODUCT_UPDATED;
   }
 
   @Delete('/:id')
   @UseGuards(AuthGuard)
-  async deleteProduct(@Param() id: IdDto): Promise<Product> {
-    return this.crudService.delete(id);
+  async deleteProduct(@Param() id: IdDto): Promise<string> {
+    await this.crudService.delete(id);
+    return SUCCESS_MESSAGES.PRODUCT_DELETED;
   }
 
   @Delete('/:id/image/:image_id')
   @UseGuards(AuthGuard)
-  async deleteImage(@Param() params: ParamsImageDto): Promise<Product> {
-    return this.imageService.deleteImage(params);
+  async deleteImage(@Param() params: ParamsImageDto): Promise<string> {
+    await this.imageService.deleteImage(params);
+    return SUCCESS_MESSAGES.IMAGE_DELETED;
   }
 
   @Post('/image/:id')
   @UseGuards(AuthGuard)
   @UseInterceptors(FilesInterceptor('image'))
-  async saveImages(@Param() id: IdDto, @UploadedFiles() files: FilesType): Promise<Product> {
-    return this.imageService.saveImages(id, files);
+  async saveImages(@Param() id: IdDto, @UploadedFiles() files: FilesType): Promise<string> {
+    await this.imageService.saveImages(id, files);
+    return SUCCESS_MESSAGES.IMAGES_SAVED;
   }
 
   @Put('/:id/image/:image_id')
@@ -101,8 +106,9 @@ export class ProductController implements IProductController {
   async updateImage(
     @Param() params: ParamsImageDto,
     @UploadedFile() file: FileType,
-  ): Promise<Product> {
-    return this.imageService.updateImage(params, file);
+  ): Promise<string> {
+    await this.imageService.updateImage(params, file);
+    return SUCCESS_MESSAGES.IMAGE_UPDATED;
   }
 
   @Post(':id')
@@ -110,15 +116,17 @@ export class ProductController implements IProductController {
   async addCategoryToProduct(
     @Param() param: IdDto,
     @Body() data: AddCategoryToProductDto,
-  ): Promise<Product> {
-    return this.productCategoryService.addCategoryToProduct(param.id, data);
+  ): Promise<string> {
+    await this.productCategoryService.addCategoryToProduct(param.id, data);
+    return SUCCESS_MESSAGES.CATEGORY_ADDED;
   }
   @Delete('category/:id')
   @UseGuards(AuthGuard)
-  async deleteCategoryToProduct(
+  async deleteCategoryFromProduct(
     @Param() param: IdDto,
     @Body() data: DeleteCategoryFromProductDto,
-  ): Promise<Product> {
-    return this.productCategoryService.deleteCategoryFromProduct(param.id, data.categoryId);
+  ): Promise<string> {
+    await this.productCategoryService.deleteCategoryFromProduct(param.id, data.categoryId);
+    return SUCCESS_MESSAGES.CATEGORY_DELETED;
   }
 }

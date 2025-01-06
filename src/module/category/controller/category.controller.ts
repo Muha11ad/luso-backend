@@ -20,7 +20,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ICategoryController } from './category.controller.interface';
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { Param, Delete, Put, UseInterceptors, UploadedFile } from '@nestjs/common';
-
+import { SUCCESS_MESSAGES } from '../types';
 
 @Controller('category')
 export class CategoryController implements ICategoryController {
@@ -43,20 +43,23 @@ export class CategoryController implements ICategoryController {
 
   @Post()
   @UseGuards(AuthGuard)
-  async createCategory(@Body() data: CategoryCreateDto): Promise<Category> {
-    return this.crudService.create(data);
+  async createCategory(@Body() data: CategoryCreateDto): Promise<string> {
+    await this.crudService.create(data);
+    return SUCCESS_MESSAGES.CATEGORY_CREATED;
   }
 
   @Put(':id')
   @UseGuards(AuthGuard)
-  async updateCategory(@Param() param: IdDto, @Body() data: CategoryUpdateDto): Promise<Category> {
-    return this.crudService.update(param.id, data);
+  async updateCategory(@Param() param: IdDto, @Body() data: CategoryUpdateDto): Promise<string> {
+    await this.crudService.update(param.id, data);
+    return SUCCESS_MESSAGES.CATEGORY_UPDATED;
   }
 
   @Delete(':id')
   @UseGuards(AuthGuard)
-  async deleteCategory(@Param() param: IdDto): Promise<Category> {
-    return this.crudService.delete(param.id);
+  async deleteCategory(@Param() param: IdDto): Promise<string> {
+    await this.crudService.delete(param.id);
+    return SUCCESS_MESSAGES.CATEGORY_DELETED;
   }
 
   @Post(':id')
@@ -64,8 +67,9 @@ export class CategoryController implements ICategoryController {
   async addProductToCategory(
     @Param() param: IdDto,
     @Body() data: AddProductToCategoryDto,
-  ): Promise<Category> {
-    return this.categoryProductService.addProductToCategory(param.id, data);
+  ): Promise<string> {
+    await this.categoryProductService.addProductToCategory(param.id, data);
+    return SUCCESS_MESSAGES.CATEGORY_PRODUCT_ADDED;
   }
 
   @Delete('product/:id')
@@ -73,8 +77,9 @@ export class CategoryController implements ICategoryController {
   async DeleteProductFromCategory(
     @Param() param: IdDto,
     @Body() data: DeleteProductFromCategoryDto,
-  ): Promise<Category> {
-    return this.categoryProductService.deleteProductFromCategory(param.id, data.productId);
+  ): Promise<string> {
+    await this.categoryProductService.deleteProductFromCategory(param.id, data.productId);
+    return SUCCESS_MESSAGES.CATEGORY_PRODUCT_DELETED;
   }
 
   @Post('upload/:id')
@@ -83,8 +88,9 @@ export class CategoryController implements ICategoryController {
   async saveImage(
     @Param() param: IdDto,
     @UploadedFile(FileValidatePipe) image: FileType,
-  ): Promise<Category> {
-    return this.imageService.saveImage(param.id, image);
+  ): Promise<string> {
+    await this.imageService.saveImage(param.id, image);
+    return SUCCESS_MESSAGES.CATEGORY_IMAGE_SAVED;
   }
   @Put('upload/:id')
   @UseGuards(AuthGuard)
@@ -92,7 +98,8 @@ export class CategoryController implements ICategoryController {
   async updateImage(
     @Param() param: IdDto,
     @UploadedFile(FileValidatePipe) image: FileType,
-  ): Promise<Category> {
-    return this.imageService.updateImage(param.id, image);
+  ): Promise<string> {
+    await this.imageService.updateImage(param.id, image);
+    return SUCCESS_MESSAGES.CATEGORY_IMAGE_UPDATED;
   }
 }
