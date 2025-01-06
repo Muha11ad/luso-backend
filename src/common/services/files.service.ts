@@ -6,8 +6,8 @@ import { BadGatewayException, Injectable } from '@nestjs/common';
 import { convertImageToWebP, pathToUpload } from '@/common/utils';
 
 export enum ImageFolderName {
-  category = 'category',
   product = 'product',
+  category = 'category',
 }
 @Injectable()
 export class FilesService {

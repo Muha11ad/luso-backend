@@ -73,15 +73,15 @@ export class ProductController implements IProductController {
 
   @Put('/:id')
   @UseGuards(AuthGuard)
-  async updateProduct(@Param() id: IdDto, @Body() data: ProductUpdateDto): Promise<string> {
-    await this.crudService.update(id, data);
+  async updateProduct(@Param() param: IdDto, @Body() data: ProductUpdateDto): Promise<string> {
+    await this.crudService.update(param.id, data);
     return SUCCESS_MESSAGES.PRODUCT_UPDATED;
   }
 
   @Delete('/:id')
   @UseGuards(AuthGuard)
-  async deleteProduct(@Param() id: IdDto): Promise<string> {
-    await this.crudService.delete(id);
+  async deleteProduct(@Param() param: IdDto): Promise<string> {
+    await this.crudService.delete(param.id);
     return SUCCESS_MESSAGES.PRODUCT_DELETED;
   }
 

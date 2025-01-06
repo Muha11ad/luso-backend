@@ -12,9 +12,9 @@ export interface IProductController {
 
   addCategoryToProduct: (param: IdDto, data: AddCategoryToProductDto) => Promise<string>;
 
-  deleteProduct: (id: IdDto) => Promise<string>;
+  deleteProduct: (param: IdDto) => Promise<string>;
   createProduct: (data: ProductCreateDto) => Promise<string>;
-  updateProduct: (id: IdDto, data: ProductUpdateDto) => Promise<string>;
+  updateProduct: (param: IdDto, data: ProductUpdateDto) => Promise<string>;
 
   deleteImage: (params: ParamsImageDto) => Promise<string>;
   saveImages: (id: IdDto, files: FilesType) => Promise<string>;

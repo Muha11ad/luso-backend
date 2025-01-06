@@ -4,6 +4,7 @@ import { OrderExceptionErrorType } from '../types';
 import { OrderBaseService } from './order.base.service';
 import { UserExceptionErrorTypes } from '@/module/user/types';
 import { BadGatewayException, Injectable, NotFoundException } from '@nestjs/common';
+import { OrderCreateEntity } from '../entity';
 
 @Injectable()
 export class OrderLifecycleService extends OrderBaseService {
@@ -32,37 +33,17 @@ export class OrderLifecycleService extends OrderBaseService {
     }
   }
 
-  private complateOrderDetails(orderDetails) {
-    return orderDetails.map((detail) => ({
-      ...detail,
-      total_price: detail.product_price * detail.quantity,
-    }));
-  }
-
   async create(data: OrderCreateDto): Promise<Order> {
     const userExist = await this.checkUserExist(data.user_id);
     await this.checkProductExists(data.orderDetails);
     try {
-      const { orderDetails, ...orderData } = data;
-
-      const completedOrderDetails = this.complateOrderDetails(orderDetails);
-
-      const totalPrice = completedOrderDetails.reduce((acc, detail) => acc + detail.total_price, 0);
-
+      const newOrder = new OrderCreateEntity(data, userExist);
       return this.database.$transaction(async (tx) => {
         const createdOrder = await tx.order.create({
-          data: {
-            user_id: userExist.telegram_id,
-            phone_number: orderData.phone_number,
-            total_price: totalPrice,
-            first_name: orderData.first_name,
-            region: orderData.region,
-            status: orderData.status,
-            delivery_fee: orderData.delivery_fee,
-          },
+          data: newOrder.toPrisma(),
         });
 
-        const detailsWithOrderId = completedOrderDetails.map((detail) => ({
+        const detailsWithOrderId = newOrder.toOrderDetails().map((detail) => ({
           ...detail,
           order_id: createdOrder.id,
         }));

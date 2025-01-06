@@ -1,63 +1,39 @@
-import { IdDto } from '@/common/dto';
-import { TranslationType } from '@/types';
+import { Product } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
-import { Product, Prisma } from '@prisma/client';
 import { ProductExceptionErrorTypes } from '../types';
 import { ProductCreateDto, ProductUpdateDto } from '../dto';
 import { ProductBaseService } from './product.base.service';
-import { createTranslation, updateTranslation } from '@/common/utils';
+import { ProductCreateEntity, ProductUpdateEntity } from '../entity';
 
 @Injectable()
 export class ProductCrudService extends ProductBaseService {
-  private buildUpdateData(
-    existingProduct: Product,
-    data: ProductUpdateDto,
-  ): Prisma.ProductUpdateInput {
-    return {
-      ...(data.name && { name: data.name }),
-      ...(data.price && { price: data.price }),
-      ...(data.available && { available: data.available }),
-      ...(data.instruction && {
-        instruction: updateTranslation(
-          existingProduct.instruction as TranslationType,
-          data.instruction,
-        ),
-      }),
-    };
-  }
-
   public async create(data: ProductCreateDto): Promise<Product> {
     await this.checkNameExists(data.name);
-    const productData = {
-      name: data.name,
-      price: data.price,
-      available: data.available,
-      instruction: createTranslation(data.instruction),
-    };
+    const newProduct = new ProductCreateEntity(data);
     return this.handleDatabaseOperation(
-      () => this.database.product.create({ data: productData }),
+      () => this.database.product.create({ data: newProduct.toPrisma() }),
       ProductExceptionErrorTypes.ERROR_CREATING,
     );
   }
 
-  public async update({ id }: IdDto, data: ProductUpdateDto): Promise<Product> {
+  public async update(id: string, data: ProductUpdateDto): Promise<Product> {
     if (data['name']) {
       await this.checkNameExists(data.name);
     }
     const existingProduct = await this.getProductById(id);
-    const newData = this.buildUpdateData(existingProduct, data);
+    const newData = new ProductUpdateEntity(existingProduct, data);
     return await this.handleDatabaseOperation(
       async () =>
         await this.database.product.update({
           where: { id },
-          data: newData as Prisma.ProductUpdateInput,
+          data: newData.toPrisma(),
         }),
       ProductExceptionErrorTypes.ERROR_UPDATING,
     );
   }
 
-  public async delete({ id }: IdDto): Promise<Product> {
-    const existingProduct = await this.getProductById(id);
+  public async delete(id: string): Promise<Product> {
+    await this.getProductById(id);
     return this.handleDatabaseOperation(
       async () => await this.database.product.delete({ where: { id } }),
       ProductExceptionErrorTypes.ERROR_DELETING,

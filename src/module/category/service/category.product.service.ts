@@ -18,6 +18,23 @@ export class CategoryProductService extends CategoryBaseService {
     return category;
   }
 
+  private async filterDuplicateProductInCategory(
+    id: string,
+    data: AddProductToCategoryDto,
+  ): Promise<string[]> {
+    const existingProductIds: string[] = await this.databaseService.productCategory
+      .findMany({
+        where: {
+          category_id: id,
+          product_id: { in: data.productIds },
+        },
+        select: { product_id: true },
+      })
+      .then((products) => products.map((product) => product.product_id));
+
+    return data.productIds.filter((p_id) => !existingProductIds.includes(p_id));
+  }
+
   private async checkCategoryAndProductExist(
     category_id: string,
     product_id: string,
@@ -35,19 +52,7 @@ export class CategoryProductService extends CategoryBaseService {
 
   public async addProductToCategory(id: string, data: AddProductToCategoryDto): Promise<Category> {
     const category = await this.checkCategoryAndProductsExist(id, data.productIds);
-
-    const existingProductIds: string[] = await this.databaseService.productCategory
-      .findMany({
-        where: {
-          category_id: id,
-          product_id: { in: data.productIds },
-        },
-        select: { product_id: true },
-      })
-      .then((products) => products.map((product) => product.product_id));
-
-    const newProductIds = data.productIds.filter((p_id) => !existingProductIds.includes(p_id));
-
+    const newProductIds = await this.filterDuplicateProductInCategory(id, data);
     if (newProductIds.length > 0) {
       await this.handleDatabaseOperation(
         () =>
