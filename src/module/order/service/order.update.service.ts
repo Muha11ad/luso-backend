@@ -1,6 +1,7 @@
 import { IdDto } from '@/common/dto';
 import { Order } from '@prisma/client';
 import { OrderExceptionErrorType } from '../types';
+import { OrderDetailsUpdateEntity } from '../entity';
 import { OrderBaseService } from './order.base.service';
 import { BadGatewayException, Injectable, NotFoundException } from '@nestjs/common';
 import { OrderUpdateDto, OrderStatusUpdateDto, OrderDetailsUpdateDto } from '../dto';
@@ -51,24 +52,28 @@ export class OrderUpdateService extends OrderBaseService {
     }
 
     try {
-      let updatedOrderDetailsTotalPrice = 0;
-      if (data['quantity'] && data['product_price']) {
-        updatedOrderDetailsTotalPrice = data.quantity * data.product_price;
-      } else if (data['quantity']) {
-        updatedOrderDetailsTotalPrice = data.quantity * existingOrderDetails.product_price;
-      } else if (data['product_price']) {
-        updatedOrderDetailsTotalPrice = existingOrderDetails.quantity * data.product_price;
+      const orderDetailsEntity = new OrderDetailsUpdateEntity(
+        existingOrderDetails.quantity,
+        existingOrderDetails.product_price,
+      );
+
+      if (data.quantity !== undefined) {
+        orderDetailsEntity.updateQuantity(data.quantity);
+      }
+
+      if (data.product_price !== undefined) {
+        orderDetailsEntity.updateProductPrice(data.product_price);
       }
 
       const updatedOrderDetails = await this.database.orderDetails.update({
         where: { id },
         data: {
           ...data,
-          total_price: updatedOrderDetailsTotalPrice,
+          total_price: orderDetailsEntity.getTotalPrice(),
         },
       });
 
-      const priceDifference = updatedOrderDetailsTotalPrice - existingOrderDetails.total_price;
+      const priceDifference = orderDetailsEntity.getTotalPrice() - existingOrderDetails.total_price;
 
       const updatedOrder = await this.database.order.update({
         where: {

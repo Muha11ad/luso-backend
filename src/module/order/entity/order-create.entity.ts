@@ -1,24 +1,7 @@
-import { OrderStatus, Region, User } from '@prisma/client';
-import { OrderCreateDto, OrderDetails as OrderDetailsDto } from '../dto';
+import { OrderCreateDto } from '../dto';
 
 export class OrderCreateEntity {
-  private user_id: number;
-  private region: Region;
-  private first_name: string;
-  private phone_number: string;
-  private status: OrderStatus;
-  private delivery_fee: number;
-  private orderDetails: OrderDetailsDto[];
-
-  constructor(data: OrderCreateDto, user: User) {
-    this.region = data.region;
-    this.status = data.status;
-    this.user_id = user.telegram_id;
-    this.first_name = data.first_name;
-    this.phone_number = data.phone_number;
-    this.orderDetails = data.orderDetails;
-    this.delivery_fee = data.delivery_fee;
-  }
+  constructor(private readonly data: OrderCreateDto) {}
 
   private completeOrderDetails(): {
     product_price: number;
@@ -27,7 +10,7 @@ export class OrderCreateEntity {
     product_id: string;
     product_name: string;
   }[] {
-    return this.orderDetails.map((detail) => ({
+    return this.data.orderDetails.map((detail) => ({
       ...detail,
       total_price: detail.product_price * detail.quantity,
     }));
@@ -39,12 +22,12 @@ export class OrderCreateEntity {
 
   toPrisma() {
     return {
-      region: this.region,
-      status: this.status,
-      user_id: this.user_id,
-      first_name: this.first_name,
-      phone_number: this.phone_number,
-      delivery_fee: this.delivery_fee,
+      region: this.data.region,
+      status: this.data.status,
+      user_id: this.data.user_id,
+      first_name: this.data.first_name,
+      phone_number: this.data.phone_number,
+      delivery_fee: this.data.delivery_fee,
       total_price: this.orderTotalPrice,
       OrderDetails: {
         create: this.completeOrderDetails(),

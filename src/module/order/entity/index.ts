@@ -1,2 +1,2 @@
 export { OrderCreateEntity } from './order-create.entity';
-export { OrderUpdateEntity } from './order-update.entity';
+export { OrderDetailsUpdateEntity } from './order-details-update.entity';

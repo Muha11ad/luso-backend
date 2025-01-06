@@ -1,16 +1,17 @@
-import { TranslationType } from '@/types';
-import { DatabaseService } from '@/common/services';
 import { ProductExceptionErrorTypes } from '../../types';
 import { CharacteristicExceptionErrorTypes } from '../types';
 import { Characteristic, Prisma, Product } from '@prisma/client';
-import { createTranslation, updateTranslation } from '@/common/utils';
+import { DatabaseService, RedisService } from '@/common/services';
 import { CharacteristicCreateDto, CharacteristicUpdateDto } from '../dto';
-import { ICharacteristicService } from './characteristic.service.interface';
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { CharacteristicCreateEntity, CharacteristicUpdateEntity } from '../entity';
 
 @Injectable()
-export class CharacteristicService implements ICharacteristicService {
-  constructor(private readonly database: DatabaseService) {}
+export class CharacteristicService {
+  constructor(
+    private readonly database: DatabaseService,
+    private readonly redisService: RedisService,
+  ) {}
 
   private async checkProductExistsOrThrowException(product_id: string): Promise<Product> {
     const productExists = await this.database.product.findUnique({
@@ -32,67 +33,25 @@ export class CharacteristicService implements ICharacteristicService {
     return characteristicExists;
   }
 
-  private createCharacteristicData(data: CharacteristicCreateDto, productId: string) {
-    return {
-      ...data,
-      product_id: productId,
-      caution: createTranslation(data.caution),
-      made_in: createTranslation(data.made_in),
-      purpose: createTranslation(data.purpose),
-      gender: createTranslation(data.gender),
-      skin_type: createTranslation(data.skin_type),
-      expiration_date: new Date(data.expiration_date),
-      ingredients: createTranslation(data.ingredients),
-      application_time: createTranslation(data.application_time),
-    };
-  }
-
-  private updateCharacteristicData(
-    existing: Characteristic,
-    data: CharacteristicUpdateDto,
-  ): Partial<Characteristic> {
-    return {
-      ...data,
-      ...(data['caution'] && {
-        caution: updateTranslation(existing.caution as TranslationType, data.caution),
-      }),
-      ...(data['made_in'] && {
-        made_in: updateTranslation(existing.made_in as TranslationType, data.made_in),
-      }),
-      ...(data['purpose'] && {
-        purpose: updateTranslation(existing.purpose as TranslationType, data.purpose),
-      }),
-      ...(data['gender'] && {
-        gender: updateTranslation(existing.gender as TranslationType, data.gender),
-      }),
-      ...(data['skin_type'] && {
-        skin_type: updateTranslation(existing.skin_type as TranslationType, data.skin_type),
-      }),
-      ...(data['ingredients'] && {
-        ingredients: updateTranslation(existing.ingredients as TranslationType, data.ingredients),
-      }),
-      ...(data['application_time'] && {
-        application_time: updateTranslation(
-          existing.application_time as TranslationType,
-          data.application_time,
-        ),
-      }),
-    };
+  private async handleDatabaseOperation<T>(
+    operation: () => Promise<T>,
+    errorType: string,
+  ): Promise<T> {
+    try {
+      await this.redisService.delAll();
+      return await operation();
+    } catch (error) {
+      throw new BadRequestException(`${errorType}: ${error.message}`);
+    }
   }
 
   async create(data: CharacteristicCreateDto): Promise<Characteristic> {
     await this.checkProductExistsOrThrowException(data.product_id);
-    try {
-      const characteristicData = this.createCharacteristicData(data, data.product_id);
-      return this.database.characteristic.create({
-        data: characteristicData as Prisma.CharacteristicUncheckedCreateInput,
-      });
-    } catch (error) {
-      console.error(error);
-      throw new BadRequestException(
-        `${CharacteristicExceptionErrorTypes.ERROR_CREATING}: ${error.message}`,
-      );
-    }
+    const characteristicData = new CharacteristicCreateEntity(data);
+    return this.handleDatabaseOperation(
+      () => this.database.characteristic.create({ data: characteristicData.toPrisma() }),
+      CharacteristicExceptionErrorTypes.ERROR_CREATING,
+    );
   }
 
   async update(id: string, data: CharacteristicUpdateDto): Promise<Characteristic> {
@@ -100,31 +59,22 @@ export class CharacteristicService implements ICharacteristicService {
     if (data['product_id']) {
       await this.checkProductExistsOrThrowException(data.product_id);
     }
-    try {
-      const characteristicData = this.updateCharacteristicData(characteristicExists, data);
-      return this.database.characteristic.update({
-        where: { id },
-        data: characteristicData as Prisma.CharacteristicUncheckedUpdateInput,
-      });
-    } catch (error) {
-      console.error(error);
-      throw new BadRequestException(
-        `${CharacteristicExceptionErrorTypes.ERROR_UPDATING}: ${error.message}`,
-      );
-    }
+    const characteristicData = new CharacteristicUpdateEntity(characteristicExists, data);
+    return this.handleDatabaseOperation(
+      () =>
+        this.database.characteristic.update({
+          where: { id },
+          data: characteristicData.toPrisma() as unknown as Prisma.CharacteristicUpdateInput,
+        }),
+      CharacteristicExceptionErrorTypes.ERROR_UPDATING,
+    );
   }
 
   async delete(id: string): Promise<Characteristic> {
     await this.checkCharacteristicExistsOrThrowException(id);
-    try {
-      return this.database.characteristic.delete({
-        where: { id },
-      });
-    } catch (error) {
-      console.error(error);
-      throw new BadRequestException(
-        `${CharacteristicExceptionErrorTypes.ERROR_DELETING}: ${error.message}`,
-      );
-    }
+    return this.handleDatabaseOperation(
+      () => this.database.characteristic.delete({ where: { id } }),
+      CharacteristicExceptionErrorTypes.ERROR_DELETING,
+    );
   }
 }

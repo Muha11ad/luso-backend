@@ -37,7 +37,7 @@ export class OrderLifecycleService extends OrderBaseService {
     const userExist = await this.checkUserExist(data.user_id);
     await this.checkProductExists(data.orderDetails);
     try {
-      const newOrder = new OrderCreateEntity(data, userExist);
+      const newOrder = new OrderCreateEntity(data);
       return this.database.$transaction(async (tx) => {
         const createdOrder = await tx.order.create({
           data: newOrder.toPrisma(),

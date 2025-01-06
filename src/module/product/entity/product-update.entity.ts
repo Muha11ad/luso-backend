@@ -4,27 +4,21 @@ import { Prisma, Product } from '@prisma/client';
 import { updateTranslation } from '@/common/utils';
 
 export class ProductUpdateEntity {
-  private name: string | null;
-  private price: number | null;
-  private available: boolean | null;
-  private instruction: TranslationType | null;
+  private updatingData: Partial<Product> = {};
 
   constructor(oldData: Product, newData: ProductUpdateDto) {
-    this.name = newData.name ?? null;
-    this.price = newData.price ?? null;
-    this.available = newData.available ?? null;
-    this.instruction = newData.instruction
-      ? updateTranslation(oldData.instruction as TranslationType, newData.instruction)
-      : null;
+    this.updatingData = { ...newData } as unknown as Partial<Product>;
+    if (newData.instruction) {
+      this.updatingData.instruction = updateTranslation(
+        oldData.instruction as TranslationType,
+        newData.instruction,
+      );
+    }
   }
 
   toPrisma(): Prisma.ProductUpdateInput {
-    const { name, price, available, instruction } = this;
     return {
-      ...(name && { name }),
-      ...(price && { price }),
-      ...(available && { available }),
-      ...(instruction && { instruction }),
+      ...this.updatingData,
     };
   }
 }
