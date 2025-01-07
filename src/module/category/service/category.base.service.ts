@@ -33,10 +33,7 @@ export class CategoryBaseService {
     id?: string | undefined,
   ): Promise<T> {
     try {
-      if (id) {
-        await this.redisService.del(`/api/category/${id}`);
-      }
-      await this.redisService.del('/api/category');
+      await this.redisService.delAll();
       return await operation();
     } catch (error) {
       throw new BadGatewayException(`${errorMessage}: ${error.message}`);

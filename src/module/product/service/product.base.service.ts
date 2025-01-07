@@ -40,15 +40,11 @@ export class ProductBaseService {
   public async handleDatabaseOperation<T>(
     operation: () => Promise<T>,
     errorType: string,
-    rollback?: () => Promise<void>,
   ): Promise<T> {
     try {
       await this.redisService.delAll();
       return await operation();
     } catch (error) {
-      if (rollback) {
-        await rollback();
-      }
       throw new BadRequestException(`${errorType}: ${error.message}`);
     }
   }

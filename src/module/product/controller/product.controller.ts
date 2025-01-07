@@ -53,11 +53,7 @@ export class ProductController implements IProductController {
   async getProductById(@Param() id: IdDto): Promise<Product> {
     return this.findService.findById(id);
   }
-  @UseInterceptors(CacheInterceptor)
-  @Get('/byCategory/:name')
-  async getProductByCategoryName(@Param() param: NameDto): Promise<Product[]> {
-    return await this.findService.findByCategoryName(param.name);
-  }
+
   @UseInterceptors(CacheInterceptor)
   @Get('/name/:name')
   async getProductByName(@Param() param: NameDto): Promise<Product[]> {

@@ -5,11 +5,7 @@ import { CategoryBaseService } from './category.base.service';
 @Injectable()
 export class CategoryFindService extends CategoryBaseService {
   async findAll(): Promise<Category[]> {
-    return this.databaseService.category.findMany({
-      include: {
-        Products: true,
-      },
-    });
+    return this.databaseService.category.findMany();
   }
 
   async findById(id: string): Promise<Category> {
@@ -18,7 +14,16 @@ export class CategoryFindService extends CategoryBaseService {
         id,
       },
       include: {
-        Products: true,
+        Products: {
+          select: {
+            product: {
+              include: {
+                Images: true,
+                Characteristic: true,
+              },
+            },
+          },
+        },
       },
     });
   }

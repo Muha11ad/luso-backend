@@ -16,7 +16,6 @@ export class CategoryCrudService extends CategoryBaseService {
     return this.handleDatabaseOperation(
       () => this.databaseService.category.delete({ where: { id } }),
       CategoryErrorTypes.ERROR_DELETING,
-      id,
     );
   }
 
@@ -45,7 +44,6 @@ export class CategoryCrudService extends CategoryBaseService {
           data: newData.toPrisma(),
         }),
       CategoryErrorTypes.ERROR_UPDATING,
-      id,
     );
   }
 }

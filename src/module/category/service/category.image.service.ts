@@ -22,7 +22,9 @@ export class CategoryImageService extends CategoryBaseService {
 
   async updateImage(id: string, file: FileType): Promise<Category> {
     const category = await this.checkIdExistsAndThrowException(id);
-    await this.fileService.deleteFile(category.imageUrl, ImageFolderName.category);
+    if (category.imageUrl) {
+      await this.fileService.deleteFile(category.imageUrl, ImageFolderName.category);
+    }
     const imageUrl = await this.fileService.saveFile(file, ImageFolderName.category);
     return this.handleDatabaseOperation(
       () =>

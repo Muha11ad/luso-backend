@@ -7,7 +7,6 @@ import { AddCategoryToProductDto } from '../dto/add-category-to-product.dto';
 export interface IProductController {
   getAllProducts: () => Promise<Product[]>;
   getProductById: (id: IdDto) => Promise<Product>;
-  getProductByCategoryName: (param: NameDto) => Promise<Product[]>;
   getProductByName: (param: NameDto) => Promise<Product[]>;
 
   addCategoryToProduct: (param: IdDto, data: AddCategoryToProductDto) => Promise<string>;

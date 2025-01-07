@@ -18,9 +18,6 @@ export class ProductImageService extends ProductBaseService {
           data: { Images: { createMany: { data: images.map((image) => ({ imageUrl: image })) } } },
         }),
       ProductExceptionErrorTypes.ERROR_SAVING_IMAGES,
-      async () => {
-        await this.filesService.deleteMultipleFiles(images, ImageFolderName.product);
-      },
     );
   }
 
