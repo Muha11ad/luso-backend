@@ -13,18 +13,6 @@ export class CategoryFindService extends CategoryBaseService {
       where: {
         id,
       },
-      include: {
-        Products: {
-          select: {
-            product: {
-              include: {
-                Images: true,
-                Characteristic: true,
-              },
-            },
-          },
-        },
-      },
     });
   }
 }

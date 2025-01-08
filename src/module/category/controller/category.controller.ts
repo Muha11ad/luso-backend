@@ -81,6 +81,11 @@ export class CategoryController implements ICategoryController {
     await this.categoryProductService.deleteProductFromCategory(param.id, data.productId);
     return SUCCESS_MESSAGES.CATEGORY_PRODUCT_DELETED;
   }
+  @Get('product/:id')
+  @UseInterceptors(CacheInterceptor)
+  async getCategoryProducts(@Param() param: IdDto): Promise<any> {
+    return await this.categoryProductService.findProductByCategoryId(param.id);
+  }
 
   @Post('upload/:id')
   @UseGuards(AuthGuard)

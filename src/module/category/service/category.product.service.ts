@@ -87,4 +87,17 @@ export class CategoryProductService extends CategoryBaseService {
     );
     return category;
   }
+
+  public async findProductByCategoryId(id: string): Promise<any> {
+    await this.checkIdExistsAndThrowException(id);
+    return this.databaseService.productCategory.findMany({
+      where: { category_id: id },
+      select: {
+        category: true,
+        product: {
+          include: { Images: true, Characteristic: true },
+        },
+      },
+    });
+  }
 }
