@@ -1,4 +1,4 @@
-import { Category } from '@prisma/client';
+import { Category, Product } from '@prisma/client';
 import { CategoryErrorTypes } from '../types';
 import { AddProductToCategoryDto } from '../dto';
 import { Injectable, NotFoundException } from '@nestjs/common';
@@ -88,16 +88,18 @@ export class CategoryProductService extends CategoryBaseService {
     return category;
   }
 
-  public async findProductByCategoryId(id: string): Promise<any> {
-    await this.checkIdExistsAndThrowException(id);
-    return this.databaseService.productCategory.findMany({
+  public async findProductByCategoryId(
+    id: string,
+  ): Promise<{ category: Category; products: Product[] }> {
+    const category = await this.checkIdExistsAndThrowException(id);
+    const products = await this.databaseService.productCategory.findMany({
       where: { category_id: id },
       select: {
-        category: true,
         product: {
           include: { Images: true, Characteristic: true },
         },
       },
     });
+    return { category, products: products.map((product) => product.product) };
   }
 }

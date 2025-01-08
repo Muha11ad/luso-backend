@@ -13,7 +13,7 @@ import {
 import { FileType } from '@/types';
 import { IdDto } from '@/common/dto';
 import { AuthGuard } from '../../auth';
-import { Category } from '@prisma/client';
+import { Category, Product } from '@prisma/client';
 import { FileValidatePipe } from '@/common/pipes';
 import { CacheInterceptor } from '@nestjs/cache-manager';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -83,7 +83,9 @@ export class CategoryController implements ICategoryController {
   }
   @Get('product/:id')
   @UseInterceptors(CacheInterceptor)
-  async getCategoryProducts(@Param() param: IdDto): Promise<any> {
+  async getCategoryProducts(
+    @Param() param: IdDto,
+  ): Promise<{ category: Category; products: Product[] }> {
     return await this.categoryProductService.findProductByCategoryId(param.id);
   }
 
