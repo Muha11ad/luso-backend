@@ -11,6 +11,7 @@ import { TelegramIdDto } from '@/module/user/dto';
 import { IOrderController } from './order.controller.interface';
 import { OrderFindService, OrderLifecycleService, OrderUpdateService } from '../service';
 import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { SUCCESS_MESSAGES } from '../types';
 
 @Controller('order')
 export class OrderController implements IOrderController {
@@ -37,8 +38,9 @@ export class OrderController implements IOrderController {
   }
 
   @Post()
-  async createOrder(@Body() data: OrderCreateDto): Promise<Order> {
-    return this.lifecycleService.create(data);
+  async createOrder(@Body() data: OrderCreateDto): Promise<string> {
+    await this.lifecycleService.create(data);
+    return SUCCESS_MESSAGES.ORDER_CREATED;
   }
 
   @Delete(':id')

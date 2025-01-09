@@ -19,6 +19,9 @@ export class OrderCreateEntity {
   private get orderTotalPrice(): number {
     return this.completeOrderDetails().reduce((acc, detail) => acc + detail.total_price, 0);
   }
+  private get orderDeliveryFee(): number {
+    return this.orderTotalPrice > 400000 ? 0 : 20000;
+  }
 
   toPrisma() {
     return {
@@ -27,7 +30,7 @@ export class OrderCreateEntity {
       user_id: this.data.user_id,
       first_name: this.data.first_name,
       phone_number: this.data.phone_number,
-      delivery_fee: this.data.delivery_fee,
+      delivery_fee: this.orderDeliveryFee,
       total_price: this.orderTotalPrice,
       OrderDetails: {
         create: this.completeOrderDetails(),

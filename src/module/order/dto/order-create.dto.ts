@@ -1,5 +1,5 @@
 import { OrderStatus, Region } from '@prisma/client';
-import { IsArray, IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsArray, IsEnum, IsNotEmpty, IsNumber, IsString, ValidateNested } from 'class-validator';
 
 export class OrderDetails {
   @IsNotEmpty()
@@ -42,9 +42,6 @@ export class OrderCreateDto {
 
   @IsNotEmpty()
   @IsArray()
+  @ValidateNested({ each: true })
   orderDetails: OrderDetails[];
-
-  @IsNotEmpty()
-  @IsNumber()
-  delivery_fee: number;
 }

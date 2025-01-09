@@ -34,7 +34,7 @@ export class OrderLifecycleService extends OrderBaseService {
   }
 
   async create(data: OrderCreateDto): Promise<Order> {
-    const userExist = await this.checkUserExist(data.user_id);
+    await this.checkUserExist(data.user_id);
     await this.checkProductExists(data.orderDetails);
     try {
       const newOrder = new OrderCreateEntity(data);

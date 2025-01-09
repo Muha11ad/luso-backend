@@ -13,7 +13,7 @@ export interface IOrderController {
   getById: (param: IdDto) => Promise<Order>;
   getByUserId: (param: TelegramIdDto) => Promise<Order[]>;
   deleteOrder: (param: IdDto) => Promise<Order>;
-  createOrder: (data: OrderCreateDto) => Promise<Order>;
+  createOrder: (data: OrderCreateDto) => Promise<string>;
   updateOrder: (param: IdDto, data: OrderUpdateDto) => Promise<Order>;
   updateOrderStatus: (param: IdDto, data: OrderStatusUpdateDto) => Promise<Order>;
   updateOrderDetails: (param: IdDto, data: OrderDetailsUpdateDto) => Promise<Order>;
