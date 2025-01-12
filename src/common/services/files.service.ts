@@ -11,7 +11,7 @@ export enum ImageFolderName {
 }
 @Injectable()
 export class FilesService {
-  private readonly baseUrl = 'http://localhost:9000/uploads';
+  private readonly baseUrl = 'http://192.168.1.105:9000/uploads';
 
   async saveFile(file: Express.Multer.File, folder: ImageFolderName): Promise<string> {
     try {

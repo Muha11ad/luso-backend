@@ -27,7 +27,6 @@ export class OrderController implements IOrderController {
   }
 
   @Get(':id')
-  @UseGuards(AuthGuard)
   async getById(@Param() param: IdDto): Promise<Order> {
     return this.findService.findById(param.id);
   }
