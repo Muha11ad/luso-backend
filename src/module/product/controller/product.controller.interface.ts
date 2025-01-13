@@ -1,13 +1,13 @@
 import { Product } from '@prisma/client';
 import { IdDto, NameDto } from '@/common/dto';
 import { FilesType, FileType } from '@/types';
-import { ParamsImageDto, ProductCreateDto, ProductUpdateDto } from '../dto';
+import { FilterProductsDto, ParamsImageDto, ProductCreateDto, ProductUpdateDto } from '../dto';
 import { AddCategoryToProductDto } from '../dto/add-category-to-product.dto';
 
 export interface IProductController {
   getAllProducts: () => Promise<Product[]>;
   getProductById: (id: IdDto) => Promise<Product>;
-  getProductByName: (param: NameDto) => Promise<Product[]>;
+  getProductsByFilter: (data: FilterProductsDto) => Promise<Product[]>;
 
   addCategoryToProduct: (param: IdDto, data: AddCategoryToProductDto) => Promise<string>;
 

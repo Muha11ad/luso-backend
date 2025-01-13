@@ -2,6 +2,7 @@ export const ProductExceptionErrorTypes = {
   NOT_FOUND: 'Product not found',
   IMAGE_NOT_FOUND: 'Image not found',
   ERROR_CREATING: 'Error while creating product',
+  FILTER_ERROR: 'Error while filtering products',
   ERROR_UPDATING: 'Error while updating product',
   ERROR_DELETING: 'Error while deleting product',
   ERROR_SAVING_IMAGES: 'Error while saving images',

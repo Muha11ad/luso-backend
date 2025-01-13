@@ -22,6 +22,7 @@ import {
   ProductCreateDto,
   ProductUpdateDto,
   DeleteCategoryFromProductDto,
+  FilterProductsDto,
 } from '../dto';
 import { Product } from '@prisma/client';
 import { AuthGuard } from '@/module/auth';
@@ -54,10 +55,10 @@ export class ProductController implements IProductController {
     return this.findService.findById(id);
   }
 
+  @Post('/filter')
   @UseInterceptors(CacheInterceptor)
-  @Get('/name/:name')
-  async getProductByName(@Param() param: NameDto): Promise<Product[]> {
-    return this.findService.findByName(param.name);
+  async getProductsByFilter(@Body() data: FilterProductsDto): Promise<Product[]> {
+    return this.findService.findByFilter(data);
   }
 
   @Post()

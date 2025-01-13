@@ -1,5 +1,6 @@
 import { IdDto } from '@/common/dto';
 import { Product } from '@prisma/client';
+import { FilterProductsDto } from '../dto';
 import { ProductExceptionErrorTypes } from '../types';
 import { ProductBaseService } from './product.base.service';
 import { BadRequestException, Injectable } from '@nestjs/common';
@@ -23,14 +24,28 @@ export class ProductFindService extends ProductBaseService {
     return product;
   }
 
-  async findByName(name: string): Promise<Product[]> {
-    return this.handleDatabaseOperation(
-      () =>
-        this.database.product.findMany({
-          where: { name: { contains: name, mode: 'insensitive' } },
-          include: { Characteristic: true, Images: true, Categories: true },
-        }),
-      ProductExceptionErrorTypes.ERROR_FINDING_BY_NAME,
-    );
+  async findByFilter(data: FilterProductsDto): Promise<Product[]> {
+    return this.handleDatabaseOperation(async () => {
+      const { age, skin_type } = data;
+      const result = await this.database.characteristic.findMany({
+        where: {
+          age,
+          OR: [
+            { skin_type: { path: ['en'], equals: skin_type } },
+            { skin_type: { path: ['ru'], equals: skin_type } },
+            { skin_type: { path: ['uz'], equals: skin_type } },
+          ],
+        },
+        select: {
+          product: {
+            include: {
+              Characteristic: true,
+              Images: true,
+            },
+          },
+        },
+      });
+      return result.map(({ product }) => product);
+    }, ProductExceptionErrorTypes.FILTER_ERROR);
   }
 }
