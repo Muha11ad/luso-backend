@@ -10,7 +10,6 @@ datasource db {
 model Category {
   id          String            @id @default(uuid())
   name        Json              @unique
-  imageUrl    String?           @unique
   description Json
   Products    ProductCategory[]
 }

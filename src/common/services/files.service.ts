@@ -1,5 +1,6 @@
 import * as path from 'path';
 import { v4 as uuidv4 } from 'uuid';
+import { ConfigService } from '@nestjs/config';
 import { ExceptionErrorTypes } from '@/types';
 import { ensureDir, writeFile, unlink } from 'fs-extra';
 import { BadGatewayException, Injectable } from '@nestjs/common';
@@ -11,8 +12,8 @@ export enum ImageFolderName {
 }
 @Injectable()
 export class FilesService {
-  private readonly baseUrl = 'http://192.168.1.105:9000/uploads';
-
+  constructor(private readonly configService: ConfigService) {}
+  private readonly baseUrl = this.configService.get('UPLOADS_ORIGIN');
   async saveFile(file: Express.Multer.File, folder: ImageFolderName): Promise<string> {
     try {
       const uploadFolder = path.resolve(pathToUpload, folder);

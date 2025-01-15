@@ -2,7 +2,6 @@ import {
   CategoryBaseService,
   CategoryCrudService,
   CategoryFindService,
-  CategoryImageService,
   CategoryProductService,
 } from './service';
 import { AuthModule } from '../auth';
@@ -16,7 +15,6 @@ import { CategoryController } from './controller';
   providers: [
     CategoryBaseService,
     CategoryCrudService,
-    CategoryImageService,
     CategoryFindService,
     CategoryProductService,
   ],

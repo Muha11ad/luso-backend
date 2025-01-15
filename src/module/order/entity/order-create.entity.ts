@@ -4,11 +4,11 @@ export class OrderCreateEntity {
   constructor(private readonly data: OrderCreateDto) {}
 
   private completeOrderDetails(): {
-    product_price: number;
     quantity: number;
-    total_price: number;
     product_id: string;
+    total_price: number;
     product_name: string;
+    product_price: number;
   }[] {
     return this.data.orderDetails.map((detail) => ({
       ...detail,

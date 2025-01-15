@@ -1,33 +1,24 @@
 import {
-  CategoryCrudService,
-  CategoryFindService,
-  CategoryImageService,
-  CategoryProductService,
-} from '../service';
-import {
-  AddProductToCategoryDto,
   CategoryCreateDto,
   CategoryUpdateDto,
+  AddProductToCategoryDto,
   DeleteProductFromCategoryDto,
 } from '../dto';
-import { FileType } from '@/types';
 import { IdDto } from '@/common/dto';
 import { AuthGuard } from '../../auth';
+import { SUCCESS_MESSAGES } from '../types';
 import { Category, Product } from '@prisma/client';
-import { FileValidatePipe } from '@/common/pipes';
 import { CacheInterceptor } from '@nestjs/cache-manager';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { ICategoryController } from './category.controller.interface';
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { Param, Delete, Put, UseInterceptors, UploadedFile } from '@nestjs/common';
-import { SUCCESS_MESSAGES } from '../types';
+import { CategoryCrudService, CategoryFindService, CategoryProductService } from '../service';
 
 @Controller('category')
 export class CategoryController implements ICategoryController {
   constructor(
     private readonly crudService: CategoryCrudService,
     private readonly findService: CategoryFindService,
-    private readonly imageService: CategoryImageService,
     private readonly categoryProductService: CategoryProductService,
   ) {}
   @Get()
@@ -74,7 +65,7 @@ export class CategoryController implements ICategoryController {
 
   @Delete('product/:id')
   @UseGuards(AuthGuard)
-  async DeleteProductFromCategory(
+  async deleteProductFromCategory(
     @Param() param: IdDto,
     @Body() data: DeleteProductFromCategoryDto,
   ): Promise<string> {
@@ -87,26 +78,5 @@ export class CategoryController implements ICategoryController {
     @Param() param: IdDto,
   ): Promise<{ category: Category; products: Product[] }> {
     return await this.categoryProductService.findProductByCategoryId(param.id);
-  }
-
-  @Post('upload/:id')
-  @UseGuards(AuthGuard)
-  @UseInterceptors(FileInterceptor('image'))
-  async saveImage(
-    @Param() param: IdDto,
-    @UploadedFile(FileValidatePipe) image: FileType,
-  ): Promise<string> {
-    await this.imageService.saveImage(param.id, image);
-    return SUCCESS_MESSAGES.CATEGORY_IMAGE_SAVED;
-  }
-  @Put('upload/:id')
-  @UseGuards(AuthGuard)
-  @UseInterceptors(FileInterceptor('image'))
-  async updateImage(
-    @Param() param: IdDto,
-    @UploadedFile(FileValidatePipe) image: FileType,
-  ): Promise<string> {
-    await this.imageService.updateImage(param.id, image);
-    return SUCCESS_MESSAGES.CATEGORY_IMAGE_UPDATED;
   }
 }

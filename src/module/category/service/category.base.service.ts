@@ -30,7 +30,6 @@ export class CategoryBaseService {
   public async handleDatabaseOperation<T>(
     operation: () => Promise<T>,
     errorMessage: string,
-    id?: string | undefined,
   ): Promise<T> {
     try {
       await this.redisService.delAll();

@@ -10,9 +10,6 @@ import { CategoryCreateEntity, CategoryUpdateEntity } from '../entity';
 export class CategoryCrudService extends CategoryBaseService {
   async delete(id: string): Promise<Category> {
     const category = await this.checkIdExistsAndThrowException(id);
-    if (category?.imageUrl) {
-      await this.fileService.deleteFile(category.imageUrl, ImageFolderName.category);
-    }
     return this.handleDatabaseOperation(
       () => this.databaseService.category.delete({ where: { id } }),
       CategoryErrorTypes.ERROR_DELETING,

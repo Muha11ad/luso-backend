@@ -3,16 +3,20 @@ import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.int
 
 export function getCorsOptions(): CorsOptions {
   const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [];
-  console.log(allowedOrigins);
 
   return {
     origin: (origin, callback) => {
+      console.log(allowedOrigins);
+
       if (allowedOrigins.includes(origin)) {
-        callback(null, true);
+        console.log('Origin allowed:', origin);
+        callback(null, origin);
       } else {
+        console.log('Origin not allowed:', origin);
+
         callback(new NotAcceptableException(`Origin ${origin} is not allowed`));
       }
     },
-    optionsSuccessStatus: 401,
+    credentials: true,
   };
 }

@@ -3,6 +3,7 @@ import { ExceptionErrorTypes } from '@/types';
 import { CategoryErrorTypes } from '@/module/category/types';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { DatabaseService, FilesService, RedisService } from '@/common/services';
+import { ProductExceptionErrorTypes } from '../types';
 
 @Injectable()
 export class ProductBaseService {
@@ -25,7 +26,7 @@ export class ProductBaseService {
       include: { Categories: true },
     });
     if (!product) {
-      throw new BadRequestException(CategoryErrorTypes.NOT_FOUND);
+      throw new BadRequestException(ProductExceptionErrorTypes.NOT_FOUND);
     }
     return product;
   }
@@ -42,8 +43,10 @@ export class ProductBaseService {
     errorType: string,
   ): Promise<T> {
     try {
+      console.log('Deleting all cache');
+      const result = await operation();
       await this.redisService.delAll();
-      return await operation();
+      return result;
     } catch (error) {
       throw new BadRequestException(`${errorType}: ${error.message}`);
     }
