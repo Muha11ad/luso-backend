@@ -13,7 +13,7 @@ import { DatabaseService, EmailService, FilesService, RedisService } from './ser
     CacheModule.registerAsync(redisOptions),
     ServeStaticModule.forRoot({
       rootPath: pathToUpload,
-      serveRoot: 'uploads',
+      renderPath: '/uploads',
     }),
   ],
   providers: [EmailService, DatabaseService, FilesService, RedisService],

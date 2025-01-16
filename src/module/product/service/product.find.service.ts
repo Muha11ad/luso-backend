@@ -29,11 +29,13 @@ export class ProductFindService extends ProductBaseService {
       const { age, skin_type } = data;
       const result = await this.database.characteristic.findMany({
         where: {
-          age,
           OR: [
+            { age },
+            { age: '7-70' },
             { skin_type: { path: ['en'], equals: skin_type } },
             { skin_type: { path: ['ru'], equals: skin_type } },
             { skin_type: { path: ['uz'], equals: skin_type } },
+            { skin_type: { path: ['en'], equals: 'All skin types' } },
           ],
         },
         select: {

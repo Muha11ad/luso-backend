@@ -1,4 +1,4 @@
-export { projectRoot, pathToUpload } from './paths';
+export { pathToUpload } from './paths';
 
 export { convertImageToWebP } from './imageConverter';
 
