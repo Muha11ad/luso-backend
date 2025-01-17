@@ -13,6 +13,7 @@ export const redisOptions: CacheModuleAsyncOptions = {
           reconnectStrategy: (retries) => Math.min(retries * 50, 2000),
           connectTimeout: 10000,
         },
+        password: configService.get<string>('REDIS_PASSWORD'), // Add this line
       });
 
       return {
