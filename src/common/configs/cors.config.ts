@@ -8,7 +8,7 @@ export function getCorsOptions(): CorsOptions {
     origin: (origin, callback) => {
       if (!origin) {
         console.log('Origin not provided');
-        callback(null, "");
+        callback(null, true);
       }
       else if (allowedOrigins.includes(origin)) {
         console.log('Origin allowed:', origin);
