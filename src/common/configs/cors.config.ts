@@ -16,7 +16,6 @@ export function getCorsOptions(): CorsOptions {
       } 
       else {
         console.log('Origin not allowed:', origin);
-
         callback(new NotAcceptableException(`Origin ${origin} is not allowed`));
       }
     },
