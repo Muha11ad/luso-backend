@@ -1,4 +1,4 @@
-export { pathToUpload } from './paths';
+export { pathToUpload, pathToSave } from './paths';
 
 export { convertImageToWebP } from './imageConverter';
 
