@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { ExceptionErrorTypes } from '@/types';
 import { ensureDir, writeFile, unlink } from 'fs-extra';
 import { BadGatewayException, Injectable } from '@nestjs/common';
-import { convertImageToWebP, pathToUpload } from '@/common/utils';
+import { convertImageToWebP, pathToSave, pathToUpload } from '@/common/utils';
 
 export enum ImageFolderName {
   product = 'product',
@@ -16,8 +16,9 @@ export class FilesService {
   private readonly baseUrl = this.configService.get('UPLOADS_ORIGIN');
   async saveFile(file: Express.Multer.File, folder: ImageFolderName): Promise<string> {
     try {
-      const uploadFolder = path.resolve(pathToUpload, folder);
-
+      const uploadFolder = path.resolve(pathToSave, folder);
+      console.log(uploadFolder);
+      
       await ensureDir(uploadFolder);
       const fileExtension = '.webp';
       const uniqueFileName = `${uuidv4()}${fileExtension}`;
