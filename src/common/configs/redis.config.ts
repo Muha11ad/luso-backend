@@ -5,6 +5,8 @@ import { CacheModuleAsyncOptions } from '@nestjs/cache-manager';
 export const redisOptions: CacheModuleAsyncOptions = {
   imports: [ConfigModule],
   useFactory: async (configService: ConfigService) => {
+    const password = configService.get<string>('REDIS_PASSWORD')
+    console.log(password)
     try {
       const store = await redisStore({
         socket: {
@@ -12,8 +14,9 @@ export const redisOptions: CacheModuleAsyncOptions = {
           port: parseInt(configService.get<string>('REDIS_PORT'), 10),
           reconnectStrategy: (retries) => Math.min(retries * 50, 2000),
           connectTimeout: 10000,
+          
         },
-        password: configService.get<string>('REDIS_PASSWORD'),
+        password
       });
 
       return {
