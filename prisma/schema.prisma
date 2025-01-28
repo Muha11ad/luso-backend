@@ -18,6 +18,7 @@ model Product {
   id             String            @id @default(uuid())
   name           String            @unique
   price          Int
+  discount       Int               @default(0)
   available      Boolean
   created_at     DateTime          @default(now())
   instruction    Json
@@ -45,7 +46,7 @@ model ProductImages {
 
 model Characteristic {
   id               String   @id @default(uuid())
-  age              String
+  age              Int
   brand            String
   caution          Json?
   expiration_date  DateTime

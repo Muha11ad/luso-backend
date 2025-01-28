@@ -1,11 +1,11 @@
 import {
-  ArrayNotEmpty,
-  IsArray,
-  IsBoolean,
-  IsNotEmpty,
+  Min,
   IsNumber,
   IsObject,
   IsString,
+  IsBoolean,
+  IsOptional,
+  IsNotEmpty,
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
@@ -23,6 +23,11 @@ export class ProductCreateDto {
   @IsNotEmpty()
   @IsBoolean()
   available: boolean;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  discount: number;
 
   @IsNotEmpty()
   @IsObject()

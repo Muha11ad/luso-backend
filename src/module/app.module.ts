@@ -6,7 +6,6 @@ import { Module } from '@nestjs/common';
 import { ProductModule } from './product';
 import { CategoryModule } from './category';
 import { ConfigModule } from '@nestjs/config';
-import { CommonServiceModule } from '@/common';
 import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
@@ -16,8 +15,8 @@ import { ThrottlerModule } from '@nestjs/throttler';
     AdminModule,
     OrderModule,
     ProductModule,
+    ProductModule,
     CategoryModule,
-    CommonServiceModule,
     ThrottlerModule.forRoot([
       {
         ttl: 60000,

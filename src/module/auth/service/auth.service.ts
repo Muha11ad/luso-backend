@@ -2,7 +2,6 @@ import * as bcrypt from 'bcrypt';
 import { LoginDto } from '../dto';
 import { JwtService } from '@nestjs/jwt';
 import { ExceptionErrorTypes } from '@/types';
-import { DatabaseService } from '@/common/services';
 import { IAuthService } from './auth.service.interface';
 import {
   BadGatewayException,
@@ -10,12 +9,13 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { DatabaseProvider } from '@/common/providers';
 
 @Injectable()
 export class AuthService implements IAuthService {
   constructor(
     private readonly jwtService: JwtService,
-    private readonly database: DatabaseService,
+    private readonly database: DatabaseProvider,
   ) {}
   async validate(data: LoginDto): Promise<Pick<LoginDto, 'email'>> {
     const isEmailExist = await this.database.admin.findUnique({ where: { email: data.email } });

@@ -1,6 +1,6 @@
+import { Characteristic } from '@prisma/client';
 import { CharacteristicUpdateDto } from '../dto';
 import { updateTranslation } from '@/common/utils';
-import { Characteristic, Prisma } from '@prisma/client';
 
 export class CharacteristicUpdateEntity {
   private updatingData: Partial<CharacteristicUpdateDto>;

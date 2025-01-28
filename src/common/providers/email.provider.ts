@@ -4,7 +4,7 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { BadGatewayException, Injectable } from '@nestjs/common';
 
 @Injectable()
-export class EmailService {
+export class EmailProvider {
   constructor(
     private readonly mailService: MailerService,
     private readonly configService: ConfigService,
@@ -18,7 +18,7 @@ export class EmailService {
       to,
       subject: 'Super Admin Code',
       text: `Your code is: ${code}`,
-      html: `<p>Your code is: <strong>${code}</strong></p>`,
+      html: `<p>Your code is: <strong>${code}</strong></p>p`,
     };
     try {
       await this.mailService.sendMail(mailOptions);

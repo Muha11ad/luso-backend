@@ -1,18 +1,18 @@
 import {
   ProductBaseService,
-  ProductCategoryService,
   ProductCrudService,
   ProductFindService,
   ProductImageService,
+  ProductCategoryService,
 } from './service';
 import { AuthModule } from '../auth';
 import { Module } from '@nestjs/common';
-import { CommonServiceModule } from '@/common';
+import { ProvidersModule } from '@/common/providers';
 import { ProductController } from './controller/product.controller';
 import { CharacteristicController, CharacteristicService } from './characteristic';
 
 @Module({
-  imports: [CommonServiceModule, AuthModule],
+  imports: [ProvidersModule, AuthModule],
   controllers: [ProductController, CharacteristicController],
   providers: [
     ProductBaseService,

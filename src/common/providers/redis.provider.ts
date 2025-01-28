@@ -3,7 +3,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { BadGatewayException, Inject, Injectable } from '@nestjs/common';
 
 @Injectable()
-export class RedisService {
+export class RedisProvider {
   constructor(@Inject(CACHE_MANAGER) private readonly cacheManager: Cache) {}
 
   async get<T>(key: string): Promise<T | null> {

@@ -6,11 +6,11 @@ import {
 } from './service';
 import { AuthModule } from '../auth';
 import { Module } from '@nestjs/common';
-import { CommonServiceModule } from '@/common';
 import { CategoryController } from './controller';
+import { ProvidersModule } from '@/common/providers';
 
 @Module({
-  imports: [CommonServiceModule, AuthModule],
+  imports: [ProvidersModule, AuthModule],
   controllers: [CategoryController],
   providers: [
     CategoryBaseService,

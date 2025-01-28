@@ -8,7 +8,6 @@ CREATE TYPE "Region" AS ENUM ('Andijon', 'Buxoro', 'Fargona', 'Jizzax', 'Navoiy'
 CREATE TABLE "Category" (
     "id" TEXT NOT NULL,
     "name" JSONB NOT NULL,
-    "imageUrl" TEXT,
     "description" JSONB NOT NULL,
 
     CONSTRAINT "Category_pkey" PRIMARY KEY ("id")
@@ -19,13 +18,20 @@ CREATE TABLE "Product" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "price" INTEGER NOT NULL,
+    "discount" INTEGER NOT NULL DEFAULT 0,
     "available" BOOLEAN NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "instruction" JSONB NOT NULL,
-    "category_id" TEXT NOT NULL,
-    "characteristic_id" TEXT,
 
     CONSTRAINT "Product_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "ProductCategory" (
+    "product_id" TEXT NOT NULL,
+    "category_id" TEXT NOT NULL,
+
+    CONSTRAINT "ProductCategory_pkey" PRIMARY KEY ("product_id","category_id")
 );
 
 -- CreateTable
@@ -40,11 +46,11 @@ CREATE TABLE "ProductImages" (
 -- CreateTable
 CREATE TABLE "Characteristic" (
     "id" TEXT NOT NULL,
-    "age" TEXT NOT NULL,
+    "age" INTEGER NOT NULL,
     "brand" TEXT NOT NULL,
     "caution" JSONB,
     "expiration_date" TIMESTAMP(3) NOT NULL,
-    "volume" JSONB NOT NULL,
+    "volume" TEXT NOT NULL,
     "made_in" JSONB NOT NULL,
     "purpose" JSONB NOT NULL,
     "gender" JSONB NOT NULL,
@@ -81,7 +87,7 @@ CREATE TABLE "Order" (
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "phone_number" TEXT NOT NULL,
     "total_price" INTEGER NOT NULL,
-    "delivery_fee" INTEGER NOT NULL,
+    "delivery_fee" INTEGER NOT NULL DEFAULT 0,
     "first_name" TEXT NOT NULL,
     "region" "Region" NOT NULL,
     "status" "OrderStatus" NOT NULL,
@@ -106,9 +112,6 @@ CREATE TABLE "OrderDetails" (
 CREATE UNIQUE INDEX "Category_name_key" ON "Category"("name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Category_imageUrl_key" ON "Category"("imageUrl");
-
--- CreateIndex
 CREATE UNIQUE INDEX "Product_name_key" ON "Product"("name");
 
 -- CreateIndex
@@ -124,10 +127,13 @@ CREATE UNIQUE INDEX "User_username_key" ON "User"("username");
 CREATE UNIQUE INDEX "Admin_email_key" ON "Admin"("email");
 
 -- AddForeignKey
-ALTER TABLE "Product" ADD CONSTRAINT "Product_category_id_fkey" FOREIGN KEY ("category_id") REFERENCES "Category"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "ProductCategory" ADD CONSTRAINT "ProductCategory_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "Product"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ProductImages" ADD CONSTRAINT "ProductImages_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "Product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "ProductCategory" ADD CONSTRAINT "ProductCategory_category_id_fkey" FOREIGN KEY ("category_id") REFERENCES "Category"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ProductImages" ADD CONSTRAINT "ProductImages_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "Product"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Characteristic" ADD CONSTRAINT "Characteristic_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "Product"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -136,7 +142,7 @@ ALTER TABLE "Characteristic" ADD CONSTRAINT "Characteristic_product_id_fkey" FOR
 ALTER TABLE "Order" ADD CONSTRAINT "Order_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "User"("telegram_id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "OrderDetails" ADD CONSTRAINT "OrderDetails_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "Product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "OrderDetails" ADD CONSTRAINT "OrderDetails_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "Product"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "OrderDetails" ADD CONSTRAINT "OrderDetails_order_id_fkey" FOREIGN KEY ("order_id") REFERENCES "Order"("id") ON DELETE CASCADE ON UPDATE CASCADE;

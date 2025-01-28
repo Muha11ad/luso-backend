@@ -1,13 +1,13 @@
 import { User } from '@prisma/client';
 import { UserCreateDto } from '../dto';
-import { UserExceptionErrorTypes } from '../types';
-import { DatabaseService } from '@/common/services';
+import { USER_MESSAGES } from '../user.const';
+import { DatabaseProvider } from '@/common/providers';
 import { IUserService } from './user.service.interface';
 import { BadGatewayException, Injectable } from '@nestjs/common';
 
 @Injectable()
 export class UserService implements IUserService {
-  constructor(private readonly database: DatabaseService) {}
+  constructor(private readonly database: DatabaseProvider) {}
 
   private async findById(telegram_id: number): Promise<User | null> {
     return this.database.user.findUnique({
@@ -42,14 +42,14 @@ export class UserService implements IUserService {
         data,
       });
     } catch (error) {
-      throw new BadGatewayException(UserExceptionErrorTypes.ERROR_CREATING_USER);
+      throw new BadGatewayException(USER_MESSAGES.error_create);
     }
   }
 
   async delete(telegram_id: number) {
     const existingUser = await this.findByTelegramId(telegram_id);
     if (!existingUser) {
-      throw new BadGatewayException(UserExceptionErrorTypes.NOT_FOUND);
+      throw new BadGatewayException(USER_MESSAGES.error_not_found);
     }
     try {
       return this.database.user.delete({
@@ -58,7 +58,7 @@ export class UserService implements IUserService {
         },
       });
     } catch (error) {
-      throw new BadGatewayException(UserExceptionErrorTypes.ERROR_DELETING_USER);
+      throw new BadGatewayException(USER_MESSAGES.error_delete);
     }
   }
 
@@ -73,7 +73,7 @@ export class UserService implements IUserService {
   async findByTelegramId(telegram_id: number): Promise<User> {
     const user = await this.findById(telegram_id);
     if (!user) {
-      throw new BadGatewayException(UserExceptionErrorTypes.NOT_FOUND);
+      throw new BadGatewayException(USER_MESSAGES.error_not_found);
     }
     return user;
   }

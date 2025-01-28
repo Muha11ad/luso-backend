@@ -21,14 +21,14 @@ import {
   ParamsImageDto,
   ProductCreateDto,
   ProductUpdateDto,
-  DeleteCategoryFromProductDto,
   FilterProductsDto,
+  DeleteCategoryFromProductDto,
 } from '../dto';
+import { IdDto } from '@/common/dto';
 import { Product } from '@prisma/client';
 import { AuthGuard } from '@/module/auth';
-import { SUCCESS_MESSAGES } from '../types';
-import { IdDto, NameDto } from '@/common/dto';
 import { FilesType, FileType } from '@/types';
+import { PRODUCT_MESSAGES } from '../product.consts';
 import { CacheInterceptor } from '@nestjs/cache-manager';
 import { IProductController } from './product.controller.interface';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
@@ -65,28 +65,28 @@ export class ProductController implements IProductController {
   @UseGuards(AuthGuard)
   async createProduct(@Body() data: ProductCreateDto): Promise<string> {
     await this.crudService.create(data);
-    return SUCCESS_MESSAGES.PRODUCT_CREATED;
+    return PRODUCT_MESSAGES.success_create;
   }
 
   @Put('/:id')
   @UseGuards(AuthGuard)
   async updateProduct(@Param() param: IdDto, @Body() data: ProductUpdateDto): Promise<string> {
     await this.crudService.update(param.id, data);
-    return SUCCESS_MESSAGES.PRODUCT_UPDATED;
+    return PRODUCT_MESSAGES.success_update;
   }
 
   @Delete('/:id')
   @UseGuards(AuthGuard)
   async deleteProduct(@Param() param: IdDto): Promise<string> {
     await this.crudService.delete(param.id);
-    return SUCCESS_MESSAGES.PRODUCT_DELETED;
+    return PRODUCT_MESSAGES.success_delete;
   }
 
   @Delete('/:id/image/:image_id')
   @UseGuards(AuthGuard)
   async deleteImage(@Param() params: ParamsImageDto): Promise<string> {
     await this.imageService.deleteImage(params);
-    return SUCCESS_MESSAGES.IMAGE_DELETED;
+    return PRODUCT_MESSAGES.success_delete;
   }
 
   @Post('/image/:id')
@@ -94,7 +94,7 @@ export class ProductController implements IProductController {
   @UseInterceptors(FilesInterceptor('image'))
   async saveImages(@Param() id: IdDto, @UploadedFiles() files: FilesType): Promise<string> {
     await this.imageService.saveImages(id, files);
-    return SUCCESS_MESSAGES.IMAGES_SAVED;
+    return PRODUCT_MESSAGES.success_create;
   }
 
   @Put('/:id/image/:image_id')
@@ -105,7 +105,7 @@ export class ProductController implements IProductController {
     @UploadedFile() file: FileType,
   ): Promise<string> {
     await this.imageService.updateImage(params, file);
-    return SUCCESS_MESSAGES.IMAGE_UPDATED;
+    return PRODUCT_MESSAGES.success_update;
   }
 
   @Post(':id')
@@ -115,7 +115,7 @@ export class ProductController implements IProductController {
     @Body() data: AddCategoryToProductDto,
   ): Promise<string> {
     await this.productCategoryService.addCategoryToProduct(param.id, data);
-    return SUCCESS_MESSAGES.CATEGORY_ADDED;
+    return PRODUCT_MESSAGES.success_category_add;
   }
   @Delete('category/:id')
   @UseGuards(AuthGuard)
@@ -124,6 +124,6 @@ export class ProductController implements IProductController {
     @Body() data: DeleteCategoryFromProductDto,
   ): Promise<string> {
     await this.productCategoryService.deleteCategoryFromProduct(param.id, data.categoryId);
-    return SUCCESS_MESSAGES.CATEGORY_DELETED;
+    return PRODUCT_MESSAGES.success_category_delete;
   }
 }

@@ -1,7 +1,6 @@
 import { Category } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
-import { CategoryErrorTypes } from '../types';
-import { ImageFolderName } from '@/common/services';
+import { CATEGORY_MESSAGE } from '../category.const';
 import { CategoryCreateDto, CategoryUpdateDto } from '../dto';
 import { CategoryBaseService } from './category.base.service';
 import { CategoryCreateEntity, CategoryUpdateEntity } from '../entity';
@@ -9,10 +8,10 @@ import { CategoryCreateEntity, CategoryUpdateEntity } from '../entity';
 @Injectable()
 export class CategoryCrudService extends CategoryBaseService {
   async delete(id: string): Promise<Category> {
-    const category = await this.checkIdExistsAndThrowException(id);
+    await this.checkIdExistsAndThrowException(id);
     return this.handleDatabaseOperation(
-      () => this.databaseService.category.delete({ where: { id } }),
-      CategoryErrorTypes.ERROR_DELETING,
+      () => this.database.category.delete({ where: { id } }),
+      CATEGORY_MESSAGE.error_delete,
     );
   }
 
@@ -21,10 +20,10 @@ export class CategoryCrudService extends CategoryBaseService {
     const categoryEntity = new CategoryCreateEntity(data);
     return this.handleDatabaseOperation(
       () =>
-        this.databaseService.category.create({
+        this.database.category.create({
           data: categoryEntity.toPrisma(),
         }),
-      CategoryErrorTypes.ERROR_CREATING,
+      CATEGORY_MESSAGE.error_create,
     );
   }
 
@@ -36,11 +35,11 @@ export class CategoryCrudService extends CategoryBaseService {
     const newData = new CategoryUpdateEntity(existingCategory, data);
     return this.handleDatabaseOperation(
       () =>
-        this.databaseService.category.update({
+        this.database.category.update({
           where: { id },
           data: newData.toPrisma(),
         }),
-      CategoryErrorTypes.ERROR_UPDATING,
+      CATEGORY_MESSAGE.error_update,
     );
   }
 }

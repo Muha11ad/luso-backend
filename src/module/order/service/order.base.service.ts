@@ -1,10 +1,10 @@
-import { OrderExceptionErrorType } from '../types';
-import { DatabaseService } from '@/common/services';
+import { ORDER_MESSAGE } from '../order.const';
+import { DatabaseProvider } from '@/common/providers';
 import { Injectable, NotFoundException } from '@nestjs/common';
 
 @Injectable()
 export class OrderBaseService {
-  constructor(public database: DatabaseService) {}
+  constructor(public database: DatabaseProvider) {}
 
   public async checkOrderExistAndThrowException(id: string): Promise<void> {
     const order = await this.database.order.findUnique({
@@ -13,7 +13,7 @@ export class OrderBaseService {
       },
     });
     if (order === null) {
-      throw new NotFoundException(OrderExceptionErrorType.ORDER_ID_NOT_FOUND);
+      throw new NotFoundException(ORDER_MESSAGE.error_not_found);
     }
   }
 }

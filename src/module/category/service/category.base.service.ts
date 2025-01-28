@@ -1,29 +1,28 @@
 import { Category } from '@prisma/client';
 import { TranslationType } from '@/types';
-import { CategoryErrorTypes } from '../types';
-import { DatabaseService, FilesService, RedisService } from '@/common/services';
+import { CATEGORY_MESSAGE } from '../category.const';
+import { DatabaseProvider, RedisProvider } from '@/common/providers';
 import { NotFoundException, BadGatewayException, Injectable } from '@nestjs/common';
 
 @Injectable()
 export class CategoryBaseService {
   constructor(
-    public readonly fileService: FilesService,
-    public readonly redisService: RedisService,
-    public readonly databaseService: DatabaseService,
+    public readonly redisProvider: RedisProvider,
+    public readonly database: DatabaseProvider,
   ) {}
 
   public async checkIdExistsAndThrowException(id: string): Promise<Category> {
-    const category = await this.databaseService.category.findUnique({ where: { id } });
+    const category = await this.database.category.findUnique({ where: { id } });
     if (!category) {
-      throw new NotFoundException(CategoryErrorTypes.NOT_FOUND);
+      throw new NotFoundException(CATEGORY_MESSAGE.error_not_found);
     }
     return category;
   }
 
   public async checkNameExistsAndThrowException(name: Partial<TranslationType>): Promise<void> {
-    const category = await this.databaseService.category.findUnique({ where: { name } });
+    const category = await this.database.category.findUnique({ where: { name } });
     if (category) {
-      throw new BadGatewayException(CategoryErrorTypes.NAME_ALREADY_EXISTS);
+      throw new BadGatewayException(CATEGORY_MESSAGE.error_name_exists);
     }
   }
 
@@ -32,7 +31,7 @@ export class CategoryBaseService {
     errorMessage: string,
   ): Promise<T> {
     try {
-      await this.redisService.delAll();
+      await this.redisProvider.delAll();
       return await operation();
     } catch (error) {
       throw new BadGatewayException(`${errorMessage}: ${error.message}`);

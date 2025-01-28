@@ -1,9 +1,9 @@
-import { Body, Controller, Delete, Get, Param, Post, UseGuards } from '@nestjs/common';
-import { IUserController } from './user.controller.interface';
-import { UserService } from '../service/user.service';
-import { AuthGuard } from '@/module/auth';
 import { User } from '@prisma/client';
+import { AuthGuard } from '@/module/auth';
+import { UserService } from '../service/user.service';
 import { TelegramIdDto, UserCreateDto } from '../dto';
+import { IUserController } from './user.controller.interface';
+import { Body, Controller, Delete, Get, Param, Post, UseGuards } from '@nestjs/common';
 
 @Controller('user')
 export class UserController implements IUserController {

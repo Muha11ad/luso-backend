@@ -1,8 +1,8 @@
 import { Product } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
-import { ProductExceptionErrorTypes } from '../types';
+import { AddCategoryToProductDto } from '../dto';
+import { PRODUCT_MESSAGES } from '../product.consts';
 import { ProductBaseService } from './product.base.service';
-import { AddCategoryToProductDto } from '../dto/add-category-to-product.dto';
 
 @Injectable()
 export class ProductCategoryService extends ProductBaseService {
@@ -17,7 +17,7 @@ export class ProductCategoryService extends ProductBaseService {
         this.database.productCategory.createMany({
           data: data.categoryIds.map((c_id: string) => ({ category_id: c_id, product_id })),
         }),
-      ProductExceptionErrorTypes.ERROR_ADDING_CATEGORY,
+      PRODUCT_MESSAGES.error_category_adding_to_product,
     );
     return product;
   }
@@ -33,7 +33,7 @@ export class ProductCategoryService extends ProductBaseService {
         this.database.productCategory.deleteMany({
           where: { category_id, product_id },
         }),
-      ProductExceptionErrorTypes.ERROR_DELETING_CATEGORY_FROM_PRODUCT,
+      PRODUCT_MESSAGES.error_category_deleting_from_product,
     );
     return product;
   }

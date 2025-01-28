@@ -1,6 +1,6 @@
 import { IdDto } from '@/common/dto';
 import { Order } from '@prisma/client';
-import { OrderExceptionErrorType } from '../types';
+import { ORDER_MESSAGE } from '../order.const';
 import { OrderDetailsUpdateEntity } from '../entity';
 import { OrderBaseService } from './order.base.service';
 import { BadGatewayException, Injectable, NotFoundException } from '@nestjs/common';
@@ -18,9 +18,7 @@ export class OrderUpdateService extends OrderBaseService {
         data,
       });
     } catch (error) {
-      throw new BadGatewayException(
-        `${OrderExceptionErrorType.ERROR_WHILE_UPDATING_ORDER} : ${error.message}`,
-      );
+      throw new BadGatewayException(ORDER_MESSAGE.error_update);
     }
   }
 
@@ -36,9 +34,7 @@ export class OrderUpdateService extends OrderBaseService {
         },
       });
     } catch (error) {
-      throw new BadGatewayException(
-        `${OrderExceptionErrorType.ERROR_WHILE_UPDATING_ORDER_STATUS} : ${error.message}`,
-      );
+      throw new BadGatewayException(ORDER_MESSAGE.error_update_status);
     }
   }
 
@@ -48,7 +44,7 @@ export class OrderUpdateService extends OrderBaseService {
     });
 
     if (!existingOrderDetails) {
-      throw new NotFoundException(OrderExceptionErrorType.ORDER_DETAILS_NOT_FOUND);
+      throw new NotFoundException(ORDER_MESSAGE.error_details_not_found);
     }
 
     try {
@@ -88,9 +84,7 @@ export class OrderUpdateService extends OrderBaseService {
 
       return updatedOrder;
     } catch (error) {
-      throw new BadGatewayException(
-        `${OrderExceptionErrorType.ERROR_WHILE_UPDATING_ORDER_DETAILS} : ${error.message}`,
-      );
+      throw new BadGatewayException(ORDER_MESSAGE.error_update_details);
     }
   }
 }

@@ -1,11 +1,20 @@
+import {
+  IsDate,
+  IsNumber,
+  IsObject,
+  IsString,
+  IsOptional,
+  IsPositive,
+  IsNotEmpty,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { TranslationsDto } from '@/common/dto';
-import { IsDate, IsNotEmpty, IsObject, IsOptional, IsString } from 'class-validator';
 
 export class CharacteristicCreateDto {
   @IsNotEmpty()
-  @IsString()
-  age: string;
+  @IsNumber()
+  @IsPositive()
+  age: number;
 
   @IsNotEmpty()
   @IsString()

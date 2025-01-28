@@ -1,30 +1,30 @@
 import * as bcrypt from 'bcrypt';
 import { Admin } from '@prisma/client';
+import { JwtService } from '@nestjs/jwt';
 import { ExceptionErrorTypes } from '@/types';
 import { AdminCreateDto, AdminUpdateDto } from '../dto';
 import { IAdminService } from './admin.serivice.interface';
-import { EmailService, DatabaseService, RedisService } from '@/common/services';
 import { BadGatewayException, BadRequestException, Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
+import { DatabaseProvider, EmailProvider, RedisProvider } from '@/common/providers';
 
 @Injectable()
 export class AdminService implements IAdminService {
   constructor(
     private readonly jwtService: JwtService,
-    private readonly redisService: RedisService,
-    private readonly emailService: EmailService,
-    private readonly databaseService: DatabaseService,
+    private readonly redisProvider: RedisProvider,
+    private readonly emailProvider: EmailProvider,
+    private readonly databaseProvider: DatabaseProvider,
   ) {}
   private async hashPassword(password: string): Promise<string> {
     const salt = await bcrypt.genSalt(10);
     return bcrypt.hash(password, salt);
   }
   private findAdminByEmail(email: string): Promise<Admin | null> {
-    return this.databaseService.admin.findUnique({ where: { email } });
+    return this.databaseProvider.admin.findUnique({ where: { email } });
   }
 
   private findAdminById(id: string): Promise<Admin | null> {
-    return this.databaseService.admin.findUnique({ where: { id } });
+    return this.databaseProvider.admin.findUnique({ where: { id } });
   }
 
   async sendCreateCode(adminDto: AdminCreateDto): Promise<void> {
@@ -37,21 +37,21 @@ export class AdminService implements IAdminService {
     const expirationTime = 6000 * 2;
 
     try {
-      this.emailService.sendGmailToSuperAdmin(verificationCode);
-      this.redisService.setex(verificationCode, adminDto, expirationTime);
+      this.emailProvider.sendGmailToSuperAdmin(verificationCode);
+      this.redisProvider.setex(verificationCode, adminDto, expirationTime);
     } catch (error) {
       throw new BadGatewayException(`Failed to send verification code: ${error.message}`);
     }
   }
   async verifyCreateCode(code: string): Promise<string> {
-    const adminDto = await this.redisService.get<AdminCreateDto>(code);
+    const adminDto = await this.redisProvider.get<AdminCreateDto>(code);
     if (!adminDto) {
       throw new BadRequestException(ExceptionErrorTypes.INVALID_CODE);
     }
     try {
       const hashedPassword = await this.hashPassword(adminDto.password);
-      await this.redisService.del(code);
-      await this.databaseService.admin.create({
+      await this.redisProvider.del(code);
+      await this.databaseProvider.admin.create({
         data: {
           email: adminDto.email,
           password: hashedPassword,
@@ -83,7 +83,7 @@ export class AdminService implements IAdminService {
     };
 
     try {
-      return this.databaseService.admin.update({
+      return this.databaseProvider.admin.update({
         where: { id: adminId },
         data: updateData,
       });
@@ -99,8 +99,8 @@ export class AdminService implements IAdminService {
     }
 
     try {
-      const deletedAdmin = await this.databaseService.admin.delete({ where: { id: adminId } });
-      await this.redisService.del('admin');
+      const deletedAdmin = await this.databaseProvider.admin.delete({ where: { id: adminId } });
+      await this.redisProvider.del('admin');
       return deletedAdmin;
     } catch (error) {
       throw new BadGatewayException(`Failed to delete admin: ${error.message}`);

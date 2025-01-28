@@ -1,22 +1,20 @@
 import { Product } from '@prisma/client';
-import { ExceptionErrorTypes } from '@/types';
-import { CategoryErrorTypes } from '@/module/category/types';
+import { PRODUCT_MESSAGES } from '../product.consts';
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { DatabaseService, FilesService, RedisService } from '@/common/services';
-import { ProductExceptionErrorTypes } from '../types';
+import { DatabaseProvider, FilesProvider, RedisProvider } from '@/common/providers';
 
 @Injectable()
 export class ProductBaseService {
   constructor(
-    public database: DatabaseService,
-    public redisService: RedisService,
-    public filesService: FilesService,
+    public database: DatabaseProvider,
+    public redisProvider: RedisProvider,
+    public filesProvider: FilesProvider,
   ) {}
 
   public async checkNameExists(name: string): Promise<void> {
     const nameExists = await this.database.product.findUnique({ where: { name } });
     if (nameExists) {
-      throw new BadRequestException(ExceptionErrorTypes.ALREADY_EXISTS);
+      throw new BadRequestException(PRODUCT_MESSAGES.error_name_exists);
     }
   }
 
@@ -26,7 +24,7 @@ export class ProductBaseService {
       include: { Categories: true },
     });
     if (!product) {
-      throw new BadRequestException(ProductExceptionErrorTypes.NOT_FOUND);
+      throw new BadRequestException(PRODUCT_MESSAGES.error_not_found);
     }
     return product;
   }
@@ -34,7 +32,7 @@ export class ProductBaseService {
   public async checkCategoryExists(category_id: string): Promise<void> {
     const categoryExists = await this.database.category.findFirst({ where: { id: category_id } });
     if (!categoryExists) {
-      throw new BadRequestException(CategoryErrorTypes.NOT_FOUND);
+      throw new BadRequestException(PRODUCT_MESSAGES.error_category_not_found);
     }
   }
 
@@ -43,9 +41,8 @@ export class ProductBaseService {
     errorType: string,
   ): Promise<T> {
     try {
-      console.log('Deleting all cache');
       const result = await operation();
-      await this.redisService.delAll();
+      await this.redisProvider.delAll();
       return result;
     } catch (error) {
       throw new BadRequestException(`${errorType}: ${error.message}`);

@@ -1,6 +1,6 @@
 import { Product } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
-import { ProductExceptionErrorTypes } from '../types';
+import { PRODUCT_MESSAGES } from '../product.consts';
 import { ProductCreateDto, ProductUpdateDto } from '../dto';
 import { ProductBaseService } from './product.base.service';
 import { ProductCreateEntity, ProductUpdateEntity } from '../entity';
@@ -12,7 +12,7 @@ export class ProductCrudService extends ProductBaseService {
     const newProduct = new ProductCreateEntity(data);
     return this.handleDatabaseOperation(
       () => this.database.product.create({ data: newProduct.toPrisma() }),
-      ProductExceptionErrorTypes.ERROR_CREATING,
+      PRODUCT_MESSAGES.error_create,
     );
   }
 
@@ -28,7 +28,7 @@ export class ProductCrudService extends ProductBaseService {
           where: { id },
           data: newData.toPrisma(),
         }),
-      ProductExceptionErrorTypes.ERROR_UPDATING,
+      PRODUCT_MESSAGES.error_update,
     );
   }
 
@@ -36,7 +36,7 @@ export class ProductCrudService extends ProductBaseService {
     await this.getProductById(id);
     return this.handleDatabaseOperation(
       async () => await this.database.product.delete({ where: { id } }),
-      ProductExceptionErrorTypes.ERROR_DELETING,
+      PRODUCT_MESSAGES.error_delete,
     );
   }
 }

@@ -11,14 +11,14 @@ export enum ImageFolderName {
   category = 'category',
 }
 @Injectable()
-export class FilesService {
+export class FilesProvider {
   constructor(private readonly configService: ConfigService) {}
   private readonly baseUrl = this.configService.get('UPLOADS_ORIGIN');
   async saveFile(file: Express.Multer.File, folder: ImageFolderName): Promise<string> {
     try {
       const uploadFolder = path.resolve(pathToSave, folder);
       console.log(uploadFolder);
-      
+
       await ensureDir(uploadFolder);
       const fileExtension = '.webp';
       const uniqueFileName = `${uuidv4()}${fileExtension}`;

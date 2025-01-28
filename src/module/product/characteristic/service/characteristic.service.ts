@@ -1,16 +1,15 @@
-import { ProductExceptionErrorTypes } from '../../types';
-import { CharacteristicExceptionErrorTypes } from '../types';
 import { Characteristic, Prisma, Product } from '@prisma/client';
-import { DatabaseService, RedisService } from '@/common/services';
+import { CHARACTERISTIC_MESSAGE } from '../characteristic.const';
+import { DatabaseProvider, RedisProvider } from '@/common/providers';
 import { CharacteristicCreateDto, CharacteristicUpdateDto } from '../dto';
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { CharacteristicCreateEntity, CharacteristicUpdateEntity } from '../entity';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 
 @Injectable()
 export class CharacteristicService {
   constructor(
-    private readonly database: DatabaseService,
-    private readonly redisService: RedisService,
+    private readonly database: DatabaseProvider,
+    private readonly redisProvider: RedisProvider,
   ) {}
 
   private async checkProductExistsOrThrowException(product_id: string): Promise<Product> {
@@ -18,7 +17,7 @@ export class CharacteristicService {
       where: { id: product_id },
     });
     if (!productExists) {
-      throw new NotFoundException(ProductExceptionErrorTypes.NOT_FOUND);
+      throw new NotFoundException(CHARACTERISTIC_MESSAGE.error_product_not_found);
     }
     return productExists;
   }
@@ -28,7 +27,7 @@ export class CharacteristicService {
       where: { id },
     });
     if (!characteristicExists) {
-      throw new NotFoundException(CharacteristicExceptionErrorTypes.NOT_FOUND);
+      throw new NotFoundException(CHARACTERISTIC_MESSAGE.error_not_found);
     }
     return characteristicExists;
   }
@@ -38,7 +37,7 @@ export class CharacteristicService {
     errorType: string,
   ): Promise<T> {
     try {
-      await this.redisService.delAll();
+      await this.redisProvider.delAll();
       return await operation();
     } catch (error) {
       throw new BadRequestException(`${errorType}: ${error.message}`);
@@ -50,7 +49,7 @@ export class CharacteristicService {
     const characteristicData = new CharacteristicCreateEntity(data);
     return this.handleDatabaseOperation(
       () => this.database.characteristic.create({ data: characteristicData.toPrisma() }),
-      CharacteristicExceptionErrorTypes.ERROR_CREATING,
+      CHARACTERISTIC_MESSAGE.error_create,
     );
   }
 
@@ -66,7 +65,7 @@ export class CharacteristicService {
           where: { id },
           data: characteristicData.toPrisma() as unknown as Prisma.CharacteristicUpdateInput,
         }),
-      CharacteristicExceptionErrorTypes.ERROR_UPDATING,
+      CHARACTERISTIC_MESSAGE.error_update,
     );
   }
 
@@ -74,7 +73,7 @@ export class CharacteristicService {
     await this.checkCharacteristicExistsOrThrowException(id);
     return this.handleDatabaseOperation(
       () => this.database.characteristic.delete({ where: { id } }),
-      CharacteristicExceptionErrorTypes.ERROR_DELETING,
+      CHARACTERISTIC_MESSAGE.error_delete,
     );
   }
 }

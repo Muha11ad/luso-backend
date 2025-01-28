@@ -1,10 +1,9 @@
-import { Order, User } from '@prisma/client';
 import { OrderCreateDto } from '../dto';
-import { OrderExceptionErrorType } from '../types';
-import { OrderBaseService } from './order.base.service';
-import { UserExceptionErrorTypes } from '@/module/user/types';
-import { BadGatewayException, Injectable, NotFoundException } from '@nestjs/common';
+import { Order, User } from '@prisma/client';
 import { OrderCreateEntity } from '../entity';
+import { ORDER_MESSAGE } from '../order.const';
+import { OrderBaseService } from './order.base.service';
+import { BadGatewayException, Injectable, NotFoundException } from '@nestjs/common';
 
 @Injectable()
 export class OrderLifecycleService extends OrderBaseService {
@@ -15,7 +14,7 @@ export class OrderLifecycleService extends OrderBaseService {
       },
     });
     if (userExist === null) {
-      throw new NotFoundException(UserExceptionErrorTypes.NOT_FOUND);
+      throw new NotFoundException(ORDER_MESSAGE.error_user_not_found);
     }
     return userExist;
   }
@@ -28,7 +27,7 @@ export class OrderLifecycleService extends OrderBaseService {
         },
       });
       if (!productExist) {
-        throw new NotFoundException(`Product with ID ${detail.product_id} not found`);
+        throw new NotFoundException(ORDER_MESSAGE.error_product_not_found);
       }
     }
   }
@@ -55,9 +54,7 @@ export class OrderLifecycleService extends OrderBaseService {
         return createdOrder;
       });
     } catch (error) {
-      throw new BadGatewayException(
-        `${OrderExceptionErrorType.ERROR_WHILE_CREATING_ORDER} : ${error.message}`,
-      );
+      throw new BadGatewayException(ORDER_MESSAGE.error_create);
     }
   }
 
@@ -70,9 +67,7 @@ export class OrderLifecycleService extends OrderBaseService {
         },
       });
     } catch (error) {
-      throw new BadGatewayException(
-        `${OrderExceptionErrorType.ERROR_WHILE_DELETING_ORDER} :  ${error.message}`,
-      );
+      throw new BadGatewayException(ORDER_MESSAGE.error_delete);
     }
   }
 }

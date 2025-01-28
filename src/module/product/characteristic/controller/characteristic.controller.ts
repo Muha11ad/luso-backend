@@ -1,10 +1,10 @@
 import { IdDto } from '@/common/dto';
 import { AuthGuard } from '@/module/auth';
-import { Characteristic } from '@prisma/client';
+import { CHARACTERISTIC_MESSAGE } from '../characteristic.const';
 import { CharacteristicService } from '../service/characteristic.service';
 import { CharacteristicCreateDto, CharacteristicUpdateDto } from '../dto';
-import { Body, Controller, Delete, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { ICharacteristicController } from './characteristic.controller.interface';
+import { Body, Controller, Delete, Param, Post, Put, UseGuards } from '@nestjs/common';
 
 @Controller('characteristic')
 export class CharacteristicController implements ICharacteristicController {
@@ -12,8 +12,9 @@ export class CharacteristicController implements ICharacteristicController {
 
   @Post()
   @UseGuards(AuthGuard)
-  async createCharacteristic(@Body() data: CharacteristicCreateDto): Promise<Characteristic> {
-    return await this.characteristicService.create(data);
+  async createCharacteristic(@Body() data: CharacteristicCreateDto): Promise<string> {
+    await this.characteristicService.create(data);
+    return CHARACTERISTIC_MESSAGE.success_create;
   }
 
   @Put('/:id')
@@ -21,13 +22,15 @@ export class CharacteristicController implements ICharacteristicController {
   async updateCharacteristic(
     @Param() param: IdDto,
     @Body() data: CharacteristicUpdateDto,
-  ): Promise<Characteristic> {
-    return await this.characteristicService.update(param.id, data);
+  ): Promise<string> {
+    await this.characteristicService.update(param.id, data);
+    return CHARACTERISTIC_MESSAGE.success_update;
   }
 
   @Delete('/:id')
   @UseGuards(AuthGuard)
-  async deleteCharacteristic(@Param() param: IdDto): Promise<Characteristic> {
-    return await this.characteristicService.delete(param.id);
+  async deleteCharacteristic(@Param() param: IdDto): Promise<string> {
+    await this.characteristicService.delete(param.id);
+    return CHARACTERISTIC_MESSAGE.success_delete;
   }
 }

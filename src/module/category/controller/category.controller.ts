@@ -6,12 +6,12 @@ import {
 } from '../dto';
 import { IdDto } from '@/common/dto';
 import { AuthGuard } from '../../auth';
-import { SUCCESS_MESSAGES } from '../types';
+import { CATEGORY_MESSAGE } from '../category.const';
 import { Category, Product } from '@prisma/client';
 import { CacheInterceptor } from '@nestjs/cache-manager';
+import { Param, Delete, Put, UseInterceptors } from '@nestjs/common';
 import { ICategoryController } from './category.controller.interface';
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
-import { Param, Delete, Put, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { CategoryCrudService, CategoryFindService, CategoryProductService } from '../service';
 
 @Controller('category')
@@ -36,21 +36,21 @@ export class CategoryController implements ICategoryController {
   @UseGuards(AuthGuard)
   async createCategory(@Body() data: CategoryCreateDto): Promise<string> {
     await this.crudService.create(data);
-    return SUCCESS_MESSAGES.CATEGORY_CREATED;
+    return CATEGORY_MESSAGE.success_create;
   }
 
   @Put(':id')
   @UseGuards(AuthGuard)
   async updateCategory(@Param() param: IdDto, @Body() data: CategoryUpdateDto): Promise<string> {
     await this.crudService.update(param.id, data);
-    return SUCCESS_MESSAGES.CATEGORY_UPDATED;
+    return CATEGORY_MESSAGE.success_update;
   }
 
   @Delete(':id')
   @UseGuards(AuthGuard)
   async deleteCategory(@Param() param: IdDto): Promise<string> {
     await this.crudService.delete(param.id);
-    return SUCCESS_MESSAGES.CATEGORY_DELETED;
+    return CATEGORY_MESSAGE.success_delete;
   }
 
   @Post(':id')
@@ -60,7 +60,7 @@ export class CategoryController implements ICategoryController {
     @Body() data: AddProductToCategoryDto,
   ): Promise<string> {
     await this.categoryProductService.addProductToCategory(param.id, data);
-    return SUCCESS_MESSAGES.CATEGORY_PRODUCT_ADDED;
+    return CATEGORY_MESSAGE.success_add_product;
   }
 
   @Delete('product/:id')
@@ -70,7 +70,7 @@ export class CategoryController implements ICategoryController {
     @Body() data: DeleteProductFromCategoryDto,
   ): Promise<string> {
     await this.categoryProductService.deleteProductFromCategory(param.id, data.productId);
-    return SUCCESS_MESSAGES.CATEGORY_PRODUCT_DELETED;
+    return CATEGORY_MESSAGE.success_delete_product;
   }
   @Get('product/:id')
   @UseInterceptors(CacheInterceptor)

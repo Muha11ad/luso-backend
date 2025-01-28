@@ -1,9 +1,8 @@
 import { IdDto } from '@/common/dto';
-import { Characteristic } from '@prisma/client';
 import { CharacteristicCreateDto, CharacteristicUpdateDto } from '../dto';
 
 export class ICharacteristicController {
-  deleteCharacteristic: (id: IdDto) => Promise<Characteristic>;
-  createCharacteristic: (data: CharacteristicCreateDto) => Promise<Characteristic>;
-  updateCharacteristic: (id: IdDto, data: CharacteristicUpdateDto) => Promise<Characteristic>;
+  deleteCharacteristic: (id: IdDto) => Promise<string>;
+  createCharacteristic: (data: CharacteristicCreateDto) => Promise<string>;
+  updateCharacteristic: (id: IdDto, data: CharacteristicUpdateDto) => Promise<string>;
 }

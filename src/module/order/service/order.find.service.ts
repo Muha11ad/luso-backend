@@ -1,5 +1,5 @@
 import { Order } from '@prisma/client';
-import { OrderExceptionErrorType } from '../types';
+import { ORDER_MESSAGE } from '../order.const';
 import { OrderBaseService } from './order.base.service';
 import { Injectable, NotFoundException } from '@nestjs/common';
 
@@ -23,7 +23,7 @@ export class OrderFindService extends OrderBaseService {
       },
     });
     if (order === null) {
-      throw new NotFoundException(OrderExceptionErrorType.ORDER_ID_NOT_FOUND);
+      throw new NotFoundException(ORDER_MESSAGE.error_not_found);
     }
     return order;
   }

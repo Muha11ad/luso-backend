@@ -1,18 +1,17 @@
-import { Category, Product } from '@prisma/client';
-import { CategoryErrorTypes } from '../types';
 import { AddProductToCategoryDto } from '../dto';
+import { Category, Product } from '@prisma/client';
+import { CATEGORY_MESSAGE } from '../category.const';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CategoryBaseService } from './category.base.service';
-import { ProductExceptionErrorTypes } from '@/module/product/types';
 
 @Injectable()
 export class CategoryProductService extends CategoryBaseService {
   private async checkCategoryAndProductsExist(id: string, productIds: string[]): Promise<Category> {
     const category = await this.checkIdExistsAndThrowException(id);
     for (const p_id of productIds) {
-      const product = await this.databaseService.product.findUnique({ where: { id: p_id } });
+      const product = await this.database.product.findUnique({ where: { id: p_id } });
       if (!product) {
-        throw new NotFoundException(ProductExceptionErrorTypes.NOT_FOUND);
+        throw new NotFoundException(CATEGORY_MESSAGE.error_product_not_found);
       }
     }
     return category;
@@ -22,7 +21,7 @@ export class CategoryProductService extends CategoryBaseService {
     id: string,
     data: AddProductToCategoryDto,
   ): Promise<string[]> {
-    const existingProductIds: string[] = await this.databaseService.productCategory
+    const existingProductIds: string[] = await this.database.productCategory
       .findMany({
         where: {
           category_id: id,
@@ -39,13 +38,13 @@ export class CategoryProductService extends CategoryBaseService {
     category_id: string,
     product_id: string,
   ): Promise<Category> {
-    const category = await this.databaseService.category.findUnique({ where: { id: category_id } });
+    const category = await this.database.category.findUnique({ where: { id: category_id } });
     if (!category) {
-      throw new NotFoundException(CategoryErrorTypes.NOT_FOUND);
+      throw new NotFoundException(CATEGORY_MESSAGE.error_not_found);
     }
-    const product = await this.databaseService.product.findUnique({ where: { id: product_id } });
+    const product = await this.database.product.findUnique({ where: { id: product_id } });
     if (!product) {
-      throw new NotFoundException(ProductExceptionErrorTypes.NOT_FOUND);
+      throw new NotFoundException(CATEGORY_MESSAGE.error_product_not_found);
     }
     return category;
   }
@@ -56,13 +55,13 @@ export class CategoryProductService extends CategoryBaseService {
     if (newProductIds.length > 0) {
       await this.handleDatabaseOperation(
         () =>
-          this.databaseService.productCategory.createMany({
+          this.database.productCategory.createMany({
             data: newProductIds.map((p_id) => ({
               product_id: p_id,
               category_id: id,
             })),
           }),
-        CategoryErrorTypes.ERROR_ADDING_PRODUCT,
+        CATEGORY_MESSAGE.error_add_product,
       );
     }
     return category;
@@ -75,7 +74,7 @@ export class CategoryProductService extends CategoryBaseService {
     const category = await this.checkCategoryAndProductExist(category_id, product_id);
     await this.handleDatabaseOperation(
       () =>
-        this.databaseService.productCategory.delete({
+        this.database.productCategory.delete({
           where: {
             product_id_category_id: {
               category_id,
@@ -83,7 +82,7 @@ export class CategoryProductService extends CategoryBaseService {
             },
           },
         }),
-      CategoryErrorTypes.ERROR_DELETING_PRODUCT_FROM_CATEGORY,
+      CATEGORY_MESSAGE.error_delete_product,
     );
     return category;
   }
@@ -92,7 +91,7 @@ export class CategoryProductService extends CategoryBaseService {
     id: string,
   ): Promise<{ category: Category; products: Product[] }> {
     const category = await this.checkIdExistsAndThrowException(id);
-    const products = await this.databaseService.productCategory.findMany({
+    const products = await this.database.productCategory.findMany({
       where: { category_id: id },
       select: {
         product: {

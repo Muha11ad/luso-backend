@@ -1,7 +1,7 @@
 import { IdDto } from '@/common/dto';
 import { Product } from '@prisma/client';
 import { FilterProductsDto } from '../dto';
-import { ProductExceptionErrorTypes } from '../types';
+import { PRODUCT_MESSAGES } from '../product.consts';
 import { ProductBaseService } from './product.base.service';
 import { BadRequestException, Injectable } from '@nestjs/common';
 
@@ -19,35 +19,33 @@ export class ProductFindService extends ProductBaseService {
       include: { Characteristic: true, Images: true, Categories: true },
     });
     if (!product) {
-      throw new BadRequestException(ProductExceptionErrorTypes.NOT_FOUND);
+      throw new BadRequestException(PRODUCT_MESSAGES.error_not_found);
     }
     return product;
   }
 
   async findByFilter(data: FilterProductsDto): Promise<Product[]> {
+    const extractedAge = data.age.split('+')[0];
+    const NumberAge = parseInt(extractedAge);
     return this.handleDatabaseOperation(async () => {
-      const { age, skin_type } = data;
-      const result = await this.database.characteristic.findMany({
+      const result = await this.database.product.findMany({
         where: {
-          OR: [
-            { age },
-            { age: '7-70' },
-            { skin_type: { path: ['en'], equals: skin_type } },
-            { skin_type: { path: ['ru'], equals: skin_type } },
-            { skin_type: { path: ['uz'], equals: skin_type } },
-            { skin_type: { path: ['en'], equals: 'All skin types' } },
+          AND: [
+            { Characteristic: { age: { gte: NumberAge } } },
+            {
+              OR: [
+                { Characteristic: { skin_type: { equals: data.skin_type } } },
+                { Characteristic: { skin_type: { path: ['en'], equals: 'All skin types' } } },
+              ],
+            },
           ],
         },
-        select: {
-          product: {
-            include: {
-              Characteristic: true,
-              Images: true,
-            },
-          },
+        include: {
+          Characteristic: true,
+          Images: true,
         },
       });
-      return result.map(({ product }) => product);
-    }, ProductExceptionErrorTypes.FILTER_ERROR);
+      return result;
+    }, PRODUCT_MESSAGES.error_filter);
   }
 }
