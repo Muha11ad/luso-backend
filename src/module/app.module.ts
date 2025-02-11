@@ -1,29 +1,30 @@
-import { AuthModule } from './auth';
-import { UserModule } from './user';
-import { AdminModule } from './admin';
-import { OrderModule } from './order';
-import { Module } from '@nestjs/common';
-import { ProductModule } from './product';
-import { CategoryModule } from './category';
-import { ConfigModule } from '@nestjs/config';
-import { ThrottlerModule } from '@nestjs/throttler';
+import { Module } from "@nestjs/common";
+import jwtConfig from "@/configs/jwt.config";
+import { ConfigModule } from "@nestjs/config";
+import appConfigs from "@/configs/app.configs";
+import fileConfig from "@/configs/file.config";
+import redisConfig from "@/configs/redis.config";
+import { AdminModule } from "./admin/admin.module";
+import { ThrottlerModule } from "@nestjs/throttler";
+import { configSchema } from "@/configs/config.schema";
+import rateLimitConfig from "@/configs/rate-limit.config";
+import { throttlerOptions } from "@/configs/throttler.config";
 
 @Module({
-  imports: [
-    AuthModule,
-    UserModule,
-    AdminModule,
-    OrderModule,
-    ProductModule,
-    ProductModule,
-    CategoryModule,
-    ThrottlerModule.forRoot([
-      {
-        ttl: 60000,
-        limit: 30,
-      },
-    ]),
-    ConfigModule.forRoot({ isGlobal: true }),
-  ],
+    imports: [
+        ConfigModule.forRoot({
+            isGlobal: true,
+            load: [
+                jwtConfig,
+                appConfigs,
+                fileConfig,
+                redisConfig,
+                rateLimitConfig,
+            ],
+            validationSchema: configSchema
+         }),
+        ThrottlerModule.forRootAsync(throttlerOptions),
+        AdminModule,
+    ]
 })
 export class AppModule {}

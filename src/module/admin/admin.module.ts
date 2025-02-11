@@ -1,14 +1,38 @@
-import { AuthModule } from '../auth';
-import { Module } from '@nestjs/common';
-import { JwtModule } from '@nestjs/jwt';
-import { jwtOptions } from '@/common/configs';
-import { ProvidersModule } from '@/common/providers';
-import { AdminService } from './service/admin.service';
-import { AdminController } from './controller/admin.controller';
+import { UserModule } from "./user";
+import { AuthModule } from "./auth";
+import { OrderModule } from "./order";
+import { Module } from "@nestjs/common";
+import { ProductModule } from "./product";
+import { CategoryModule } from "./category";
+import { RouterModule } from "@nestjs/core";
+import { ENDPOINTS } from "@/shared/utils/consts";
 
 @Module({
-  imports: [ProvidersModule, AuthModule, JwtModule.register(jwtOptions)],
-  controllers: [AdminController],
-  providers: [AdminService],
+    imports:[
+        AuthModule,
+        UserModule,
+        OrderModule,
+        ProductModule,
+        CategoryModule,
+        RouterModule.register([
+            {
+                path : ENDPOINTS.product,
+                module : ProductModule
+            },
+            {
+                path : ENDPOINTS.category,
+                module : CategoryModule
+            },
+            {
+                path : ENDPOINTS.order,
+                module : OrderModule
+            },
+            {
+                path : ENDPOINTS.user,
+                module : UserModule
+            },
+
+        ])
+    ]
 })
-export class AdminModule {}
+export class AdminModule {} 

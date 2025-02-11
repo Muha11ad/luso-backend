@@ -2,7 +2,7 @@
   "compilerOptions": {
     "baseUrl": "./",
     "sourceMap": true,
-    "target": "ES2021",
+    "target": "es2017",
     "paths": {
       "@/*": ["src/*"]
     },
@@ -13,12 +13,13 @@
     "skipLibCheck": true,
     "removeComments": true,
     "noImplicitAny": false,
+    "esModuleInterop": true,
     "strictNullChecks": false,
     "strictBindCallApply": false,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "noFallthroughCasesInSwitch": false,
     "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": false
+    "forceConsistentCasingInFileNames": false,
   }
 }
