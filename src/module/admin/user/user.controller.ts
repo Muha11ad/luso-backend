@@ -1,22 +1,21 @@
-import { AuthGuard } from "../auth";
 import { Response } from "express";
-import { ApiTags } from "@nestjs/swagger";
 import { UserService } from "./user.service";
 import { UserIdReq } from "@/shared/utils/types";
 import { UserCreateReq } from "./user.interface";
 import { ENDPOINTS } from "@/shared/utils/consts";
 import { setResult } from "@/shared/utils/helpers";
 import { TelegramIdDto, UserCreateDto } from "./dto";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Res, UseGuards } from "@nestjs/common";
 
 @Controller(ENDPOINTS.user)
 @ApiTags(ENDPOINTS.user)
+@ApiBearerAuth()
 export class UserController {
 
     constructor(private readonly userService: UserService) { }
 
     @Get('all')
-    @UseGuards(AuthGuard)
     async getAll(@Res() res: Response) {
 
         const { errId, data } = await this.userService.findAll();
@@ -30,7 +29,6 @@ export class UserController {
     }
 
     @Get("/:telegram_id")
-    @UseGuards(AuthGuard)
     async getById(@Res() res: Response, @Param() param: TelegramIdDto) {
 
         const requestData: UserIdReq = { id: param.telegramId };
@@ -61,7 +59,6 @@ export class UserController {
     }
 
     @Delete("/:telegram_id")
-    @UseGuards(AuthGuard)
     async delete(@Res() res: Response, @Param() param: TelegramIdDto) {
 
         const requestData: UserIdReq = { id: param.telegramId };

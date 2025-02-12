@@ -1,10 +1,9 @@
 import { Response } from "express";
-import { AuthGuard } from "../auth";
-import { ApiTags } from "@nestjs/swagger";
 import { ReqIdDto } from "@/shared/dto/id.dto";
 import { ENDPOINTS } from "@/shared/utils/consts";
 import { setResult } from "@/shared/utils/helpers";
 import { CacheInterceptor } from "@nestjs/cache-manager";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { Body, Controller, Get, Post, UseGuards } from "@nestjs/common";
 import { Param, Delete, Put, UseInterceptors, HttpStatus, Res } from "@nestjs/common";
 import { CategoryCrudService, CategoryFindService, CategoryProductService } from "./service";
@@ -13,6 +12,7 @@ import { CategoryCreateReq, CategoryDeleteReq, CategoryProductAddReq, CategoryPr
 
 @Controller(ENDPOINTS.category)
 @ApiTags(ENDPOINTS.category)
+@ApiBearerAuth()
 export class CategoryController {
 
     constructor(
@@ -38,7 +38,6 @@ export class CategoryController {
     }
 
     @Post()
-    @UseGuards(AuthGuard)
     async create(@Res() res: Response, @Body() body: CategoryCreateDto) {
 
         const requestData: CategoryCreateReq = body;
@@ -56,7 +55,6 @@ export class CategoryController {
     }
 
     @Put(":id")
-    @UseGuards(AuthGuard)
     async updateCategory(@Res() res: Response, @Param() param: ReqIdDto, @Body() body: CategoryUpdateDto) {
 
         const requestData: CategoryUpdateReq = { ...body, id: param.id, };
@@ -74,7 +72,6 @@ export class CategoryController {
     }
 
     @Delete(":id")
-    @UseGuards(AuthGuard)
     async deleteCategory(@Res() res: Response, @Param() param: ReqIdDto) {
 
         const requestData: CategoryDeleteReq = param;
@@ -92,7 +89,6 @@ export class CategoryController {
     }
 
     @Post(":id")
-    @UseGuards(AuthGuard)
     async addProductToCategory(@Res() res: Response, @Param() param: ReqIdDto, @Body() body: AddProductToCategoryDto
     ) {
 
@@ -111,7 +107,6 @@ export class CategoryController {
     }
 
     @Delete(":id/product")
-    @UseGuards(AuthGuard)
     async deleteProductFromCategory(@Res() res: Response, @Param() param: ReqIdDto, @Body() body: DeleteProductFromCategoryDto) {
 
         const requestData: CategoryProductDeleteReq = { ...body, id: param.id, };

@@ -24,6 +24,10 @@ export class MyError {
   public static INVALID_FILE_TYPE = new MyError(208, false, "Invalid file type");
   public static EXCEEDED_FILE_SIZE = new MyError(209, false, "File size exceeds 10MB");
 
+  public static USER_NOT_ADMIN = new MyError(210, false, "User is not an admin");
+
+
+  
   constructor(public readonly errId: number, public readonly isFriendly: boolean, public readonly message: string) { }
 
   private static returnErrorObject(error: MyError): ErrorObject {

@@ -4,15 +4,16 @@ import { FilesType } from "@/shared/utils/types";
 import { ENDPOINTS } from "@/shared/utils/consts";
 import { FileValidatePipe } from "@/shared/pipes";
 import { setResult } from "@/shared/utils/helpers";
-import { ApiConsumes, ApiTags } from "@nestjs/swagger";
 import { UploadParamsDto } from "./dto/upload-params.dto";
 import { FilesInterceptor } from "@nestjs/platform-express";
+import { ApiBearerAuth, ApiConsumes, ApiTags } from "@nestjs/swagger";
 import { DeleteMultipleFilesDto } from "./dto/delete-multiple-files.dto";
 import { UploadDeleteMultipleFilesReq, UploadMultipliFilesReq } from "./upload.interface";
 import { Body, Controller, Delete, HttpStatus, Param, ParseFilePipe, Post, Res, UploadedFiles, UseInterceptors, UsePipes } from "@nestjs/common";
 
 @Controller(ENDPOINTS.upload)
 @ApiTags(ENDPOINTS.upload)
+@ApiBearerAuth()
 export class UploadController {
 
     constructor(private readonly uploadService: UploadService) { }

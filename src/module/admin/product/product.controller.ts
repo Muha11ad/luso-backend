@@ -1,11 +1,11 @@
 import { AuthGuard } from "../auth";
 import { Response } from "express";
 import { ReqIdDto } from "@/shared/dto";
-import { ApiTags } from "@nestjs/swagger";
 import { IdReq } from "@/shared/utils/types";
 import { ENDPOINTS } from "@/shared/utils/consts";
 import { setResult } from "@/shared/utils/helpers";
 import { CacheInterceptor } from "@nestjs/cache-manager";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { ProductCrudService, ProductFindService, ProductCategoryService } from "./service";
 import { Put, Get, Body, Post, Param, Delete, UseGuards, Controller, UseInterceptors, Res, HttpStatus } from "@nestjs/common";
 import { ProductCreateDto, ProductUpdateDto, FilterProductsDto, AddCategoryToProductDto, DeleteCategoryFromProductDto } from "./dto";
@@ -13,6 +13,7 @@ import { ProductCategoryAddReq, ProductCategoryDeleteReq, ProductCreateReq, Prod
 
 @Controller(ENDPOINTS.product)
 @ApiTags(ENDPOINTS.product)
+@ApiBearerAuth()
 export class ProductController {
 
     constructor(
@@ -66,7 +67,6 @@ export class ProductController {
     }
 
     @Post()
-    @UseGuards(AuthGuard)
     async create(@Res() res: Response, @Body() body: ProductCreateDto) {
 
         const requestData: ProductCreateReq = body;
@@ -82,7 +82,6 @@ export class ProductController {
     }
 
     @Put("/:id")
-    @UseGuards(AuthGuard)
     async update(@Res() res: Response, @Param() param: ReqIdDto, @Body() body: ProductUpdateDto) {
 
         const reqData: ProductUpdateReq = {
@@ -101,7 +100,6 @@ export class ProductController {
     }
 
     @Delete("/:id")
-    @UseGuards(AuthGuard)
     async delete(@Res() res: Response, @Param() param: ReqIdDto) {
 
         const requestData: IdReq = param;
@@ -117,7 +115,6 @@ export class ProductController {
     }
 
     @Post("category/:id")
-    @UseGuards(AuthGuard)
     async addCategoryToProduct(@Res() res: Response, @Param() param: ReqIdDto, @Body() body: AddCategoryToProductDto) {
 
         const requestData: ProductCategoryAddReq = {
@@ -136,7 +133,6 @@ export class ProductController {
     }
 
     @Delete("category/:id")
-    @UseGuards(AuthGuard)
     async deleteCategoryFromProduct(@Res() res: Response, @Param() param: ReqIdDto, @Body() body: DeleteCategoryFromProductDto) {
 
         const requestData: ProductCategoryDeleteReq = {
