@@ -5,6 +5,7 @@ export function getCorsOptions(): CorsOptions {
 
     const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(",") || [];
 
+
     return {
         origin: (origin, callback) => {
 

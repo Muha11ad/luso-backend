@@ -9,7 +9,7 @@ import { OrderCreateDto, OrderUpdateDto, OrderStatusUpdateDto, OrderDetailsUpdat
 import { Put, Get, Body, Post, Param, Delete, Controller, Res, HttpStatus, Patch } from "@nestjs/common";
 import { OrderCreateReq, OrderDetailsUpdateReq, OrderGetByUserIdReq, OrderIdReq, OrderUpdateReq, OrderUpdateStatusReq } from "./order.interface";
 
-@Controller(ENDPOINTS.order)
+@Controller()
 @ApiTags(ENDPOINTS.order)
 @ApiBearerAuth()
 export class OrderController {

@@ -10,7 +10,7 @@ import { ProductsFilterReq } from "@/module/admin/product/product.interface";
 import { ProductCategoryService, ProductFindService } from "@/module/admin/product/service";
 import { Get, Body, Post, Param, Controller, UseInterceptors, Res, HttpStatus } from "@nestjs/common";
 
-@Controller(ENDPOINTS.product)
+@Controller()
 @ApiTags(ENDPOINTS.product)
 export class ProductController {
 

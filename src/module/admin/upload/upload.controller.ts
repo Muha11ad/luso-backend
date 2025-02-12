@@ -11,7 +11,7 @@ import { DeleteMultipleFilesDto } from "./dto/delete-multiple-files.dto";
 import { UploadDeleteMultipleFilesReq, UploadMultipliFilesReq } from "./upload.interface";
 import { Body, Controller, Delete, HttpStatus, Param, ParseFilePipe, Post, Res, UploadedFiles, UseInterceptors, UsePipes } from "@nestjs/common";
 
-@Controller(ENDPOINTS.upload)
+@Controller()
 @ApiTags(ENDPOINTS.upload)
 @ApiBearerAuth()
 export class UploadController {

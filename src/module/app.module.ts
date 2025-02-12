@@ -26,7 +26,7 @@ import { throttlerOptions } from "@/configs/throttler.config";
          }),
         ThrottlerModule.forRootAsync(throttlerOptions),
         AdminModule,
-        LandingModule
+        LandingModule,
     ]
 })
 export class AppModule {}

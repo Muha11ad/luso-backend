@@ -7,9 +7,11 @@ import { AdminCategoryModule } from "./category";
 import { ENDPOINTS } from "@/shared/utils/consts";
 import { AdminAuthModule, AuthGuard } from "./auth";
 import { APP_GUARD, RouterModule } from "@nestjs/core";
+import { ProvidersModule } from "@/shared/providers";
 
 @Module({
     imports: [
+        ProvidersModule,
         AdminAuthModule,
         AdminUserModule,
         AdminOrderModule,

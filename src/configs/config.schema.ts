@@ -8,7 +8,7 @@ export const configSchema = Joi.object({
     ADMIN_EMAIL: Joi.string(),
     ADMIN_PASSWORD: Joi.string(),
 
-    CORS_ORIGIN: Joi.string(),
+    ALLOWED_ORIGINS: Joi.string(),
 
     RATE_LIMIT_MAX: Joi.number(),
 

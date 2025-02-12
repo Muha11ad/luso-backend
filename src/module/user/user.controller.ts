@@ -7,7 +7,7 @@ import { UserService } from "../admin/user/user.service";
 import { UserCreateReq } from "../admin/user/user.interface";
 import { Body, Controller, HttpStatus, Post, Res, } from "@nestjs/common";
 
-@Controller(ENDPOINTS.user)
+@Controller()
 @ApiTags(ENDPOINTS.user)
 export class UserController {
 

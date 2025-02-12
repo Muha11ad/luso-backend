@@ -1,8 +1,8 @@
 import { Module } from "@nestjs/common";
-import { JwtModule } from "@nestjs/jwt";
 import { ConfigModule } from "@nestjs/config";
 import { RedisProvider } from "./redis.provider";
 import { CacheModule } from "@nestjs/cache-manager";
+import { JwtModule, JwtService } from "@nestjs/jwt";
 import { DatabaseProvider } from "./database.provider";
 import { jwtOptions, redisOptions } from "../../configs";
 
@@ -12,9 +12,9 @@ import { jwtOptions, redisOptions } from "../../configs";
         JwtModule.registerAsync(jwtOptions),
         CacheModule.registerAsync(redisOptions)
     ],
-    providers: [DatabaseProvider, RedisProvider],
+    providers: [DatabaseProvider, RedisProvider, JwtService],
     exports: [
-        JwtModule,
+        JwtService,
         CacheModule,
         RedisProvider,
         DatabaseProvider,

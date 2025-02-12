@@ -7,7 +7,7 @@ import { CacheInterceptor } from "@nestjs/cache-manager";
 import { UseInterceptors, HttpStatus, Res } from "@nestjs/common";
 import { CategoryFindService } from "@/module/admin/category/service";
 
-@Controller(ENDPOINTS.category)
+@Controller()
 @ApiTags(ENDPOINTS.category)
 export class CategoryController {
 

@@ -7,9 +7,9 @@ import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { CharacteristicService } from "./characteristic.service";
 import { CharacteristicCreateDto, CharacteristicUpdateDto } from "./dto";
 import { CharacteristicCreateReq, CharacteristicUpdateReq } from "./characteristic.interface";
-import { Put, Body, Post, Param, Delete, UseGuards, Controller, Res, HttpStatus } from "@nestjs/common";
+import { Put, Body, Post, Param, Delete, Controller, Res, HttpStatus } from "@nestjs/common";
 
-@Controller(ENDPOINTS.characteristic)
+@Controller()
 @ApiTags(`${ENDPOINTS.product}/${ENDPOINTS.characteristic}`)
 @ApiBearerAuth()
 export class CharacteristicController {

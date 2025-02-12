@@ -10,7 +10,7 @@ import { CategoryCrudService, CategoryFindService, CategoryProductService } from
 import { CategoryCreateDto, CategoryUpdateDto, AddProductToCategoryDto, DeleteProductFromCategoryDto } from "./dto";
 import { CategoryCreateReq, CategoryDeleteReq, CategoryProductAddReq, CategoryProductDeleteReq, CategoryUpdateReq } from "./category.interface";
 
-@Controller(ENDPOINTS.category)
+@Controller()
 @ApiTags(ENDPOINTS.category)
 @ApiBearerAuth()
 export class CategoryController {
@@ -29,11 +29,11 @@ export class CategoryController {
 
         if (errId) {
 
-            return res.status(HttpStatus.BAD_GATEWAY).send(setResult(null, errId));
+            return res.status(HttpStatus.BAD_GATEWAY).json(setResult(null, errId));
 
         }
 
-        return res.status(HttpStatus.OK).send(setResult(data, null));
+        return res.status(HttpStatus.OK).jsonp(setResult(data, null));
 
     }
 
@@ -46,11 +46,11 @@ export class CategoryController {
 
         if (errId) {
 
-            return res.status(HttpStatus.BAD_REQUEST).send(setResult(null, errId));
+            return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
 
         }
 
-        return res.status(HttpStatus.CREATED).send(setResult(data, null));
+        return res.status(HttpStatus.CREATED).jsonp(setResult(data, null));
 
     }
 
@@ -63,11 +63,11 @@ export class CategoryController {
 
         if (errId) {
 
-            return res.status(HttpStatus.BAD_REQUEST).send(setResult(null, errId));
+            return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
 
         }
 
-        return res.status(HttpStatus.OK).send(setResult(data, null));
+        return res.status(HttpStatus.OK).jsonp(setResult(data, null));
 
     }
 
@@ -80,11 +80,11 @@ export class CategoryController {
 
         if (errId) {
 
-            return res.status(HttpStatus.BAD_REQUEST).send(setResult(null, errId));
+            return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
 
         }
 
-        return res.status(HttpStatus.OK).send(setResult(data, null));
+        return res.status(HttpStatus.OK).jsonp(setResult(data, null));
 
     }
 
@@ -98,11 +98,11 @@ export class CategoryController {
 
         if (errId) {
 
-            return res.status(HttpStatus.BAD_REQUEST).send(setResult(null, errId));
+            return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
 
         }
 
-        return res.status(HttpStatus.CREATED).send(setResult(data, null));
+        return res.status(HttpStatus.CREATED).jsonp(setResult(data, null));
 
     }
 
@@ -115,11 +115,11 @@ export class CategoryController {
 
         if (errId) {
 
-            return res.status(HttpStatus.BAD_REQUEST).send(setResult(null, errId));
+            return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
 
         }
 
-        return res.status(HttpStatus.OK).send(setResult(result, null));
+        return res.status(HttpStatus.OK).jsonp(setResult(result, null));
 
     }
 

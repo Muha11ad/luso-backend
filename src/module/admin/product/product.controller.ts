@@ -11,7 +11,7 @@ import { Put, Get, Body, Post, Param, Delete, UseGuards, Controller, UseIntercep
 import { ProductCreateDto, ProductUpdateDto, FilterProductsDto, AddCategoryToProductDto, DeleteCategoryFromProductDto } from "./dto";
 import { ProductCategoryAddReq, ProductCategoryDeleteReq, ProductCreateReq, ProductsFilterReq, ProductUpdateReq } from "./product.interface";
 
-@Controller(ENDPOINTS.product)
+@Controller()
 @ApiTags(ENDPOINTS.product)
 @ApiBearerAuth()
 export class ProductController {

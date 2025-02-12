@@ -8,7 +8,7 @@ import { Body, Controller, Get, HttpStatus, Param, Post, Res } from "@nestjs/com
 import { OrderFindService, OrderLifecycleService } from "@/module/admin/order/service";
 import { OrderCreateReq, OrderGetByUserIdReq } from "@/module/admin/order/order.interface";
 
-@Controller(ENDPOINTS.order)
+@Controller()
 @ApiTags(ENDPOINTS.order)
 export class OrderController {
 

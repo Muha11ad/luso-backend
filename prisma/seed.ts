@@ -1,6 +1,7 @@
 import { config } from 'dotenv';
 import { PrismaClient } from '@prisma/client';
 import { hashPassword } from '@/shared/utils/helpers';
+import { BadRequestException } from '@nestjs/common';
 
 config();
 
@@ -11,7 +12,7 @@ async function main() {
   const adminPassword = process.env.ADMIN_PASSWORD;
 
     if (!adminEmail || !adminPassword) {
-        throw new Error('ADMIN_EMAIL and ADMIN_PASSWORD must be set in .env file');
+        throw new BadRequestException('ADMIN_EMAIL and ADMIN_PASSWORD must be set in .env file');
     }
 
   // Upsert ensures the admin is created if it doesn't exist
