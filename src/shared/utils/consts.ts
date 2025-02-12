@@ -1,10 +1,11 @@
 export const ENDPOINTS = {
+    auth: "auth",
     user: "user",
     order : "order",
+    upload: "upload",
     product : "product",
     category : "category",
     characteristic : "characteristic",
-    auth: "auth",
 }
 
 

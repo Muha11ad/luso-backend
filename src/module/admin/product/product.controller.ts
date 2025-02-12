@@ -1,6 +1,7 @@
 import { AuthGuard } from "../auth";
 import { Response } from "express";
 import { ReqIdDto } from "@/shared/dto";
+import { ApiTags } from "@nestjs/swagger";
 import { IdReq } from "@/shared/utils/types";
 import { ENDPOINTS } from "@/shared/utils/consts";
 import { setResult } from "@/shared/utils/helpers";
@@ -11,6 +12,7 @@ import { ProductCreateDto, ProductUpdateDto, FilterProductsDto, AddCategoryToPro
 import { ProductCategoryAddReq, ProductCategoryDeleteReq, ProductCreateReq, ProductsFilterReq, ProductUpdateReq } from "./product.interface";
 
 @Controller(ENDPOINTS.product)
+@ApiTags(ENDPOINTS.product)
 export class ProductController {
 
     constructor(

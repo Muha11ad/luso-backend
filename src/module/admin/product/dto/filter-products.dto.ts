@@ -1,15 +1,19 @@
+import { ApiProperty } from "@nestjs/swagger";
 import { IsNotEmpty, IsString } from "class-validator";
 
 export class FilterProductsDto {
 
+    @ApiProperty({ type: String, required: true })
     @IsNotEmpty()
     @IsString()
-    age: string;
-    
+        age: string;
+
+    @ApiProperty({ type: String, required: true })
     @IsNotEmpty()
     @IsString()
-    skin_type: string;
-    
+        skinType: string;
+
+    @ApiProperty({ type: String, required: true })
     @IsNotEmpty()
     @IsString()
         purpose: string;

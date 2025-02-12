@@ -1,16 +1,18 @@
 import { Response } from "express";
 import { AuthGuard } from "../auth";
+import { ApiTags } from "@nestjs/swagger";
 import { ReqIdDto } from "@/shared/dto/id.dto";
 import { ENDPOINTS } from "@/shared/utils/consts";
 import { setResult } from "@/shared/utils/helpers";
 import { CacheInterceptor } from "@nestjs/cache-manager";
 import { Body, Controller, Get, Post, UseGuards } from "@nestjs/common";
-import { CategoryCrudService, CategoryFindService, CategoryProductService } from "./service";
 import { Param, Delete, Put, UseInterceptors, HttpStatus, Res } from "@nestjs/common";
+import { CategoryCrudService, CategoryFindService, CategoryProductService } from "./service";
 import { CategoryCreateDto, CategoryUpdateDto, AddProductToCategoryDto, DeleteProductFromCategoryDto } from "./dto";
 import { CategoryCreateReq, CategoryDeleteReq, CategoryProductAddReq, CategoryProductDeleteReq, CategoryUpdateReq } from "./category.interface";
 
 @Controller(ENDPOINTS.category)
+@ApiTags(ENDPOINTS.category)
 export class CategoryController {
 
     constructor(

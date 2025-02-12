@@ -1,35 +1,45 @@
-import { UserModule } from "./user";
-import { AuthModule } from "./auth";
-import { OrderModule } from "./order";
 import { Module } from "@nestjs/common";
-import { ProductModule } from "./product";
-import { CategoryModule } from "./category";
+import { AdminUserModule } from "./user";
+import { AdminAuthModule } from "./auth";
+import { AdminOrderModule } from "./order";
 import { RouterModule } from "@nestjs/core";
+import { AdminProductModule } from "./product";
+import { AdminCategoryModule } from "./category";
 import { ENDPOINTS } from "@/shared/utils/consts";
+import { AdminUploadModule } from "./upload/upload.module";
 
 @Module({
     imports:[
-        AuthModule,
-        UserModule,
-        OrderModule,
-        ProductModule,
-        CategoryModule,
+        AdminAuthModule,
+        AdminUserModule,
+        AdminOrderModule,
+        AdminUploadModule,
+        AdminProductModule,
+        AdminCategoryModule,
         RouterModule.register([
             {
-                path : ENDPOINTS.product,
-                module : ProductModule
-            },
-            {
-                path : ENDPOINTS.category,
-                module : CategoryModule
-            },
-            {
-                path : ENDPOINTS.order,
-                module : OrderModule
+                path : ENDPOINTS.auth,
+                module : AdminAuthModule
             },
             {
                 path : ENDPOINTS.user,
-                module : UserModule
+                module : AdminUserModule
+            },
+            {
+                path : ENDPOINTS.order,
+                module : AdminOrderModule
+            },
+            {
+                path : ENDPOINTS.upload,
+                module: AdminUploadModule
+            },
+            {
+                path : ENDPOINTS.product,
+                module : AdminProductModule
+            },
+            {
+                path : ENDPOINTS.category,
+                module : AdminCategoryModule
             },
 
         ])

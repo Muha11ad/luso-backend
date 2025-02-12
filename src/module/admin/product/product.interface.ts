@@ -25,5 +25,5 @@ export interface ProductCategoryDeleteReq {
 export interface ProductsFilterReq {
     age: string;
     purpose: string;
-    skin_type: string;
+    skinType: string;
 }

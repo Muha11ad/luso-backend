@@ -1,1 +1,1 @@
-export { CategoryModule } from "./category.module";
+export { AdminCategoryModule } from "./category.module";

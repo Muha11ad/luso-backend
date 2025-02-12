@@ -1,5 +1,6 @@
 import { AuthGuard } from "../auth";
 import { Response } from "express";
+import { ApiTags } from "@nestjs/swagger";
 import { UserService } from "./user.service";
 import { UserIdReq } from "@/shared/utils/types";
 import { UserCreateReq } from "./user.interface";
@@ -9,6 +10,7 @@ import { TelegramIdDto, UserCreateDto } from "./dto";
 import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Res, UseGuards } from "@nestjs/common";
 
 @Controller(ENDPOINTS.user)
+@ApiTags(ENDPOINTS.user)
 export class UserController {
 
     constructor(private readonly userService: UserService) { }

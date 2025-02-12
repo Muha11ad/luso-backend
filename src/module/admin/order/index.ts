@@ -1,1 +1,1 @@
-export { OrderModule } from "./order.module";
+export { AdminOrderModule } from "./order.module";

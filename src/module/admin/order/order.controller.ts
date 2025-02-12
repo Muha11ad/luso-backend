@@ -8,8 +8,10 @@ import { OrderFindService, OrderUpdateService, OrderLifecycleService } from "./s
 import { OrderCreateDto, OrderUpdateDto, OrderStatusUpdateDto, OrderDetailsUpdateDto } from "./dto";
 import { Put, Get, Body, Post, Param, Delete, UseGuards, Controller, Res, HttpStatus, Patch } from "@nestjs/common";
 import { OrderCreateReq, OrderDetailsUpdateReq, OrderGetByUserIdReq, OrderIdReq, OrderUpdateReq, OrderUpdateStatusReq } from "./order.interface";
+import { ApiTags } from "@nestjs/swagger";
 
 @Controller(ENDPOINTS.order)
+@ApiTags(ENDPOINTS.order)
 export class OrderController {
 
   constructor(

@@ -1,4 +1,4 @@
-export { UserModule } from "./user.module";
+export { AdminUserModule } from "./user.module";
 
 export { UserController } from "./user.controller";
 

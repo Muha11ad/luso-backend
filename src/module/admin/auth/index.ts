@@ -1,4 +1,4 @@
-export { AuthModule } from "./auth.module";
+export { AdminAuthModule } from "./auth.module";
 
 export { AuthController } from "./auth.controller";
 

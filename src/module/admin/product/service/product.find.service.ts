@@ -58,7 +58,7 @@ export class ProductFindService extends ProductBaseService {
                         {
                             OR: [
                                 // get specific skin type
-                                { Characteristic: { skin_type: { equals: reqData.skin_type } } },
+                                { Characteristic: { skin_type: { equals: reqData.skinType } } },
                                 // add all skin types
                                 {
                                     Characteristic: {

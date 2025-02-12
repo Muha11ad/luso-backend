@@ -8,4 +8,4 @@ import { ProvidersModule } from "@/shared/providers";
     controllers: [AuthController],
     providers: [AuthService],
 })
-export class AuthModule {}
+export class AdminAuthModule {}
