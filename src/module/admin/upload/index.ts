@@ -1,0 +1,1 @@
+export { AdminUploadModule } from "./upload.module";

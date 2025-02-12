@@ -1,0 +1,1 @@
+export { LandingUserModule } from "./user.module";

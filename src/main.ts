@@ -18,7 +18,7 @@ async function bootstrap() {
 
     if (true) {
 
-        const [landingDocument, adminDocument] = createSwaggerDocuments(app);
+        const [adminDocument, landingDocument] = createSwaggerDocuments(app);
 
         SwaggerModule.setup("docs-admin", app, adminDocument);
         SwaggerModule.setup("docs-landing", app, landingDocument);

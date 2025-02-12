@@ -3,10 +3,10 @@ import { AdminUserModule } from "./user";
 import { AdminAuthModule } from "./auth";
 import { AdminOrderModule } from "./order";
 import { RouterModule } from "@nestjs/core";
+import { AdminUploadModule } from "./upload";
 import { AdminProductModule } from "./product";
 import { AdminCategoryModule } from "./category";
 import { ENDPOINTS } from "@/shared/utils/consts";
-import { AdminUploadModule } from "./upload/upload.module";
 
 @Module({
     imports:[

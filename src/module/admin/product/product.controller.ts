@@ -154,4 +154,23 @@ export class ProductController {
 
     }
 
+    @Get("category/:id")
+    @UseInterceptors(CacheInterceptor)
+    async getCategoriesByProduct(@Res() res: Response, @Param() param: ReqIdDto) {
+
+        const requestData: IdReq = param;
+
+        const { errId, data } = await this.productCategoryService.getProductByCategoryId(requestData);
+
+        if (errId) {
+
+            return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
+        
+        }
+
+        return res.status(HttpStatus.OK).jsonp(setResult(data, null));
+
+    }
+
 }
+

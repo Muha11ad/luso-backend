@@ -7,6 +7,7 @@ import redisConfig from "@/configs/redis.config";
 import { AdminModule } from "./admin/admin.module";
 import { ThrottlerModule } from "@nestjs/throttler";
 import { configSchema } from "@/configs/config.schema";
+import { LandingModule } from "./landing/landing.module";
 import rateLimitConfig from "@/configs/rate-limit.config";
 import { throttlerOptions } from "@/configs/throttler.config";
 
@@ -25,6 +26,7 @@ import { throttlerOptions } from "@/configs/throttler.config";
          }),
         ThrottlerModule.forRootAsync(throttlerOptions),
         AdminModule,
+        LandingModule
     ]
 })
 export class AppModule {}

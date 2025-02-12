@@ -1,4 +1,14 @@
+import { LandingUserModule } from "./module/user";
 import { INestApplication } from "@nestjs/common";
+import { AdminAuthModule } from "./module/admin/auth";
+import { AdminUserModule } from "./module/admin/user";
+import { AdminOrderModule } from "./module/admin/order";
+import { AdminUploadModule } from "./module/admin/upload";
+import { LandingOrderModule } from "./module/landing/order";
+import { AdminProductModule } from "./module/admin/product";
+import { AdminCategoryModule } from "./module/admin/category";
+import { LandingProductModule } from "./module/landing/product";
+import { LandingCategoryModule } from "./module/landing/category";
 import { DocumentBuilder, OpenAPIObject, SwaggerModule } from "@nestjs/swagger";
 
 export function createSwaggerDocuments(app: INestApplication): OpenAPIObject[] {
@@ -11,7 +21,14 @@ export function createSwaggerDocuments(app: INestApplication): OpenAPIObject[] {
         .build();
 
     const staffDocument = SwaggerModule.createDocument(app, adminConfig, {
-        include: []
+        include: [
+            AdminAuthModule,
+            AdminUserModule,
+            AdminOrderModule,
+            AdminUploadModule,
+            AdminProductModule,
+            AdminCategoryModule,
+        ]
     });
 
     const landingConfig = new DocumentBuilder()
@@ -22,7 +39,12 @@ export function createSwaggerDocuments(app: INestApplication): OpenAPIObject[] {
         .build();
 
     const landingDocument = SwaggerModule.createDocument(app, landingConfig, {
-        include: []
+        include: [
+            LandingUserModule,
+            LandingOrderModule,
+            LandingProductModule,
+            LandingCategoryModule,
+        ]
     });
 
     return [staffDocument, landingDocument];

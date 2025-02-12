@@ -1,6 +1,7 @@
+import { Product } from "@prisma/client";
 import { Injectable } from "@nestjs/common";
 import { ProductBaseService } from "./product.base.service";
-import { BaseResponse, SuccessRes } from "@/shared/utils/types";
+import { BaseResponse, IdReq, SuccessRes } from "@/shared/utils/types";
 import { ServiceExceptions } from "@/shared/exceptions/service.exception";
 import { ProductCategoryAddReq, ProductCategoryDeleteReq } from "../product.interface";
 
@@ -59,4 +60,30 @@ export class ProductCategoryService extends ProductBaseService {
 
     }
 
+    public async getProductByCategoryId(reqData: IdReq): Promise<BaseResponse<Product[]>> {
+
+        try {
+
+            const products = await this.database.productCategory.findMany({
+                where: { category_id: reqData.id },
+                select: {
+                    product: {
+                        include: {
+                            Characteristic: true,
+                            Images: true
+                        }
+                    }
+                }
+            })
+
+            return { errId: null, data: products.map(p => p.product) };
+
+        } catch (error) {
+
+            return ServiceExceptions.handle(error, ProductCategoryService.name, 'getProductByCategoryId');
+            
+        }
+
+
+    }
 }
