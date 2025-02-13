@@ -5,31 +5,32 @@ import { ENDPOINTS } from "@/shared/utils/consts";
 import { FileValidatePipe } from "@/shared/pipes";
 import { setResult } from "@/shared/utils/helpers";
 import { UploadParamsDto } from "./dto/upload-params.dto";
+import { UploadImagesBodyDto } from "./dto/upload-body.dto";
 import { FilesInterceptor } from "@nestjs/platform-express";
 import { ApiBearerAuth, ApiConsumes, ApiTags } from "@nestjs/swagger";
 import { DeleteMultipleFilesDto } from "./dto/delete-multiple-files.dto";
 import { UploadDeleteMultipleFilesReq, UploadMultipliFilesReq } from "./upload.interface";
-import { Body, Controller, Delete, HttpStatus, Param, ParseFilePipe, Post, Res, UploadedFiles, UseInterceptors, UsePipes } from "@nestjs/common";
+import { Body, Controller, Delete, HttpStatus, Param, Post, Res, UploadedFiles, UseInterceptors, UsePipes } from "@nestjs/common";
 
 @Controller()
-@ApiTags(ENDPOINTS.upload)
 @ApiBearerAuth()
+@ApiTags(ENDPOINTS.upload)
 export class UploadController {
 
     constructor(private readonly uploadService: UploadService) { }
 
     @Post("image/:folder")
-    @UsePipes(FileValidatePipe)
     @ApiConsumes("multipart/form-data")
-    @UseInterceptors(FilesInterceptor('image'))
+    @UseInterceptors(FilesInterceptor('images'))
     async uploadImages(
         @Res() res: Response,
         @Param() param: UploadParamsDto,
-        @UploadedFiles(ParseFilePipe, new FileValidatePipe()) files: FilesType
+        @Body() body: UploadImagesBodyDto,
+        @UploadedFiles(new FileValidatePipe) images: FilesType,
     ) {
-
+        
         const requestData: UploadMultipliFilesReq = {
-            files,
+            files: images,
             folder: param.folder,
         }
 

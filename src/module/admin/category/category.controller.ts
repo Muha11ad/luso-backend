@@ -11,8 +11,8 @@ import { CategoryCreateDto, CategoryUpdateDto, AddProductToCategoryDto, DeletePr
 import { CategoryCreateReq, CategoryDeleteReq, CategoryProductAddReq, CategoryProductDeleteReq, CategoryUpdateReq } from "./category.interface";
 
 @Controller()
-@ApiTags(ENDPOINTS.category)
 @ApiBearerAuth()
+@ApiTags(ENDPOINTS.category)
 export class CategoryController {
 
     constructor(
@@ -22,7 +22,6 @@ export class CategoryController {
     ) { }
 
     @Get('all')
-    @UseInterceptors(CacheInterceptor)
     async getAll(@Res() res: Response) {
 
         const { errId, data } = await this.findService.findAll();

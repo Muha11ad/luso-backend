@@ -8,22 +8,26 @@ export class ServiceExceptions {
     
     private static handlePrismaKnownError(e: Prisma.PrismaClientKnownRequestError) {
         switch (e.code) {
-            case "P2002": 
+            case "P2002":
+                this.logger.error(`Error Code: ${e.code}, Message: ${e.message}`);
                 return {
                     errId: MyError.UNIQUE_CONSTRAINT_FAILED.errId,
                     data: null
                 };
-            case "P2003": 
+            case "P2003":
+                this.logger.error(`Error Code: ${e.code}, Message: ${e.message}`);
                 return {
                     errId: MyError.FOREIGN_KEY_CONSTRAINT_FAILED.errId,
                     data: null
                 };
-            case "P2025": 
+            case "P2025":
+                this.logger.error(`Error Code: ${e.code}, Message: ${e.message}`);
                 return {
                     errId: MyError.NOT_FOUND.errId,
                     data: null
                 };
             default:
+                this.logger.error(`Error Code: ${e.code}, Message: ${e.message}`);
                 return {
                     errId: MyError.PRISMA_CLIENT_KNOWN_REQUEST_ERROR.errId,
                     data: null
@@ -56,6 +60,7 @@ export class ServiceExceptions {
             };
         }
         if (e instanceof Prisma.PrismaClientValidationError) {
+            this.logger.error(`Service: [${serviceName}], method: [${methodName}], Error: ${e}`);
             return {
                 errId: MyError.PRISMA_CLIENT_VALIDATION_ERROR.errId,
                 data: null

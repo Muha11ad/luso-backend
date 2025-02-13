@@ -13,6 +13,8 @@ export const configSchema = Joi.object({
     RATE_LIMIT_MAX: Joi.number(),
 
     UPLOADS_ORIGIN: Joi.string(),
+    PATH_TO_UPLOADS: Joi.string(),
+
 
     DB_TYPE: Joi.string(),
     DB_CONNECTION_URL: Joi.string(),

@@ -1,45 +1,32 @@
 import { Injectable } from "@nestjs/common";
 import { OrderCreateEntity } from "../entity";
-import { Product, User } from "@prisma/client";
-import { MyError } from "@/shared/utils/error";
 import { OrderBaseService } from "./order.base.service";
 import { BaseResponse, SuccessRes } from "@/shared/utils/types";
-import { OrderCreateReq, OrderIdReq } from "../order.interface";
 import { ServiceExceptions } from "@/shared/exceptions/service.exception";
+import { OrderCreateReq, OrderDetailsCreateReq, OrderIdReq } from "../order.interface";
 
 @Injectable()
 export class OrderLifecycleService extends OrderBaseService {
 
-    private async checkUserExist(id: number | string): Promise<BaseResponse<User>> {
+    private async checkUserExist(id: number | string): Promise<void> {
 
-        const userExist = await this.database.user.findUnique({
+        await this.database.user.findUnique({
             where: {
                 telegram_id: Number(id)
             }
         });
-        if (!userExist) {
-
-            return { errId: MyError.NOT_FOUND.errId, data: null };
-
-        }
-        return { errId: null, data: userExist };
 
     }
 
-    private async checkProductExists(orderDetails): Promise<BaseResponse<Product[]>> {
+    private async checkProductExists(orderDetails: OrderDetailsCreateReq[]): Promise<void> {
 
         for (const detail of orderDetails) {
 
-            const productExist = await this.database.product.findUnique({
+            await this.database.product.findUniqueOrThrow({
                 where: {
-                    id: detail.product_id
+                    id: detail.productId
                 }
             });
-            if (!productExist) {
-
-                return { errId: MyError.NOT_FOUND.errId, data: null };
-
-            }
 
         }
 
@@ -49,21 +36,9 @@ export class OrderLifecycleService extends OrderBaseService {
 
         try {
 
-            const { errId: userErrId, data: userExist } = await this.checkUserExist(reqData.userId);
+            await this.checkUserExist(reqData.userId);
 
-            if (userErrId) {
-
-                return { errId: userErrId, data: null };
-
-            }
-
-            const { errId: productErrId } = await this.checkProductExists(reqData.orderDetails);
-
-            if (productErrId) {
-
-                return { errId: productErrId, data: null }
-
-            }
+            await this.checkProductExists(reqData.orderDetails);
 
             const newOrder = new OrderCreateEntity(reqData);
             await this.database.$transaction(async (tx) => {
@@ -102,7 +77,7 @@ export class OrderLifecycleService extends OrderBaseService {
 
             await this.database.order.delete({
                 where: {
-                    id: order.id 
+                    id: order.id
                 }
             });
 

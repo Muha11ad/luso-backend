@@ -9,9 +9,9 @@ import { CharacteristicCreateDto, CharacteristicUpdateDto } from "./dto";
 import { CharacteristicCreateReq, CharacteristicUpdateReq } from "./characteristic.interface";
 import { Put, Body, Post, Param, Delete, Controller, Res, HttpStatus } from "@nestjs/common";
 
-@Controller()
-@ApiTags(`${ENDPOINTS.product}/${ENDPOINTS.characteristic}`)
 @ApiBearerAuth()
+@Controller(ENDPOINTS.characteristic)
+@ApiTags(`${ENDPOINTS.product}/${ENDPOINTS.characteristic}`)
 export class CharacteristicController {
 
   constructor(private readonly characteristicService: CharacteristicService) { }

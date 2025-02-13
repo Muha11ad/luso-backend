@@ -33,12 +33,12 @@ export class OrderCreateEntity {
     public toPrisma(): Prisma.OrderCreateInput {
 
         return {
-            region: this.data?.region,
             status: this.data?.status,
+            region: this.data?.region,
             first_name: this.data?.firstName,
-            phone_number: this.data?.phoneNumber,
-            delivery_fee: this.orderDeliveryFee,
             total_price: this.orderTotalPrice,
+            delivery_fee: this.orderDeliveryFee,
+            phone_number: this.data?.phoneNumber,
             user: {
                 connect: {
                     telegram_id: Number(this.data?.userId)

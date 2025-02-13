@@ -4,6 +4,7 @@ import { MyError } from "./error";
 import { FILE_FORMAT } from "./consts";
 import { BadRequestException } from "@nestjs/common";
 import { HttpResponse, TranslationType } from "./types";
+import { FilesInterceptor } from "@nestjs/platform-express";
 
 export function setResult(data: any, errorId: number): HttpResponse {
   if (!errorId) {
@@ -80,4 +81,16 @@ export function isPasswordValid(
   hashPassword: string
 ): boolean {
   return bcrypt.compareSync(password, hashPassword);
+}
+
+export function createFilesInterceptor(fieldName: string, maxCount: number) {
+  return FilesInterceptor(fieldName, maxCount, {
+    fileFilter: (req, file, callback) => {
+      const allowedMimeTypes = ["image/jpeg", "image/png"];
+      if (!allowedMimeTypes.includes(file.mimetype)) {
+        return callback(new BadRequestException('Only PNG, JPEG/JPG, and WEBP, files are allowed!'), false);
+      }
+      callback(null, true);
+    }
+  });
 }

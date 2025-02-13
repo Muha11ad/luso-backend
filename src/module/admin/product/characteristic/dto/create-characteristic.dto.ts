@@ -1,76 +1,83 @@
 import { Type } from "class-transformer";
-import { TranslationsDto } from "@/shared/dto";
-import { IsNumber, IsObject, IsString, IsOptional, IsPositive, IsNotEmpty } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
+import { TranslationsDto } from "@/shared/dto";
+import { IsNumber, IsObject, IsString, IsOptional, IsPositive, IsNotEmpty, IsUUID, ValidateNested } from "class-validator";
 
 export class CharacteristicCreateDto {
 
-    @ApiProperty({ type: Number, required: true })
-    @IsNotEmpty()
     @IsNumber()
+    @IsNotEmpty()
     @IsPositive()
+    @ApiProperty({ type: Number, required: true })
         age: number;
 
-    @ApiProperty({ type: String, required: true }) 
-    @IsNotEmpty()
     @IsString()
+    @IsNotEmpty()
+    @ApiProperty({ type: String, required: true }) 
         brand: string;
 
-    @ApiProperty({ type: TranslationsDto, required: false })
-    @IsOptional()
     @IsObject()
+    @IsOptional()
     @Type(() => TranslationsDto)
+    @ValidateNested({ each: true })
+    @ApiProperty({ type: TranslationsDto, required: false })
         caution: TranslationsDto;
 
-    @ApiProperty({ type: String, required: true }) 
-    @IsNotEmpty()
     @IsString()
+    @IsNotEmpty()
+    @ApiProperty({ type: String, required: true }) 
         expirationDate: string;
 
-    @ApiProperty({ type: String, required: true }) 
-    @IsNotEmpty()
     @IsString()
+    @IsNotEmpty()
+    @ApiProperty({ type: String, required: true }) 
         volume: string;
 
-    @ApiProperty({ type: TranslationsDto, required: true })
-    @IsNotEmpty()
     @IsObject()
+    @IsNotEmpty()
     @Type(() => TranslationsDto)
+    @ValidateNested({ each: true })
+    @ApiProperty({ type: TranslationsDto, required: true })
         madeIn: TranslationsDto;
 
-    @ApiProperty({ type: TranslationsDto, required: true })
-    @IsNotEmpty()
     @IsObject()
+    @IsNotEmpty()
     @Type(() => TranslationsDto)
+    @ValidateNested({ each: true })
+    @ApiProperty({ type: TranslationsDto, required: true })
         purpose: TranslationsDto;
 
-    @ApiProperty({type: TranslationsDto, required: true })
-    @IsNotEmpty()
     @IsObject()
+    @IsNotEmpty()
     @Type(() => TranslationsDto)
+    @ValidateNested({ each: true })
+    @ApiProperty({type: TranslationsDto, required: true })
         gender: TranslationsDto;
 
-    @ApiProperty({ type: TranslationsDto, required: true })
-    @IsNotEmpty()
     @IsObject()
+    @IsNotEmpty()
     @Type(() => TranslationsDto)
+    @ValidateNested({ each: true })
+    @ApiProperty({ type: TranslationsDto, required: true })
         skinType: TranslationsDto;
 
-    @ApiProperty({ type: TranslationsDto, required: true })
-    @IsNotEmpty()
     @IsObject()
+    @IsNotEmpty()
     @Type(() => TranslationsDto)
+    @ValidateNested({ each: true })
+    @ApiProperty({ type: TranslationsDto, required: true })
         ingredients: TranslationsDto;
 
-    @ApiProperty({ type: TranslationsDto, required: true })
-    @IsNotEmpty()
     @IsObject()
+    @IsNotEmpty()
     @Type(() => TranslationsDto)
+    @ValidateNested({ each: true })
+    @ApiProperty({ type: TranslationsDto, required: true })
         applicationTime: TranslationsDto;
 
-    @ApiProperty({ type: TranslationsDto, required: true })
+    @IsUUID()
     @IsNotEmpty()
-    @IsString()
+    @ApiProperty({ type: String, required: true })
         productId: string;
 
 }

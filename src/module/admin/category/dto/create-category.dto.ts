@@ -1,20 +1,22 @@
 import { Type } from "class-transformer";
-import { TranslationsDto } from "@/shared/dto";
-import { IsNotEmpty, IsObject } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
+import { TranslationsDto } from "@/shared/dto";
+import { IsNotEmpty, IsObject, ValidateNested } from "class-validator";
 
 export class CategoryCreateDto {
 
-    @ApiProperty({type: TranslationsDto, required: true})
-    @IsNotEmpty()
     @IsObject()
+    @IsNotEmpty()
     @Type(() => TranslationsDto)
+    @ValidateNested({ each: true })
+    @ApiProperty({ type: TranslationsDto, required: true })
         name: TranslationsDto;
 
-    @ApiProperty({ type: TranslationsDto, required: true })
     @IsNotEmpty()
-    @IsObject()
+    @IsObject({})
     @Type(() => TranslationsDto)
+    @ValidateNested({ each: true })
+    @ApiProperty({ type: TranslationsDto, required: true })
         description: TranslationsDto;
 
 }

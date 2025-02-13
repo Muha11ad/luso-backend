@@ -1,4 +1,3 @@
-import { AuthGuard } from "../auth";
 import { Response } from "express";
 import { ReqIdDto } from "@/shared/dto";
 import { IdReq } from "@/shared/utils/types";
@@ -12,8 +11,8 @@ import { ProductCreateDto, ProductUpdateDto, FilterProductsDto, AddCategoryToPro
 import { ProductCategoryAddReq, ProductCategoryDeleteReq, ProductCreateReq, ProductsFilterReq, ProductUpdateReq } from "./product.interface";
 
 @Controller()
-@ApiTags(ENDPOINTS.product)
 @ApiBearerAuth()
+@ApiTags(ENDPOINTS.product)
 export class ProductController {
 
     constructor(
@@ -77,7 +76,7 @@ export class ProductController {
             return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
         }
 
-        return res.status(HttpStatus.OK).jsonp(setResult(data, null));
+        return res.status(HttpStatus.CREATED).jsonp(setResult(data, null));
 
     }
 

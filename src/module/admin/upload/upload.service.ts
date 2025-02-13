@@ -5,7 +5,6 @@ import { ConfigService } from "@nestjs/config";
 import { ensureDir, writeFile, unlink } from "fs-extra";
 import { convertImageToWebP } from "@/shared/utils/helpers";
 import { BaseResponse, SuccessRes } from "@/shared/utils/types";
-import { pathToSave, pathToUpload } from "@/shared/utils/consts";
 import { ServiceExceptions } from "@/shared/exceptions/service.exception";
 import { UploadDeleteFileReq, UploadDeleteMultipleFilesReq, UploadFileReq, UploadMultipliFilesReq } from "./upload.interface";
 
@@ -13,14 +12,21 @@ import { UploadDeleteFileReq, UploadDeleteMultipleFilesReq, UploadFileReq, Uploa
 export class UploadService {
 
     private readonly baseUrl: string;
+    private readonly pathToUpload: string;
 
-    constructor(private readonly config: ConfigService) { this.baseUrl = this.config.get<string>("file.origin") }
+
+    constructor(private readonly config: ConfigService) {
+
+        this.baseUrl = this.config.get<string>("file.origin"),
+        this.pathToUpload =  this.config.get<string>("file.pathToUpload")
+
+    }
 
     private async saveFile(reqData: UploadFileReq): Promise<BaseResponse<string>> {
 
         try {
-
-            const uploadFolder = path.resolve(pathToSave, reqData.folder);
+            
+            const uploadFolder = path.resolve(this.pathToUpload, reqData.folder);
             await ensureDir(uploadFolder);
 
             const fileExtension = ".webp";
@@ -45,7 +51,7 @@ export class UploadService {
         try {
 
             const fileName = path.basename(reqData.fileName);
-            const filePath = path.resolve(pathToUpload, reqData.folder, fileName);
+            const filePath = path.resolve(this.pathToUpload, reqData.folder, fileName);
 
             await unlink(filePath);
 

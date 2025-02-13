@@ -1,62 +1,67 @@
+import { Type } from "class-transformer";
 import { ApiProperty } from "@nestjs/swagger";
 import { OrderStatus, Region } from "@prisma/client";
-import { IsArray, IsEnum, IsNotEmpty, IsNumber, IsString, ValidateNested } from "class-validator";
+import { IsArray, IsEnum, IsNotEmpty, IsNumber, IsPositive, IsString, IsUUID, ValidateNested } from "class-validator";
 
 export class OrderDetailsDto {
 
-    @ApiProperty({ type: Number, required: true })
-    @IsNotEmpty()
     @IsNumber()
-    quantity: number;
+    @IsNotEmpty()
+    @IsPositive()
+    @ApiProperty({ type: Number, required: true })
+        quantity: number;
 
-    @ApiProperty({ type: Number, required: true })
-    @IsNotEmpty()
     @IsNumber()
+    @IsNotEmpty()
+    @IsPositive()
+    @ApiProperty({ type: Number, required: true })
     productPrice: number;
-
-    @ApiProperty({ type: String, required: true })
+    
+    @IsUUID()
     @IsNotEmpty()
-    @IsString()
+    @ApiProperty({ type: String, required: true })
     productId: string;
 
-    @ApiProperty({ type: String, required: true })
-    @IsNotEmpty()
     @IsString()
+    @IsNotEmpty()
+    @ApiProperty({ type: String, required: true })
     productName: string;
 
 }
 
 export class OrderCreateDto {
 
-    @ApiProperty({ type: Number, required: true })
-    @IsNotEmpty()
     @IsNumber()
+    @IsNotEmpty()
+    @IsPositive()
+    @ApiProperty({ type: Number, required: true })
         userId: number;
 
-    @ApiProperty({ type: String, required: true })
     @IsNotEmpty()
     @IsString()
+    @ApiProperty({ type: String, required: true })
         phoneNumber: string;
 
-    @ApiProperty({ type: String, required: true })
-    @IsNotEmpty()
     @IsString()
+    @IsNotEmpty()
+    @ApiProperty({ type: String, required: true })
         firstName: string;
 
-    @ApiProperty({ type: String, required: true })
     @IsNotEmpty()
     @IsEnum(Region)
+    @ApiProperty({ enum: Region, required: true })
         region: Region;
 
-    @ApiProperty({ type: String, required: true })
     @IsNotEmpty()
     @IsEnum(OrderStatus)
+    @ApiProperty({ type: String, required: true })
         status: OrderStatus;
 
-    @ApiProperty({ type: OrderDetailsDto, required: true, isArray: true })
-    @IsNotEmpty()
     @IsArray()
+    @IsNotEmpty()
+    @Type(() => OrderDetailsDto)
     @ValidateNested({ each: true })
+    @ApiProperty({ type: OrderDetailsDto, required: true, isArray: true })
         orderDetails: OrderDetailsDto[];
 
 }
