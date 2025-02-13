@@ -17,6 +17,7 @@ export class OrderFindService extends OrderBaseService {
                     OrderDetails: true
                 }
             });
+
             return { errId: null, data: orders };
 
 
@@ -30,12 +31,15 @@ export class OrderFindService extends OrderBaseService {
     }
 
     public async findById(reqData: OrderIdReq): Promise<BaseResponse<Order>> {
-        
+
         try {
 
             const order = await this.database.order.findUnique({
                 where: {
                     id: reqData.id
+                },
+                include: {
+                    OrderDetails: true
                 }
             });
             return { errId: null, data: order };
@@ -59,6 +63,7 @@ export class OrderFindService extends OrderBaseService {
                     OrderDetails: true
                 }
             });
+            
             return { errId: null, data: orders };
 
         } catch (error) {

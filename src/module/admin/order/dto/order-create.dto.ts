@@ -15,17 +15,17 @@ export class OrderDetailsDto {
     @IsNotEmpty()
     @IsPositive()
     @ApiProperty({ type: Number, required: true })
-    productPrice: number;
+        productPrice: number;
     
     @IsUUID()
     @IsNotEmpty()
     @ApiProperty({ type: String, required: true })
-    productId: string;
+        productId: string;
 
     @IsString()
     @IsNotEmpty()
     @ApiProperty({ type: String, required: true })
-    productName: string;
+        productName: string;
 
 }
 
@@ -54,7 +54,7 @@ export class OrderCreateDto {
 
     @IsNotEmpty()
     @IsEnum(OrderStatus)
-    @ApiProperty({ type: String, required: true })
+    @ApiProperty({ enum: OrderStatus, required: true })
         status: OrderStatus;
 
     @IsArray()

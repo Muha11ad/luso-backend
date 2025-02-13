@@ -1,5 +1,4 @@
 import { Injectable } from "@nestjs/common";
-import { MyError } from "@/shared/utils/error";
 import { DatabaseProvider, RedisProvider } from "@/shared/providers";
 import { BaseResponse, IdReq, SuccessRes } from "@/shared/utils/types";
 import { ServiceExceptions } from "@/shared/exceptions/service.exception";
@@ -41,23 +40,12 @@ export class CharacteristicService {
 
         try {
 
-            const existingCharacteristic = await this.database.characteristic.findUnique({ where: { id: reqData.id } });
+            const existingCharacteristic = await this.database.characteristic.findUniqueOrThrow({ where: { id: reqData.id } });
 
-            if (!existingCharacteristic) {
+            if (reqData?.productId) {
 
-                return { errId: MyError.NOT_FOUND.errId, data: null };
+                await this.database.product.findUniqueOrThrow({ where: { id: reqData.productId } });
 
-            }
-
-            if (reqData.productId) {
-
-                const existingProduct = await this.database.product.findUnique({ where: { id: reqData.productId } });
-
-                if (!existingProduct) {
-
-                    return { errId: MyError.NOT_FOUND.errId, data: null };
-
-                }
 
             }
 
@@ -78,11 +66,10 @@ export class CharacteristicService {
 
     }
 
+    // fix esli cho
     public async delete(reqData: IdReq): Promise<BaseResponse<SuccessRes>> {
 
         try {
-
-            await this.database.characteristic.findUniqueOrThrow({ where: { id: reqData.id } });
 
             await this.database.characteristic.delete({ where: { id: reqData.id } });
 

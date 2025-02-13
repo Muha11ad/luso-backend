@@ -1,4 +1,3 @@
-import { Category } from "@prisma/client";
 import { Injectable } from "@nestjs/common";
 import { MyError } from "@/shared/utils/error";
 import { CategoryBaseService } from "./category.base.service";
@@ -9,48 +8,12 @@ import { CategoryProductAddReq, CategoryProductDeleteReq } from "../category.int
 @Injectable()
 export class CategoryProductService extends CategoryBaseService {
 
-    private async checkCategoryAndProductsExist(reqData: CategoryProductAddReq): Promise<BaseResponse<Category>> {
-
-        const data = await this.database.category.findUniqueOrThrow({
-            where: { id: reqData.id }
-        })
-
-        for (const p_id of reqData.productIds) {
-
-            await this.database.product.findUniqueOrThrow({ where: { id: p_id } });
-
-        }
-        return { errId: null, data };
-
-    }
-
-    private async filterDuplicateProductInCategory(reqData: CategoryProductAddReq): Promise<BaseResponse<string[]>> {
-
-        const existingProductIds: string[] = await this.database.productCategory
-            .findMany({
-                where: {
-                    category_id: reqData.id,
-                    product_id: { in: reqData.productIds }
-                },
-                select: { product_id: true }
-            })
-            .then((products) => products.map((product) => product.product_id));
-
-        return { errId: null, data: reqData.productIds.filter((p_id) => !existingProductIds.includes(p_id)) };
-
-    }
-
     public async addProductToCategory(reqData: CategoryProductAddReq): Promise<BaseResponse<SuccessRes>> {
 
         try {
 
-            const { errId, data } = await this.checkCategoryAndProductsExist(reqData);
+            await this.checkCategoryAndProductsExist(reqData);
 
-            if (errId) {
-
-                return { errId, data: null }
-
-            }
 
             const { data: filteredProductIds } = await this.filterDuplicateProductInCategory(reqData);
 
@@ -81,13 +44,8 @@ export class CategoryProductService extends CategoryBaseService {
 
         try {
 
-            const { errId, data } = await this.checkCategoryAndProductsExist(redData);
+            await this.checkCategoryAndProductsExist(redData);
 
-            if (errId) {
-
-                return { errId, data: null }
-
-            }
             await this.database.productCategory.deleteMany({
                 where: {
                     category_id: redData.id,
@@ -104,5 +62,36 @@ export class CategoryProductService extends CategoryBaseService {
         }
 
     }
+
+    private async checkCategoryAndProductsExist(reqData: CategoryProductAddReq): Promise<void> {
+
+        await this.database.category.findUniqueOrThrow({
+            where: { id: reqData.id }
+        })
+
+        for (const p_id of reqData.productIds) {
+
+            await this.database.product.findUniqueOrThrow({ where: { id: p_id } });
+
+        }
+
+    }
+
+    private async filterDuplicateProductInCategory(reqData: CategoryProductAddReq): Promise<BaseResponse<string[]>> {
+
+        const existingProductIds: string[] = await this.database.productCategory
+            .findMany({
+                where: {
+                    category_id: reqData.id,
+                    product_id: { in: reqData.productIds }
+                },
+                select: { product_id: true }
+            })
+            .then((products) => products.map((product) => product.product_id));
+
+        return { errId: null, data: reqData.productIds.filter((p_id) => !existingProductIds.includes(p_id)) };
+
+    }
+
 
 }

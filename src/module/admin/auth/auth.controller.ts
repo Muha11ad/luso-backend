@@ -9,8 +9,8 @@ import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { Body, Controller, HttpStatus, Post, Res } from "@nestjs/common";
 
 @Controller()
-@ApiTags(ENDPOINTS.auth)
 @ApiBearerAuth()
+@ApiTags(ENDPOINTS.auth)
 export class AuthController {
 
     constructor(private readonly authService: AuthService) { }

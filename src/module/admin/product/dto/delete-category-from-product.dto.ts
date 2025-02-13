@@ -3,9 +3,9 @@ import { IsNotEmpty, IsString } from "class-validator";
 
 export class DeleteCategoryFromProductDto {
 
-    @ApiProperty({ type: String, required: true })
     @IsString()
     @IsNotEmpty()
+    @ApiProperty({ type: String, required: true })
         categoryId: string;
 
 }

@@ -26,7 +26,9 @@ export class OrderCreateEntity {
 
     private get orderDeliveryFee(): number {
 
-        return this.orderTotalPrice > 400000 ? 0 : 20000;
+        const deliveryFee = process.env.DELIVERY_FEE ? Number(process.env.DELIVERY_FEE) : 0;
+
+        return this.orderTotalPrice > 400000 ? 0 : deliveryFee;
 
     }
 

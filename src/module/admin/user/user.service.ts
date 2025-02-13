@@ -3,36 +3,14 @@ import { UserCreateReq } from "./user.interface";
 import { DatabaseProvider } from "@/shared/providers";
 import { BadGatewayException, Injectable } from "@nestjs/common";
 import { ServiceExceptions } from "@/shared/exceptions/service.exception";
-import { BaseResponse, IdReq, SuccessRes, UserIdReq } from "@/shared/utils/types";
+import { BaseResponse, SuccessRes, UserIdReq } from "@/shared/utils/types";
 
 @Injectable()
 export class UserService {
 
     constructor(private readonly database: DatabaseProvider) { }
 
-    private async create(reqData: UserCreateReq): Promise<BaseResponse<User>> {
-
-        try {
-
-            const user = await this.database.user.create({
-                data: {
-                    name: reqData.name,
-                    username: reqData.username,
-                    telegram_id: reqData.telegramId
-                }
-            });
-
-            return { errId: null, data: user };
-
-        } catch (error) {
-
-            throw new BadGatewayException(error.message);
-
-        }
-
-    }
-
-    public async findAll(): Promise<BaseResponse<User[]>> {
+    public async getAll(): Promise<BaseResponse<User[]>> {
 
         try {
 
@@ -54,9 +32,11 @@ export class UserService {
         try {
 
             await this.database.user.delete({
+
                 where: {
                     telegram_id: reqData.id
                 }
+            
             });
 
             return { errId: null, data: { success: true } };
@@ -72,16 +52,18 @@ export class UserService {
     public async checkExistOrCreate(reqData: UserCreateReq): Promise<BaseResponse<User>> {
 
         const user = await this.database.user.findUnique({ where: { telegram_id: reqData.telegramId } });
+
         if (user) {
 
             return { errId: null, data: user };
 
         }
+
         return this.create(reqData);
 
     }
 
-    public async findById(reqData: UserIdReq): Promise<BaseResponse<User>> {
+    public async getById(reqData: UserIdReq): Promise<BaseResponse<User>> {
 
         try {
 
@@ -91,7 +73,29 @@ export class UserService {
 
         } catch (error) {
 
-            return ServiceExceptions.handle(error, UserService.name, 'findById');
+            return ServiceExceptions.handle(error, UserService.name, 'getById');
+
+        }
+
+    }
+
+    private async create(reqData: UserCreateReq): Promise<BaseResponse<User>> {
+
+        try {
+
+            const user = await this.database.user.create({
+                data: {
+                    name: reqData.name,
+                    username: reqData.username,
+                    telegram_id: reqData.telegramId
+                }
+            });
+
+            return { errId: null, data: user };
+
+        } catch (error) {
+
+            throw new BadGatewayException(error.message);
 
         }
 

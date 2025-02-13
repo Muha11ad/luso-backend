@@ -1,7 +1,7 @@
 import { Prisma, Product } from "@prisma/client";
-import { updateTranslation } from "@/shared/utils/helpers";
-import { ProductUpdateReq } from "../product.interface";
 import { TranslationType } from "@/shared/utils/types";
+import { ProductUpdateReq } from "../product.interface";
+import { updateTranslation } from "@/shared/utils/helpers";
 
 export class ProductUpdateEntity {
     private updatingData: ProductUpdateReq;

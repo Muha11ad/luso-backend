@@ -1,4 +1,4 @@
-import { LandingUserModule } from "./module/user";
+import { LandingUserModule } from "./module/landing/user";
 import { INestApplication } from "@nestjs/common";
 import { AdminAuthModule } from "./module/admin/auth";
 import { AdminUserModule } from "./module/admin/user";

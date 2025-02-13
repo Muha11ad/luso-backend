@@ -22,48 +22,6 @@ export class UploadService {
 
     }
 
-    private async saveFile(reqData: UploadFileReq): Promise<BaseResponse<string>> {
-
-        try {
-            
-            const uploadFolder = path.resolve(this.pathToUpload, reqData.folder);
-            await ensureDir(uploadFolder);
-
-            const fileExtension = ".webp";
-            const uniqueFileName = `${uuidv4()}${fileExtension}`;
-            const webpBuffer = await convertImageToWebP(reqData.file);
-
-            const filePath = path.join(uploadFolder, uniqueFileName);
-            await writeFile(filePath, webpBuffer);
-
-            const relativePath = `${reqData.folder}/${uniqueFileName}`;
-            return { data: `${this.baseUrl}/${relativePath}`, errId: null };
-
-        } catch (error) {
-
-            return ServiceExceptions.handle(error, UploadService.name, 'saveFile');
-
-        }
-    }
-
-    private async deleteFile(reqData: UploadDeleteFileReq): Promise<BaseResponse<SuccessRes>> {
-
-        try {
-
-            const fileName = path.basename(reqData.fileName);
-            const filePath = path.resolve(this.pathToUpload, reqData.folder, fileName);
-
-            await unlink(filePath);
-
-            return { data: { success: true }, errId: null };
-
-        } catch (error) {
-
-            return ServiceExceptions.handle(error, UploadService.name, 'deleteFile');
-
-        }
-    }
-
     public async saveMultipleFiles(reqData: UploadMultipliFilesReq): Promise<BaseResponse<string[]>> {
 
         try {
@@ -115,4 +73,47 @@ export class UploadService {
 
         }
     }
+
+    private async saveFile(reqData: UploadFileReq): Promise<BaseResponse<string>> {
+
+        try {
+
+            const uploadFolder = path.resolve(this.pathToUpload, reqData.folder);
+            await ensureDir(uploadFolder);
+
+            const fileExtension = ".webp";
+            const uniqueFileName = `${uuidv4()}${fileExtension}`;
+            const webpBuffer = await convertImageToWebP(reqData.file);
+
+            const filePath = path.join(uploadFolder, uniqueFileName);
+            await writeFile(filePath, webpBuffer);
+
+            const relativePath = `${reqData.folder}/${uniqueFileName}`;
+            return { data: `${this.baseUrl}/${relativePath}`, errId: null };
+
+        } catch (error) {
+
+            return ServiceExceptions.handle(error, UploadService.name, 'saveFile');
+
+        }
+    }
+
+    private async deleteFile(reqData: UploadDeleteFileReq): Promise<BaseResponse<SuccessRes>> {
+
+        try {
+
+            const fileName = path.basename(reqData.fileName);
+            const filePath = path.resolve(this.pathToUpload, reqData.folder, fileName);
+
+            await unlink(filePath);
+
+            return { data: { success: true }, errId: null };
+
+        } catch (error) {
+
+            return ServiceExceptions.handle(error, UploadService.name, 'deleteFile');
+
+        }
+    }
+
 }

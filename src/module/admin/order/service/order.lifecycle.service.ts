@@ -8,35 +8,11 @@ import { OrderCreateReq, OrderDetailsCreateReq, OrderIdReq } from "../order.inte
 @Injectable()
 export class OrderLifecycleService extends OrderBaseService {
 
-    private async checkUserExist(id: number | string): Promise<void> {
-
-        await this.database.user.findUnique({
-            where: {
-                telegram_id: Number(id)
-            }
-        });
-
-    }
-
-    private async checkProductExists(orderDetails: OrderDetailsCreateReq[]): Promise<void> {
-
-        for (const detail of orderDetails) {
-
-            await this.database.product.findUniqueOrThrow({
-                where: {
-                    id: detail.productId
-                }
-            });
-
-        }
-
-    }
-
     public async create(reqData: OrderCreateReq): Promise<BaseResponse<SuccessRes>> {
 
         try {
 
-            await this.checkUserExist(reqData.userId);
+            await this.database.user.findUniqueOrThrow({ where: { telegram_id: reqData.userId } });
 
             await this.checkProductExists(reqData.orderDetails);
 
@@ -67,17 +43,11 @@ export class OrderLifecycleService extends OrderBaseService {
 
         try {
 
-            const { errId, data: order } = await this.checkOrder(reqData.id);
-
-            if (errId) {
-
-                return { errId, data: null };
-
-            }
+            await this.database.order.findUniqueOrThrow({ where: { id: reqData.id } });
 
             await this.database.order.delete({
                 where: {
-                    id: order.id
+                    id: reqData.id
                 }
             });
 
@@ -86,6 +56,20 @@ export class OrderLifecycleService extends OrderBaseService {
         } catch (error) {
 
             return ServiceExceptions.handle(error, OrderLifecycleService.name, 'delete');
+
+        }
+
+    }
+
+    private async checkProductExists(orderDetails: OrderDetailsCreateReq[]): Promise<void> {
+
+        for (const detail of orderDetails) {
+
+            await this.database.product.findUniqueOrThrow({
+                where: {
+                    id: detail.productId
+                }
+            });
 
         }
 

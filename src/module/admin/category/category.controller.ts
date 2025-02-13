@@ -2,10 +2,9 @@ import { Response } from "express";
 import { ReqIdDto } from "@/shared/dto/id.dto";
 import { ENDPOINTS } from "@/shared/utils/consts";
 import { setResult } from "@/shared/utils/helpers";
-import { CacheInterceptor } from "@nestjs/cache-manager";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
-import { Body, Controller, Get, Post, UseGuards } from "@nestjs/common";
-import { Param, Delete, Put, UseInterceptors, HttpStatus, Res } from "@nestjs/common";
+import { Body, Controller, Get, Post, } from "@nestjs/common";
+import { Param, Delete, Put, HttpStatus, Res } from "@nestjs/common";
 import { CategoryCrudService, CategoryFindService, CategoryProductService } from "./service";
 import { CategoryCreateDto, CategoryUpdateDto, AddProductToCategoryDto, DeleteProductFromCategoryDto } from "./dto";
 import { CategoryCreateReq, CategoryDeleteReq, CategoryProductAddReq, CategoryProductDeleteReq, CategoryUpdateReq } from "./category.interface";
@@ -28,7 +27,7 @@ export class CategoryController {
 
         if (errId) {
 
-            return res.status(HttpStatus.BAD_GATEWAY).json(setResult(null, errId));
+            return res.status(HttpStatus.BAD_REQUEST).json(setResult(null, errId));
 
         }
 
@@ -87,7 +86,7 @@ export class CategoryController {
 
     }
 
-    @Post(":id")
+    @Post("product/:id")
     async addProductToCategory(@Res() res: Response, @Param() param: ReqIdDto, @Body() body: AddProductToCategoryDto
     ) {
 
@@ -105,7 +104,7 @@ export class CategoryController {
 
     }
 
-    @Delete(":id/product")
+    @Delete("product/:id")
     async deleteProductFromCategory(@Res() res: Response, @Param() param: ReqIdDto, @Body() body: DeleteProductFromCategoryDto) {
 
         const requestData: CategoryProductDeleteReq = { ...body, id: param.id, };

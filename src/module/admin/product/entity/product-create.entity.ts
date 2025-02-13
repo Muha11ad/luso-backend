@@ -1,6 +1,6 @@
 import { Prisma } from "@prisma/client";
-import { createTranslation } from "@/shared/utils/helpers";
 import { ProductCreateReq } from "../product.interface";
+import { createTranslation } from "@/shared/utils/helpers";
 
 export class ProductCreateEntity {
 

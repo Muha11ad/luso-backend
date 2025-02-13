@@ -8,20 +8,19 @@ import { OrderDetailsUpdateReq, OrderUpdateReq, OrderUpdateStatusReq } from "../
 @Injectable()
 export class OrderUpdateService extends OrderBaseService {
 
-    async updateOrder(reqData: OrderUpdateReq): Promise<BaseResponse<SuccessRes>> {
+    public async update(reqData: OrderUpdateReq): Promise<BaseResponse<SuccessRes>> {
 
         try {
-            const { errId, data } = await this.checkOrder(reqData.id);
 
-            if (errId) {
-
-                return { errId, data: null };
-
-            }
+            await this.database.order.findUniqueOrThrow({ where: { id: reqData.id } });
 
             await this.database.order.update({
                 where: { id: reqData.id },
-                data: reqData
+                data: {
+                    region: reqData?.region,
+                    first_name: reqData?.firstName,
+                    phone_number: reqData?.phoneNumber,
+                }
             })
 
             return { errId: null, data: { success: true } };
@@ -35,16 +34,11 @@ export class OrderUpdateService extends OrderBaseService {
 
     }
 
-    async updateOrderStatus(reqData: OrderUpdateStatusReq): Promise<BaseResponse<SuccessRes>> {
+    public async updateStatus(reqData: OrderUpdateStatusReq): Promise<BaseResponse<SuccessRes>> {
 
         try {
 
-            const { errId, data } = await this.checkOrder(reqData.id);
-
-            if (errId) {
-
-                return { errId, data: null };
-            }
+            await this.database.order.findUniqueOrThrow({ where: { id: reqData.id } });
 
             await this.database.order.update({
                 where: { id: reqData.id },
@@ -61,7 +55,7 @@ export class OrderUpdateService extends OrderBaseService {
 
     }
 
-    async updateOrderDetails(reqData: OrderDetailsUpdateReq): Promise<BaseResponse<SuccessRes>> {
+    public async updateDetails(reqData: OrderDetailsUpdateReq): Promise<BaseResponse<SuccessRes>> {
 
         try {
 
@@ -69,7 +63,7 @@ export class OrderUpdateService extends OrderBaseService {
                 where: { id: reqData.id }
             });
 
-            const orderDetailsEntity = new OrderDetailsUpdateEntity(reqData, existingOrderDetails?.total_price);
+            const orderDetailsEntity = new OrderDetailsUpdateEntity(existingOrderDetails, reqData);
 
             const updatedOrderDetails = await this.database.orderDetails.update({
                 where: { id: reqData.id },

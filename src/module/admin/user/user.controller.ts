@@ -6,8 +6,8 @@ import { ENDPOINTS } from "@/shared/utils/consts";
 import { setResult } from "@/shared/utils/helpers";
 import { TelegramIdDto, UserCreateDto } from "./dto";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
-import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Res, UseGuards, UseInterceptors } from "@nestjs/common";
 import { CacheInterceptor } from "@nestjs/cache-manager";
+import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Res, UseInterceptors } from "@nestjs/common";
 
 @Controller()
 @ApiTags(ENDPOINTS.user)
@@ -20,26 +20,30 @@ export class UserController {
     @UseInterceptors(CacheInterceptor)
     async getAll(@Res() res: Response) {
 
-        const { errId, data } = await this.userService.findAll();
+        const { errId, data } = await this.userService.getAll();
 
         if (errId) {
+
             return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
+        
         }
 
         return res.status(HttpStatus.OK).jsonp(setResult(data, null));
 
     }
 
-    @Get("/:telegram_id")
+    @Get(":telegramId")
     @UseInterceptors(CacheInterceptor)
     async getById(@Res() res: Response, @Param() param: TelegramIdDto) {
 
-        const requestData: UserIdReq = { id: param.telegramId };
+        const requestData: UserIdReq = { id: Number(param.telegramId) };
 
-        const { errId, data } = await this.userService.findById(requestData)
+        const { errId, data } = await this.userService.getById(requestData)
 
         if (errId) {
+
             return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
+
         }
 
         return res.status(HttpStatus.OK).jsonp(setResult(data, null));
@@ -54,17 +58,19 @@ export class UserController {
         const { errId, data: user } = await this.userService.checkExistOrCreate(requestData);
 
         if (errId) {
+
             return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
+        
         }
 
         return res.status(HttpStatus.OK).jsonp(setResult(user, null));
 
     }
 
-    @Delete("/:telegram_id")
+    @Delete(":telegramId")
     async delete(@Res() res: Response, @Param() param: TelegramIdDto) {
 
-        const requestData: UserIdReq = { id: param.telegramId };
+        const requestData: UserIdReq = { id: Number(param.telegramId) };
 
         const { errId } = await this.userService.delete(requestData);
 

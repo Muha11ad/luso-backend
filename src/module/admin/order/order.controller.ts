@@ -10,8 +10,8 @@ import { Put, Get, Body, Post, Param, Delete, Controller, Res, HttpStatus, Patch
 import { OrderCreateReq, OrderDetailsUpdateReq, OrderGetByUserIdReq, OrderIdReq, OrderUpdateReq, OrderUpdateStatusReq } from "./order.interface";
 
 @Controller()
-@ApiTags(ENDPOINTS.order)
 @ApiBearerAuth()
+@ApiTags(ENDPOINTS.order)
 export class OrderController {
 
   constructor(
@@ -55,7 +55,7 @@ export class OrderController {
   async getByUserId(@Res() res: Response, @Param() param: TelegramIdDto) {
 
     const requestData: OrderGetByUserIdReq = {
-      userId: param.telegramId
+      userId: Number(param.telegramId)
     }
 
     const { errId, data } = await this.findService.findByUserId(requestData);
@@ -83,7 +83,7 @@ export class OrderController {
 
     }
 
-    return res.status(HttpStatus.OK).jsonp(setResult(data, null));
+    return res.status(HttpStatus.CREATED).jsonp(setResult(data, null));
 
   }
 
@@ -112,7 +112,7 @@ export class OrderController {
       id: param.id
     }
 
-    const { errId, data: result } = await this.updateService.updateOrder(requestData);
+    const { errId, data: result } = await this.updateService.update(requestData);
 
     if (errId) {
 
@@ -132,7 +132,7 @@ export class OrderController {
       id: param.id
     }
 
-    const { errId, data } = await this.updateService.updateOrderStatus(requestData);
+    const { errId, data } = await this.updateService.updateStatus(requestData);
 
     if (errId) {
 
@@ -153,7 +153,7 @@ export class OrderController {
       id: param.id
     }
 
-    const { errId, data } = await this.updateService.updateOrderDetails(requestData);
+    const { errId, data } = await this.updateService.updateDetails(requestData);
 
     if (errId) {
 

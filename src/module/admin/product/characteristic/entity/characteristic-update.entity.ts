@@ -1,5 +1,5 @@
-import { updateTranslation } from "@/shared/utils/helpers";
 import { Characteristic, Prisma } from "@prisma/client";
+import { updateTranslation } from "@/shared/utils/helpers";
 import { CharacteristicUpdateReq } from "../characteristic.interface";
 
 export class CharacteristicUpdateEntity {

@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 import { RouterModule } from "@nestjs/core";
-import { LandingUserModule } from "../user";
+import { LandingUserModule } from "./user";
 import { LandingOrderModule } from "./order";
 import { LandingProductModule } from "./product";
 import { ENDPOINTS } from "@/shared/utils/consts";

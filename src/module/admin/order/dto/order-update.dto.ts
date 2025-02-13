@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { OrderStatus, Region } from "@prisma/client";
-import { IsEnum, IsNumber, IsOptional, IsString } from "class-validator";
+import { IsEnum, IsNumber, IsOptional, IsPositive, IsString, Min } from "class-validator";
 
 export class OrderUpdateDto {
 
@@ -22,14 +22,16 @@ export class OrderUpdateDto {
 }
 export class OrderDetailsUpdateDto {
 
-    @ApiProperty({ type: String, required: false })
+    @ApiProperty({ type: Number, required: false })
     @IsOptional()
     @IsNumber()
+    @IsPositive()
         productPrice: number;
 
     @ApiProperty({ type: Number, required: false })
     @IsOptional()
     @IsNumber()
+    @Min(1)
         quantity: number;
 
 }

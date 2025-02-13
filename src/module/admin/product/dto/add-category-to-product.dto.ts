@@ -1,12 +1,12 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { ArrayNotEmpty, IsArray, IsNotEmpty } from "class-validator";
+import { ArrayNotEmpty, IsArray, IsNotEmpty, ValidateNested } from "class-validator";
 
 export class AddCategoryToProductDto {
 
-    @ApiProperty({ type: Array, required: true })
-    @IsNotEmpty()
     @IsArray()
+    @IsNotEmpty()
     @ArrayNotEmpty()
+    @ApiProperty({ type: Array, required: true })
         categoryIds: string[];
 
 }

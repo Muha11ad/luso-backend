@@ -8,22 +8,28 @@ export class CategoryUpdateEntity {
   private readonly description: TranslationType | null = null;
 
   constructor(oldData: Category, newData: CategoryUpdateDto) {
-    if (newData["name"]) {
+
+    if (newData?.name) {
+    
       this.name = updateTranslation(oldData.name as TranslationType , newData.name);
+    
     }
-    if (newData["description"]) {
+    
+    if (newData?.description) {
+    
       this.description = updateTranslation(
         oldData.description as TranslationType,
         newData.description
       );
+    
     }
   }
 
   toPrisma(): Prisma.CategoryUpdateInput {
     const { name, description } = this;
     return {
-      ...(name && { name }),
-      ...(description && { description }),
+      name,
+      description,
     };
   }
 }

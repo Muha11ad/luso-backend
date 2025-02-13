@@ -84,7 +84,7 @@ model Order {
   first_name   String
   region       Region
   status       OrderStatus
-  user         User           @relation(fields: [user_id], references: [telegram_id])
+  user         User           @relation(fields: [user_id], references: [telegram_id], onDelete: Cascade)
   OrderDetails OrderDetails[]
 }
 

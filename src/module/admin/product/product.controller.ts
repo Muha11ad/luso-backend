@@ -28,7 +28,9 @@ export class ProductController {
         const { errId, data } = await this.findService.findAll();
 
         if (errId) {
+        
             return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
+        
         }
 
         return res.status(HttpStatus.OK).jsonp(setResult(data, null));
@@ -43,7 +45,9 @@ export class ProductController {
         const { errId, data } = await this.findService.findById(requestData);
 
         if (errId) {
+        
             return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
+        
         }
 
         return res.status(HttpStatus.OK).jsonp(setResult(data, null));
@@ -58,7 +62,9 @@ export class ProductController {
         const { errId, data: products } = await this.findService.findByFilter(requestData);
 
         if (errId) {
+
             return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
+        
         }
 
         return res.status(HttpStatus.OK).jsonp(setResult(products, null));
@@ -73,7 +79,9 @@ export class ProductController {
         const { errId, data } = await this.crudService.create(requestData);
 
         if (errId) {
+        
             return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
+        
         }
 
         return res.status(HttpStatus.CREATED).jsonp(setResult(data, null));
@@ -91,7 +99,9 @@ export class ProductController {
         const { errId, data } = await this.crudService.update(reqData);
 
         if (errId) {
+
             return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
+        
         }
 
         return res.status(HttpStatus.OK).jsonp(setResult(data, null));
@@ -106,7 +116,9 @@ export class ProductController {
         const { errId, data } = await this.crudService.delete(requestData);
 
         if (errId) {
+        
             return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
+        
         }
 
         return res.status(HttpStatus.OK).jsonp(setResult(data, null));
@@ -124,7 +136,9 @@ export class ProductController {
         const { errId, data } = await this.productCategoryService.addCategoryToProduct(requestData);
 
         if (errId) {
+     
             return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
+     
         }
 
         return res.status(HttpStatus.OK).jsonp(setResult(data, null));
@@ -142,7 +156,9 @@ export class ProductController {
         const { errId, data } = await this.productCategoryService.deleteCategoryFromProduct(requestData);
 
         if (errId) {
+
             return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
+        
         }
 
         return res.status(HttpStatus.OK).jsonp(setResult(data, null));

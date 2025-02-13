@@ -23,13 +23,13 @@ export class CharacteristicController {
 
     const { errId, data } = await this.characteristicService.create(requestData);
 
-    if (data) {
+    if (errId) {
 
-      return res.status(HttpStatus.CREATED).jsonp(setResult(data, errId));
+      return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(data, errId));
 
     }
 
-    return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(data, errId));
+    return res.status(HttpStatus.CREATED).jsonp(setResult(data, errId));
 
   }
 
@@ -69,4 +69,6 @@ export class CharacteristicController {
     return res.status(HttpStatus.OK).jsonp(setResult(data, errId));
 
   }
+
 }
+

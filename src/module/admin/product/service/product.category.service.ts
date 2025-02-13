@@ -69,8 +69,8 @@ export class ProductCategoryService extends ProductBaseService {
                 select: {
                     product: {
                         include: {
-                            Characteristic: true,
-                            Images: true
+                            Images: true,
+                            Characteristic: true
                         }
                     }
                 }

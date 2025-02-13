@@ -1,10 +1,10 @@
 import { Response } from "express";
 import { ApiTags } from "@nestjs/swagger";
-import { UserCreateDto } from "../admin/user";
+import { UserCreateDto } from "../../admin/user";
 import { ENDPOINTS } from "@/shared/utils/consts";
 import { setResult } from "@/shared/utils/helpers";
-import { UserService } from "../admin/user/user.service";
-import { UserCreateReq } from "../admin/user/user.interface";
+import { UserService } from "../../admin/user/user.service";
+import { UserCreateReq } from "../../admin/user/user.interface";
 import { Body, Controller, HttpStatus, Post, Res, } from "@nestjs/common";
 
 @Controller()

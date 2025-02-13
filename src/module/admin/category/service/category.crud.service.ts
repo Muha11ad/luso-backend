@@ -8,68 +8,34 @@ import { CategoryCreateReq, CategoryDeleteReq, CategoryUpdateReq } from "../cate
 @Injectable()
 export class CategoryCrudService extends CategoryBaseService {
 
+  public async create(reqData: CategoryCreateReq): Promise<BaseResponse<SuccessRes>> {
 
-  async delete(reqData: CategoryDeleteReq): Promise<BaseResponse<SuccessRes>> {
     try {
-
-      await this.database.category.delete({ where: { id: reqData.id } });
-
-      await this.redisProvider.delAll()
-
-      return { errId: null, data: { success: true } };
-
-    } catch (error) {
-      return ServiceExceptions.handle(
-        error,
-        CategoryCrudService.name,
-        "delete"
-      );
-    }
-  }
-
-  async create(reqData: CategoryCreateReq): Promise<BaseResponse<SuccessRes>> {
-    try {
-      const { errId, data } = await this.checkName(reqData.name);
-
-      if (errId) {
-        return { errId, data: null };
-      }
 
       const categoryEntity = new CategoryCreateEntity(reqData);
 
       await this.database.category.create({
         data: categoryEntity.toPrisma(),
       });
+
       await this.redisProvider.delAll()
 
       return { errId: null, data: { success: true } };
+
     } catch (error) {
-      return ServiceExceptions.handle(
-        error,
-        CategoryCrudService.name,
-        "create"
-      );
+
+      return ServiceExceptions.handle(error, CategoryCrudService.name, "create");
+
     }
   }
 
-  async update(reqData: CategoryUpdateReq): Promise<BaseResponse<SuccessRes>> {
+  public async update(reqData: CategoryUpdateReq): Promise<BaseResponse<SuccessRes>> {
 
     try {
 
       const category = await this.database.category.findUniqueOrThrow({
         where: { id: reqData.id },
       });
-
-      if (reqData["name"]) {
-
-        const { errId, data } = await this.checkName(reqData.name);
-        
-        if (errId) {
-        
-          return { errId, data: null };
-        
-        }
-      }
 
       const categoryEntity = new CategoryUpdateEntity(category, reqData);
 
@@ -88,4 +54,23 @@ export class CategoryCrudService extends CategoryBaseService {
 
     }
   }
+
+  public async delete(reqData: CategoryDeleteReq): Promise<BaseResponse<SuccessRes>> {
+
+    try {
+
+      await this.database.category.delete({ where: { id: reqData.id } });
+
+      await this.redisProvider.delAll()
+
+      return { errId: null, data: { success: true } };
+
+    } catch (error) {
+
+      return ServiceExceptions.handle(error, CategoryCrudService.name, "delete");
+
+    }
+  }
+
+
 }

@@ -3,19 +3,19 @@ import { IsNotEmpty, IsString } from "class-validator";
 
 export class FilterProductsDto {
 
-    @ApiProperty({ type: String, required: true })
-    @IsNotEmpty()
     @IsString()
+    @IsNotEmpty()
+    @ApiProperty({ type: String, required: true })
         age: string;
 
-    @ApiProperty({ type: String, required: true })
-    @IsNotEmpty()
     @IsString()
+    @IsNotEmpty()
+    @ApiProperty({ type: String, required: true })
         skinType: string;
 
-    @ApiProperty({ type: String, required: true })
     @IsNotEmpty()
     @IsString()
+    @ApiProperty({ type: String, required: true })
         purpose: string;
 
 }

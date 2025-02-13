@@ -1,50 +1,24 @@
-import { Prisma } from "@prisma/client";
+import { OrderDetails, Prisma } from "@prisma/client";
 import { OrderDetailsUpdateReq } from "../order.interface";
 
 export class OrderDetailsUpdateEntity {
     constructor(
-        private readonly data: OrderDetailsUpdateReq,
-        private readonly originalTotalPrice: number
+        private readonly oldData: OrderDetails,
+        private readonly newData: OrderDetailsUpdateReq,
     ) { }
 
-    
     public toPrisma(): Prisma.OrderDetailsUpdateInput {
-        const { quantity, productPrice } = this.data;
+        const { quantity: newQuantity, productPrice: newProductPrice } = this.newData;
+        const { quantity: oldQuantity, product_price: oldProductPrice } = this.oldData;
 
-        if (quantity && productPrice) {
-            return {
-                quantity,
-                product_price: productPrice,
-                total_price: quantity * productPrice,
-            };
-        }
+        const quantity = newQuantity ?? oldQuantity;
+        const productPrice = newProductPrice ?? oldProductPrice;
+        const totalPrice = quantity * productPrice;
 
-        if (quantity) {
-            return {
-                quantity,
-                product_price: this.calculateProductPrice(quantity),
-                total_price: quantity * this.calculateProductPrice(quantity),
-            };
-        }
-
-        if (productPrice) {
-            return {
-                quantity: this.calculateQuantity(productPrice),
-                product_price: productPrice,
-                total_price: this.calculateQuantity(productPrice) * productPrice,
-            };
-        }
-
-        return {};
+        return {
+            quantity: newQuantity !== undefined ? newQuantity : undefined,
+            product_price: newProductPrice !== undefined ? newProductPrice : undefined,
+            total_price: totalPrice,
+        };
     }
-
-
-    private calculateProductPrice(quantity: number): number {
-        return this.originalTotalPrice / quantity;
-    }
-
-    private calculateQuantity(productPrice: number): number {
-        return this.originalTotalPrice / productPrice; 
-    }
-
 }

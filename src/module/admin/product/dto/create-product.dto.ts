@@ -5,34 +5,34 @@ import { Min, IsNumber, IsObject, IsString, IsBoolean, IsOptional, IsNotEmpty, V
 
 export class ProductCreateDto {
 
-    @ApiProperty({ type: String, required: true })
-    @IsNotEmpty()
     @IsString()
+    @IsNotEmpty()
+    @ApiProperty({ type: String, required: true })
         name: string;
 
-    @ApiProperty({ type: Number, required: true })
+    @Min(0)
     @IsNumber()
     @IsNotEmpty()
-    @Min(0)
+    @ApiProperty({ type: Number, required: true })
         price: number;
 
-    @ApiProperty({ type: Boolean, required: true })
-    @IsNotEmpty()
     @IsBoolean()
+    @IsNotEmpty()
+    @ApiProperty({ type: Boolean, required: true })
         available: boolean;
 
-    @ApiProperty({ type: Number, required: false , default: 0 })
-    @IsOptional()
-    @IsNumber()
     @Min(0)
+    @IsNumber()
+    @IsOptional()
+    @ApiProperty({ type: Number, required: false , default: 0 })
         discount = 0;
 
 
-    @ApiProperty({ type: TranslationsDto, required: true })
-    @IsNotEmpty()
     @IsObject()
-    @ValidateNested({ each: true })
+    @IsNotEmpty()
     @Type(() => TranslationsDto)
+    @ValidateNested({ each: true })
+    @ApiProperty({ type: TranslationsDto, required: true })
         instruction: TranslationsDto;
 
 }

@@ -16,6 +16,8 @@ export const configSchema = Joi.object({
     PATH_TO_UPLOADS: Joi.string(),
 
 
+    DELIVERY_FEE: Joi.number(),
+
     DB_TYPE: Joi.string(),
     DB_CONNECTION_URL: Joi.string(),
 
