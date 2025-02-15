@@ -3,8 +3,9 @@ import { TranslationType } from "@/shared/utils/types";
 export interface ProductCreateReq {
     name: string;
     price: number;
-    available: boolean;
+    images: string[];
     discount?: number;
+    available: boolean;
     instruction: TranslationType
 }
 

@@ -1,0 +1,21 @@
+model Recommendation {
+  id         String    @id @default(uuid())
+  user_id    Int
+  purpose    String
+  created_at DateTime? @default(now())
+  updated_at DateTime?
+  deleted_at DateTime?
+
+  user     User                    @relation(fields: [user_id], references: [telegram_id], onDelete: Cascade)
+  products RecommendationProduct[]
+}
+
+model RecommendationProduct {
+  recommendationId String
+  productId        String
+
+  recommendation Recommendation @relation(fields: [recommendationId], references: [id], onDelete: Cascade)
+  product        Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@id([recommendationId, productId])
+}

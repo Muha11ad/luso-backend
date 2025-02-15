@@ -35,4 +35,5 @@ export class ProductCreateDto {
     @ApiProperty({ type: TranslationsDto, required: true })
         instruction: TranslationsDto;
 
+        
 }
