@@ -2,6 +2,7 @@ import { Reflector } from "@nestjs/core";
 import { JwtService } from "@nestjs/jwt";
 import { MyError } from "../utils/error";
 import { IS_PUBLIC_KEY } from "../decorators";
+import { ConfigService } from "@nestjs/config";
 import { DatabaseProvider } from "../providers";
 import { Injectable, CanActivate, ExecutionContext, UnauthorizedException, BadRequestException } from "@nestjs/common";
 
@@ -10,6 +11,7 @@ export class AuthGuard implements CanActivate {
 
     constructor(
         private readonly reflector: Reflector,
+        private readonly config: ConfigService,
         private readonly jwtService: JwtService,
         private readonly database: DatabaseProvider
     ) { }
@@ -28,17 +30,23 @@ export class AuthGuard implements CanActivate {
         let token = request.headers["authorization"];
 
         if (!token) {
+
             throw new UnauthorizedException(MyError.INVALID_TOKEN.message);
+        
         }
 
         if (token.startsWith('Bearer ')) {
+        
             token = token.slice(7, token.length).trimLeft();
+       
         }
 
 
         try {
 
-            const result = await this.jwtService.verify(token, { secret: process.env.JWT_SECRET });
+            const accessSecret = this.config.get('jwt.accessSecret');
+
+            const result = await this.jwtService.verify(token, { secret: accessSecret });
 
 
             if (!result.email) {
@@ -59,7 +67,7 @@ export class AuthGuard implements CanActivate {
 
         } catch (error) {
 
-            throw new BadRequestException(error.message);
+            throw new UnauthorizedException(error.message);
 
         }
 

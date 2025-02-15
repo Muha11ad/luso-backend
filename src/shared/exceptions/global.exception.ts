@@ -10,9 +10,6 @@ export class GlobalExceptionFilter implements ExceptionFilter {
 
     catch(exception: any, host: ArgumentsHost) {
 
-        console.log('GlobalExceptionFilter', exception);
-        
-
         const ctx = host.switchToHttp();
         const res = ctx.getResponse<Response>();
 

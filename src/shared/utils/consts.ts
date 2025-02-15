@@ -1,11 +1,11 @@
 export const ENDPOINTS = {
     auth: "auth",
     user: "user",
-    order : "order",
+    order: "order",
     upload: "upload",
-    product : "product",
-    category : "category",
-    characteristic : "characteristic",
+    product: "product",
+    category: "category",
+    characteristic: "characteristic",
 }
 
 export const FILE_FORMAT = ["jpeg", "png", "webp"]
@@ -16,3 +16,5 @@ export const REDIS_ENDPOINT_KEYS = {
     product: "api/product/all",
     category: "api/category/all",
 }
+
+export const REFRESH_TOKEN_KEY = "refreshToken" 

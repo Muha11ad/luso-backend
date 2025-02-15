@@ -25,7 +25,8 @@ export const configSchema = Joi.object({
     REDIS_PORT: Joi.number(),
     REDIS_PASSWORD: Joi.string(),
 
-    JWT_SECRET: Joi.string(),
+    JWT_ACCESS_SECRET: Joi.string(),
+    JWT_REFRESH_SECRET: Joi.string(),
     JWT_ACCESS_EXPIRES: Joi.string(),
     JWT_REFRESH_EXPIRES: Joi.string(),
 
