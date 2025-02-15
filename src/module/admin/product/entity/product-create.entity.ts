@@ -14,6 +14,9 @@ export class ProductCreateEntity {
             discount: this.data.discount,
             available: this.data.available,
             instruction: createTranslation(this.data.instruction),
+            Images: {
+                create: this.data.images.map(image => ({ imageUrl: image }))
+            }
         };
 
     }

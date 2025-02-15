@@ -1,7 +1,7 @@
 import { Type } from "class-transformer";
 import { ApiProperty } from "@nestjs/swagger";
 import { TranslationsDto } from "@/shared/dto";
-import { Min, IsNumber, IsObject, IsString, IsBoolean, IsOptional, IsNotEmpty, ValidateNested } from "class-validator";
+import { Min, IsNumber, IsObject, IsString, IsBoolean, IsOptional, IsNotEmpty, ValidateNested, IsArray } from "class-validator";
 
 export class ProductCreateDto {
 
@@ -34,6 +34,12 @@ export class ProductCreateDto {
     @ValidateNested({ each: true })
     @ApiProperty({ type: TranslationsDto, required: true })
         instruction: TranslationsDto;
+
+    @IsArray()
+    @IsNotEmpty()
+    @ValidateNested({ each: true })
+    @ApiProperty({ type: Array<String>, required: true })
+        images: string[];
 
         
 }

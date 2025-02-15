@@ -8,7 +8,6 @@ model Order {
 
     created_at DateTime? @default(now())
     updated_at DateTime?
-    deleted_at DateTime?
 
     region       Region
     status       OrderStatus

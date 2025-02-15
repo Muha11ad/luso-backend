@@ -25,6 +25,13 @@ export class OrderLifecycleService extends OrderBaseService {
                     data: newOrder.toOrderDetails(createdOrder.id)
                 });
 
+                for (const detail of reqData.orderDetails) {
+                    await tx.product.update({
+                        where: { id: detail.productId },
+                        data: { sold: { increment: 1 } }
+                    });
+                }
+
                 return createdOrder;
 
             });

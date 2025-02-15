@@ -12,9 +12,13 @@ export class ProductUpdateEntity {
     }
 
     private updateInstruction(oldData: Product, newData: ProductUpdateReq): void {
+
         if (newData.instruction) {
+    
             this.updatingData.instruction = updateTranslation(oldData.instruction as TranslationType, newData.instruction);
+    
         }
+    
     }
 
     toPrisma(): Prisma.ProductUpdateInput {

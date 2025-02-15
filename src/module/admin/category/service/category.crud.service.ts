@@ -15,10 +15,10 @@ export class CategoryCrudService extends CategoryBaseService {
       const categoryEntity = new CategoryCreateEntity(reqData);
 
       await this.database.category.create({
-        data: categoryEntity.toPrisma(),
-      });
 
-      await this.redisProvider.delAll()
+        data: categoryEntity.toPrisma(),
+
+      });
 
       return { errId: null, data: { success: true } };
 
@@ -44,8 +44,6 @@ export class CategoryCrudService extends CategoryBaseService {
         data: categoryEntity.toPrisma(),
       });
 
-      await this.redisProvider.delAll()
-
       return { errId: null, data: { success: true } };
 
     } catch (error) {
@@ -61,8 +59,6 @@ export class CategoryCrudService extends CategoryBaseService {
 
       await this.database.category.delete({ where: { id: reqData.id } });
 
-      await this.redisProvider.delAll()
-
       return { errId: null, data: { success: true } };
 
     } catch (error) {
@@ -71,6 +67,5 @@ export class CategoryCrudService extends CategoryBaseService {
 
     }
   }
-
 
 }

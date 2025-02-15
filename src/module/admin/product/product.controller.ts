@@ -5,7 +5,7 @@ import { ENDPOINTS } from "@/shared/utils/consts";
 import { setResult } from "@/shared/utils/helpers";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { ProductCrudService, ProductFindService, ProductCategoryService } from "./service";
-import { Put, Get, Body, Post, Param, Delete, Controller, UseInterceptors, Res, HttpStatus } from "@nestjs/common";
+import { Put, Get, Body, Post, Param, Delete, Controller, Res, HttpStatus } from "@nestjs/common";
 import { ProductCreateDto, ProductUpdateDto, FilterProductsDto, AddCategoryToProductDto, DeleteCategoryFromProductDto } from "./dto";
 import { ProductCategoryAddReq, ProductCategoryDeleteReq, ProductCreateReq, ProductsFilterReq, ProductUpdateReq } from "./product.interface";
 

@@ -1,13 +1,14 @@
 import { Module } from "@nestjs/common";
 import { AdminUserModule } from "./user";
+import { AdminAuthModule } from "./auth";
 import { AdminOrderModule } from "./order";
 import { AdminUploadModule } from "./upload";
 import { AdminProductModule } from "./product";
 import { AdminCategoryModule } from "./category";
 import { ENDPOINTS } from "@/shared/utils/consts";
-import { AdminAuthModule, AuthGuard } from "./auth";
 import { APP_GUARD, RouterModule } from "@nestjs/core";
 import { ProvidersModule } from "@/shared/providers";
+import { AuthGuard } from "@/shared/guards/auth.guard";
 
 @Module({
     imports: [

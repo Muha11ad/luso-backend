@@ -6,6 +6,6 @@ export class RefreshDto {
     @IsString()
     @IsNotEmpty()
     @ApiProperty({ type: String, required: true })
-    refreshToken: string;
+        refreshToken: string;
 
 }

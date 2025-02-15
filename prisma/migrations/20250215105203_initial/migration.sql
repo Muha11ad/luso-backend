@@ -11,7 +11,6 @@ CREATE TABLE "Admin" (
     "password" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3),
-    "deleted_at" TIMESTAMP(3),
 
     CONSTRAINT "Admin_pkey" PRIMARY KEY ("id")
 );
@@ -24,7 +23,6 @@ CREATE TABLE "Category" (
     "description" JSONB NOT NULL,
     "created_at" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3),
-    "deleted_at" TIMESTAMP(3),
 
     CONSTRAINT "Category_pkey" PRIMARY KEY ("id")
 );
@@ -39,7 +37,6 @@ CREATE TABLE "Order" (
     "delivery_fee" INTEGER NOT NULL DEFAULT 0,
     "created_at" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3),
-    "deleted_at" TIMESTAMP(3),
     "region" "Region" NOT NULL,
     "status" "OrderStatus" NOT NULL,
 
@@ -71,7 +68,6 @@ CREATE TABLE "Product" (
     "instruction" JSONB NOT NULL,
     "created_at" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3),
-    "deleted_at" TIMESTAMP(3),
 
     CONSTRAINT "Product_pkey" PRIMARY KEY ("id")
 );
@@ -119,7 +115,6 @@ CREATE TABLE "Recommendation" (
     "purpose" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3),
-    "deleted_at" TIMESTAMP(3),
 
     CONSTRAINT "Recommendation_pkey" PRIMARY KEY ("id")
 );
@@ -139,7 +134,6 @@ CREATE TABLE "User" (
     "username" TEXT,
     "created_at" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3),
-    "deleted_at" TIMESTAMP(3),
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("telegram_id")
 );

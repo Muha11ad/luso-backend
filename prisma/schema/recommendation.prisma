@@ -4,7 +4,6 @@ model Recommendation {
   purpose    String
   created_at DateTime? @default(now())
   updated_at DateTime?
-  deleted_at DateTime?
 
   user     User                    @relation(fields: [user_id], references: [telegram_id], onDelete: Cascade)
   products RecommendationProduct[]

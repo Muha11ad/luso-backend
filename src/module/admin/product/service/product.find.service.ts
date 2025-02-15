@@ -36,6 +36,8 @@ export class ProductFindService extends ProductBaseService {
                 include: { Characteristic: true, Images: true, Categories: true }
             });
 
+            await this.database.product.update({where: {id: reqData.id}, data: {views: product.views + 1}});
+
             return { errId: null, data: product };
 
         } catch (error) {

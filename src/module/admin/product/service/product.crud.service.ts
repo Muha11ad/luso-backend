@@ -1,12 +1,23 @@
 import { Injectable } from "@nestjs/common";
+import { FolderName } from "@/shared/utils/enums";
+import { UploadService } from "../../upload/upload.service";
 import { ProductBaseService } from "./product.base.service";
 import { ProductCreateEntity, ProductUpdateEntity } from "../entity";
 import { BaseResponse, IdReq, SuccessRes } from "@/shared/utils/types";
 import { ProductCreateReq, ProductUpdateReq } from "../product.interface";
 import { ServiceExceptions } from "@/shared/exceptions/service.exception";
+import { DatabaseProvider, RedisProvider } from "@/shared/providers";
 
 @Injectable()
 export class ProductCrudService extends ProductBaseService {
+
+    constructor(
+        public uploadService: UploadService,
+        public database: DatabaseProvider,
+        public redisProvider: RedisProvider
+    ) {
+        super(database, redisProvider);
+    }
 
     public async create(reqData: ProductCreateReq): Promise<BaseResponse<SuccessRes>> {
 
@@ -14,7 +25,11 @@ export class ProductCrudService extends ProductBaseService {
 
             const productEntity = new ProductCreateEntity(reqData);
 
-            await this.database.product.create({ data: productEntity.toPrisma() })
+            await this.database.product.create({
+
+                data: productEntity.toPrisma()
+
+            });
 
             return { errId: null, data: { success: true } };
 
@@ -33,7 +48,7 @@ export class ProductCrudService extends ProductBaseService {
             const existingProduct = await this.database.product.findUniqueOrThrow({ where: { id: reqData.id } });
 
             const productEntity = new ProductUpdateEntity(existingProduct, reqData);
-            
+
             await this.database.product.update({
                 where: { id: reqData.id },
                 data: productEntity.toPrisma()
@@ -55,11 +70,45 @@ export class ProductCrudService extends ProductBaseService {
 
             await this.database.product.delete({ where: { id: reqData.id } });
 
+            const productImages = await this.database.productImages.findMany({ where: { product_id: reqData.id } });
+
+            const files = productImages.map(image => image.imageUrl);
+
+            await this.database.productImages.deleteMany({ where: { product_id: reqData.id } });
+
+            await this.uploadService.deleteMultipleFiles({ fileNames: files, folder: FolderName.PRODUCT });
+
             return { errId: null, data: { success: true } };
 
         } catch (error) {
 
             return ServiceExceptions.handle(error, ProductCrudService.name, 'delete');
+
+        }
+
+    }
+
+    public async deletProductImages(reqData: IdReq[]): Promise<BaseResponse<SuccessRes>> {
+
+        try {
+
+            let imageUrls = []
+
+            for (const { id } of reqData) {
+
+                const image = await this.database.productImages.delete({ where: { id } });
+
+                imageUrls.push(image.imageUrl)
+
+            }
+
+            await this.uploadService.deleteMultipleFiles({ fileNames: imageUrls, folder: FolderName.PRODUCT });
+
+            return { errId: null, data: { success: true } };
+
+        } catch (error) {
+
+            return ServiceExceptions.handle(error, ProductCrudService.name, 'deletProductImages');
 
         }
 
