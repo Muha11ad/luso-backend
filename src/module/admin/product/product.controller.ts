@@ -3,10 +3,9 @@ import { ReqIdDto } from "@/shared/dto";
 import { IdReq } from "@/shared/utils/types";
 import { ENDPOINTS } from "@/shared/utils/consts";
 import { setResult } from "@/shared/utils/helpers";
-import { CacheInterceptor } from "@nestjs/cache-manager";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { ProductCrudService, ProductFindService, ProductCategoryService } from "./service";
-import { Put, Get, Body, Post, Param, Delete, UseGuards, Controller, UseInterceptors, Res, HttpStatus } from "@nestjs/common";
+import { Put, Get, Body, Post, Param, Delete, Controller, UseInterceptors, Res, HttpStatus } from "@nestjs/common";
 import { ProductCreateDto, ProductUpdateDto, FilterProductsDto, AddCategoryToProductDto, DeleteCategoryFromProductDto } from "./dto";
 import { ProductCategoryAddReq, ProductCategoryDeleteReq, ProductCreateReq, ProductsFilterReq, ProductUpdateReq } from "./product.interface";
 
@@ -22,7 +21,6 @@ export class ProductController {
     ) { }
 
     @Get('all')
-    @UseInterceptors(CacheInterceptor)
     async getAll(@Res() res: Response) {
 
         const { errId, data } = await this.findService.findAll();
@@ -33,11 +31,14 @@ export class ProductController {
         
         }
 
-        return res.status(HttpStatus.OK).jsonp(setResult(data, null));
+        const result = setResult(data, null)
+
+        res.status(HttpStatus.OK).jsonp(result);
+        
+        return result
     }
 
     @Get("/:id")
-    @UseInterceptors(CacheInterceptor)
     async getById(@Res() res: Response, @Param() param: ReqIdDto) {
 
         const requestData: IdReq = param;
@@ -54,7 +55,6 @@ export class ProductController {
     }
 
     @Post("/filter")
-    @UseInterceptors(CacheInterceptor)
     async getByFilter(@Res() res: Response, @Body() body: FilterProductsDto) {
 
         const requestData: ProductsFilterReq = body
@@ -166,7 +166,6 @@ export class ProductController {
     }
 
     @Get("category/:id")
-    @UseInterceptors(CacheInterceptor)
     async getCategoriesByProduct(@Res() res: Response, @Param() param: ReqIdDto) {
 
         const requestData: IdReq = param;
