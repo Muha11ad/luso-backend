@@ -9,6 +9,7 @@ import { ENDPOINTS } from "@/shared/utils/consts";
 import { APP_GUARD, RouterModule } from "@nestjs/core";
 import { ProvidersModule } from "@/shared/providers";
 import { AuthGuard } from "@/shared/guards/auth.guard";
+import { AdminRecommendationModule } from "./recommendation";
 
 @Module({
     imports: [
@@ -19,6 +20,7 @@ import { AuthGuard } from "@/shared/guards/auth.guard";
         AdminUploadModule,
         AdminProductModule,
         AdminCategoryModule,
+        AdminRecommendationModule,
         RouterModule.register([
             {
                 path: ENDPOINTS.auth,
@@ -43,6 +45,10 @@ import { AuthGuard } from "@/shared/guards/auth.guard";
             {
                 path: ENDPOINTS.category,
                 module: AdminCategoryModule
+            },
+            {
+                path: ENDPOINTS.recommendation,
+                module: AdminRecommendationModule
             },
 
         ])

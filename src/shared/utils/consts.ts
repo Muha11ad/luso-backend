@@ -6,6 +6,7 @@ export const ENDPOINTS = {
     product: "product",
     category: "category",
     characteristic: "characteristic",
+    recommendation: "recommendation",
 }
 
 export const FILE_FORMAT = ["jpeg", "png", "webp"]

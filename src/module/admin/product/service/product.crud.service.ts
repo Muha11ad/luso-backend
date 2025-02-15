@@ -2,11 +2,11 @@ import { Injectable } from "@nestjs/common";
 import { FolderName } from "@/shared/utils/enums";
 import { UploadService } from "../../upload/upload.service";
 import { ProductBaseService } from "./product.base.service";
+import { DatabaseProvider, RedisProvider } from "@/shared/providers";
 import { ProductCreateEntity, ProductUpdateEntity } from "../entity";
 import { BaseResponse, IdReq, SuccessRes } from "@/shared/utils/types";
 import { ProductCreateReq, ProductUpdateReq } from "../product.interface";
 import { ServiceExceptions } from "@/shared/exceptions/service.exception";
-import { DatabaseProvider, RedisProvider } from "@/shared/providers";
 
 @Injectable()
 export class ProductCrudService extends ProductBaseService {

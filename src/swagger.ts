@@ -1,14 +1,15 @@
-import { LandingUserModule } from "./module/landing/user";
 import { INestApplication } from "@nestjs/common";
 import { AdminAuthModule } from "./module/admin/auth";
 import { AdminUserModule } from "./module/admin/user";
 import { AdminOrderModule } from "./module/admin/order";
 import { AdminUploadModule } from "./module/admin/upload";
+import { LandingUserModule } from "./module/landing/user";
 import { LandingOrderModule } from "./module/landing/order";
 import { AdminProductModule } from "./module/admin/product";
 import { AdminCategoryModule } from "./module/admin/category";
 import { LandingProductModule } from "./module/landing/product";
 import { LandingCategoryModule } from "./module/landing/category";
+import { AdminRecommendationModule } from "./module/admin/recommendation";
 import { DocumentBuilder, OpenAPIObject, SwaggerModule } from "@nestjs/swagger";
 
 export function createSwaggerDocuments(app: INestApplication): OpenAPIObject[] {
@@ -28,6 +29,7 @@ export function createSwaggerDocuments(app: INestApplication): OpenAPIObject[] {
             AdminUploadModule,
             AdminProductModule,
             AdminCategoryModule,
+            AdminRecommendationModule
         ]
     });
 

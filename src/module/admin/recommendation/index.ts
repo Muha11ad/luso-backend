@@ -1,0 +1,1 @@
+export { AdminRecommendationModule } from "./recommendation.module";
