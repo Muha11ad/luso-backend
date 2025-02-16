@@ -4,14 +4,15 @@ import { ApiTags } from "@nestjs/swagger";
 import { IdReq } from "@/shared/utils/types";
 import { ENDPOINTS } from "@/shared/utils/consts";
 import { setResult } from "@/shared/utils/helpers";
-import { CacheInterceptor } from "@nestjs/cache-manager";
 import { FilterProductsDto } from "@/module/admin/product/dto";
 import { ProductsFilterReq } from "@/module/admin/product/product.interface";
 import { ProductCategoryService, ProductFindService } from "@/module/admin/product/service";
 import { Get, Body, Post, Param, Controller, UseInterceptors, Res, HttpStatus } from "@nestjs/common";
+import { Public } from "@/shared/decorators";
 
 @Controller()
 @ApiTags(ENDPOINTS.product)
+@Public()
 export class ProductController {
 
     constructor(
@@ -20,7 +21,6 @@ export class ProductController {
     ) { }
 
     @Get('all')
-    @UseInterceptors(CacheInterceptor)
     async getAll(@Res() res: Response) {
 
         const { errId, data } = await this.findService.findAll();
@@ -33,7 +33,6 @@ export class ProductController {
     }
 
     @Get("/:id")
-    @UseInterceptors(CacheInterceptor)
     async getById(@Res() res: Response, @Param() param: ReqIdDto) {
 
         const requestData: IdReq = param;
@@ -48,7 +47,6 @@ export class ProductController {
     }
 
     @Post("/filter")
-    @UseInterceptors(CacheInterceptor)
     async getByFilter(@Res() res: Response, @Body() body: FilterProductsDto) {
 
         const requestData: ProductsFilterReq = body
@@ -64,7 +62,6 @@ export class ProductController {
     }
 
     @Get("category/:id")
-    @UseInterceptors(CacheInterceptor)
     async getCategoriesByProduct(@Res() res: Response, @Param() param: ReqIdDto) {
 
         const requestData: IdReq = param;

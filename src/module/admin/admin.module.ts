@@ -23,34 +23,39 @@ import { AdminRecommendationModule } from "./recommendation";
         AdminRecommendationModule,
         RouterModule.register([
             {
-                path: ENDPOINTS.auth,
-                module: AdminAuthModule
-            },
-            {
-                path: ENDPOINTS.user,
-                module: AdminUserModule
-            },
-            {
-                path: ENDPOINTS.order,
-                module: AdminOrderModule
-            },
-            {
-                path: ENDPOINTS.upload,
-                module: AdminUploadModule
-            },
-            {
-                path: ENDPOINTS.product,
-                module: AdminProductModule
-            },
-            {
-                path: ENDPOINTS.category,
-                module: AdminCategoryModule
-            },
-            {
-                path: ENDPOINTS.recommendation,
-                module: AdminRecommendationModule
-            },
+                path: 'admin',
+                children: [
+                    {
+                        path: ENDPOINTS.auth,
+                        module: AdminAuthModule
+                    },
+                    {
+                        path: ENDPOINTS.user,
+                        module: AdminUserModule
+                    },
+                    {
+                        path: ENDPOINTS.order,
+                        module: AdminOrderModule
+                    },
+                    {
+                        path: ENDPOINTS.upload,
+                        module: AdminUploadModule
+                    },
+                    {
+                        path: ENDPOINTS.product,
+                        module: AdminProductModule
+                    },
+                    {
+                        path: ENDPOINTS.category,
+                        module: AdminCategoryModule
+                    },
+                    {
+                        path: ENDPOINTS.recommendation,
+                        module: AdminRecommendationModule
+                    },
 
+                ]
+            }
         ])
     ],
     providers: [{ provide: APP_GUARD, useClass: AuthGuard }]
