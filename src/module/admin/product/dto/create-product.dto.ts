@@ -37,7 +37,6 @@ export class ProductCreateDto {
 
     @IsArray()
     @IsNotEmpty()
-    @ValidateNested({ each: true })
     @ApiProperty({ type: Array<String>, required: true })
         images: string[];
 

@@ -28,3 +28,7 @@ export interface ProductsFilterReq {
     purpose: string;
     skinType: string;
 }
+
+export interface ProductDeleteImageReq {
+    imageIds: string[];
+}

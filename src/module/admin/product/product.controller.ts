@@ -6,8 +6,8 @@ import { setResult } from "@/shared/utils/helpers";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { ProductCrudService, ProductFindService, ProductCategoryService } from "./service";
 import { Put, Get, Body, Post, Param, Delete, Controller, Res, HttpStatus } from "@nestjs/common";
-import { ProductCreateDto, ProductUpdateDto, FilterProductsDto, AddCategoryToProductDto, DeleteCategoryFromProductDto } from "./dto";
-import { ProductCategoryAddReq, ProductCategoryDeleteReq, ProductCreateReq, ProductsFilterReq, ProductUpdateReq } from "./product.interface";
+import { ProductCreateDto, ProductUpdateDto, FilterProductsDto, AddCategoryToProductDto, DeleteCategoryFromProductDto, DeleteImagesFromProductDto } from "./dto";
+import { ProductCategoryAddReq, ProductCategoryDeleteReq, ProductCreateReq, ProductDeleteImageReq, ProductsFilterReq, ProductUpdateReq } from "./product.interface";
 
 @Controller()
 @ApiBearerAuth()
@@ -179,6 +179,24 @@ export class ProductController {
         }
 
         return res.status(HttpStatus.OK).jsonp(setResult(data, null));
+
+    }
+
+    @Delete("images")
+    async deleteImages(@Res() res: Response, @Body() body: DeleteImagesFromProductDto ) {
+
+        const requestData: ProductDeleteImageReq = body;
+
+        const { errId, data } = await this.crudService.deletProductImages(requestData);
+
+        if (errId) {
+
+            return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
+        
+        }
+
+        return res.status(HttpStatus.OK).jsonp(setResult(data, null));
+
 
     }
 

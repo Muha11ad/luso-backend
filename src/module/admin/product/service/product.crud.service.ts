@@ -5,7 +5,7 @@ import { ProductBaseService } from "./product.base.service";
 import { DatabaseProvider, RedisProvider } from "@/shared/providers";
 import { ProductCreateEntity, ProductUpdateEntity } from "../entity";
 import { BaseResponse, IdReq, SuccessRes } from "@/shared/utils/types";
-import { ProductCreateReq, ProductUpdateReq } from "../product.interface";
+import { ProductCreateReq, ProductDeleteImageReq, ProductUpdateReq } from "../product.interface";
 import { ServiceExceptions } from "@/shared/exceptions/service.exception";
 
 @Injectable()
@@ -88,13 +88,13 @@ export class ProductCrudService extends ProductBaseService {
 
     }
 
-    public async deletProductImages(reqData: IdReq[]): Promise<BaseResponse<SuccessRes>> {
+    public async deletProductImages(reqData: ProductDeleteImageReq): Promise<BaseResponse<SuccessRes>> {
 
         try {
 
             let imageUrls = []
 
-            for (const { id } of reqData) {
+            for (const id of reqData.imageIds) {
 
                 const image = await this.database.productImages.delete({ where: { id } });
 

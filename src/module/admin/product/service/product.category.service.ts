@@ -64,6 +64,11 @@ export class ProductCategoryService extends ProductBaseService {
 
         try {
 
+            await this.database.category.update({
+                where: { id: reqData.id },
+                data: { views: { increment: 1 } }
+            });
+
             const products = await this.database.productCategory.findMany({
                 where: { category_id: reqData.id },
                 select: {
@@ -75,6 +80,7 @@ export class ProductCategoryService extends ProductBaseService {
                     }
                 }
             })
+
 
             return { errId: null, data: products.map(p => p.product) };
 

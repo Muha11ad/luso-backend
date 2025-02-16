@@ -35,7 +35,7 @@ export class RecommendationService {
 
         try {
 
-            for (let id in reqData.products) {
+            for (let id of reqData.products) {
 
                 await this.database.product.findUniqueOrThrow({ where: { id } });
 
