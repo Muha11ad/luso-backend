@@ -6,7 +6,9 @@ import { setResult } from "@/shared/utils/helpers";
 import { UserService } from "../../admin/user/user.service";
 import { UserCreateReq } from "../../admin/user/user.interface";
 import { Body, Controller, HttpStatus, Post, Res, } from "@nestjs/common";
+import { Public } from "@/shared/decorators";
 
+@Public()
 @Controller()
 @ApiTags(ENDPOINTS.user)
 export class UserController {
