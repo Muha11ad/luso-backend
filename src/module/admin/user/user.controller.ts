@@ -17,7 +17,6 @@ export class UserController {
     constructor(private readonly userService: UserService) { }
 
     @Get('all')
-    @UseInterceptors(CacheInterceptor)
     async getAll(@Res() res: Response) {
 
         const { errId, data } = await this.userService.getAll();
@@ -33,7 +32,6 @@ export class UserController {
     }
 
     @Get(":telegramId")
-    @UseInterceptors(CacheInterceptor)
     async getById(@Res() res: Response, @Param() param: TelegramIdDto) {
 
         const requestData: UserIdReq = { id: Number(param.telegramId) };
