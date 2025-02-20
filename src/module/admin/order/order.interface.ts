@@ -11,10 +11,10 @@ export interface OrderDetailsCreateReq {
 
 export interface OrderCreateReq {
     region: Region;
-    status: OrderStatus;
-    userId: number;
-    phoneNumber: string;
+    userId: string;
     firstName: string;
+    status: OrderStatus;
+    phoneNumber: string;
     orderDetails: OrderDetailsCreateReq[];
 }
 
@@ -41,5 +41,5 @@ export interface OrderIdReq {
 }
 
 export interface OrderGetByUserIdReq {
-    userId: number;
+    userId: string;
 }

@@ -3,11 +3,10 @@ import { IsArray, IsNotEmpty, IsNumber, IsPositive, IsString } from "class-valid
 
 export class CreateRecommendationDto {
 
-    @IsNumber()
-    @IsPositive()
+    @IsString()
     @IsNotEmpty()
-    @ApiProperty({ type: Number, required: true })
-        userId: number
+    @ApiProperty({ type: String, required: true })
+        userId: string
     
     @IsString()
     @IsNotEmpty()

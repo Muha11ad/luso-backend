@@ -1,14 +1,11 @@
-import { Transform } from "class-transformer";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsNumber, IsPositive } from "class-validator";
+import { IsNotEmpty, IsString } from "class-validator";
 
 export class TelegramIdDto {
 
-    @IsNumber()
-    @IsPositive()
+    @IsString()
     @IsNotEmpty()
-    @Transform(({ value }) => Number(value))
-    @ApiProperty({ type: Number, required: true })
-        telegramId: number;
+    @ApiProperty({ type: String, required: true })
+    telegramId: string;
 
 }

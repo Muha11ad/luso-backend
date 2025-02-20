@@ -30,7 +30,7 @@ CREATE TABLE "Category" (
 -- CreateTable
 CREATE TABLE "Order" (
     "id" TEXT NOT NULL,
-    "user_id" INTEGER NOT NULL,
+    "user_id" TEXT NOT NULL,
     "first_name" TEXT NOT NULL,
     "total_price" INTEGER NOT NULL,
     "phone_number" TEXT NOT NULL,
@@ -111,7 +111,7 @@ CREATE TABLE "Characteristic" (
 -- CreateTable
 CREATE TABLE "Recommendation" (
     "id" TEXT NOT NULL,
-    "user_id" INTEGER NOT NULL,
+    "user_id" TEXT NOT NULL,
     "purpose" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3),
@@ -129,7 +129,7 @@ CREATE TABLE "RecommendationProduct" (
 
 -- CreateTable
 CREATE TABLE "User" (
-    "telegram_id" INTEGER NOT NULL,
+    "telegram_id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "username" TEXT,
     "created_at" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,

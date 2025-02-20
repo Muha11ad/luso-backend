@@ -34,6 +34,6 @@ export interface IdReq {
 }
 
 export interface UserIdReq {
-    id: number;
+    id: string;
 }
 

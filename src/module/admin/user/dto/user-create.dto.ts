@@ -1,14 +1,9 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString } from "class-validator";
+import { TelegramIdDto } from "./telegramId.dto";
+import { IsNotEmpty, IsOptional, IsString } from "class-validator";
 
-export class UserCreateDto {
+export class UserCreateDto extends TelegramIdDto {
 
-    @IsNumber()
-    @IsNotEmpty()
-    @IsPositive()
-    @ApiProperty({ type: Number, required: true })
-        telegramId: number;
-    
     @IsString()
     @IsNotEmpty()
     @ApiProperty({ type: String, required: true })

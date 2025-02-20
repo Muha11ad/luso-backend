@@ -1,6 +1,6 @@
 model Recommendation {
   id         String    @id @default(uuid())
-  user_id    Int
+  user_id    String
   purpose    String
   created_at DateTime? @default(now())
   updated_at DateTime?

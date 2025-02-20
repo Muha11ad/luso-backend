@@ -31,11 +31,10 @@ export class OrderDetailsDto {
 
 export class OrderCreateDto {
 
-    @IsNumber()
+    @IsString()
     @IsNotEmpty()
-    @IsPositive()
-    @ApiProperty({ type: Number, required: true })
-        userId: number;
+    @ApiProperty({ type: String, required: true })
+        userId: string;
 
     @IsNotEmpty()
     @IsString()

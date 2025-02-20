@@ -18,7 +18,7 @@ export class OrderController {
   ) { }
 
 
-  @Get("user/:telegram_id")
+  @Get("user/:telegramId")
   async getByUserId(@Res() res: Response, @Param() param: TelegramIdDto) {
 
     const requestData: OrderGetByUserIdReq = {

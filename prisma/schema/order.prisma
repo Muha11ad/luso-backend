@@ -1,6 +1,6 @@
 model Order {
     id           String @id @default(uuid())
-    user_id      Int
+    user_id      String
     first_name   String
     total_price  Int
     phone_number String

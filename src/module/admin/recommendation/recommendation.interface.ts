@@ -1,5 +1,5 @@
 export interface RecommendationCreateReq {
-    userId: number
+    userId: string
     purpose: string
     products: string[]
 }

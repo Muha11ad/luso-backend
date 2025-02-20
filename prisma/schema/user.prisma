@@ -1,5 +1,5 @@
 model User {
-    telegram_id Int     @id @unique
+    telegram_id String     @id @unique
     name        String
     username    String? @unique
 

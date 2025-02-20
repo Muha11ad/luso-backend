@@ -43,7 +43,7 @@ export class OrderCreateEntity {
             phone_number: this.data?.phoneNumber,
             user: {
                 connect: {
-                    telegram_id: Number(this.data?.userId)
+                    telegram_id: this.data?.userId
                 }
             },
         };

@@ -34,7 +34,7 @@ export class UserController {
     @Get(":telegramId")
     async getById(@Res() res: Response, @Param() param: TelegramIdDto) {
 
-        const requestData: UserIdReq = { id: Number(param.telegramId) };
+        const requestData: UserIdReq = { id: param.telegramId };
 
         const { errId, data } = await this.userService.getById(requestData)
 
@@ -68,7 +68,7 @@ export class UserController {
     @Delete(":telegramId")
     async delete(@Res() res: Response, @Param() param: TelegramIdDto) {
 
-        const requestData: UserIdReq = { id: Number(param.telegramId) };
+        const requestData: UserIdReq = { id: param.telegramId };
 
         const { errId } = await this.userService.delete(requestData);
 
