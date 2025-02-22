@@ -1,13 +1,15 @@
 import { Response } from "express";
 import { ApiTags } from "@nestjs/swagger";
+import { Public } from "@/shared/decorators";
 import { ENDPOINTS } from "@/shared/utils/consts";
 import { setResult } from "@/shared/utils/helpers";
 import { Controller, Get, } from "@nestjs/common";
-import { UseInterceptors, HttpStatus, Res } from "@nestjs/common";
+import { HttpStatus, Res } from "@nestjs/common";
 import { CategoryFindService } from "@/module/admin/category/service";
 
 @Controller()
 @ApiTags(ENDPOINTS.category)
+@Public()
 export class CategoryController {
 
     constructor(
