@@ -47,18 +47,24 @@ export class RecommendationService {
             const recommendation = await this.database.recommendation.create({
 
                 data: {
+                    age: reqData.age,
                     user_id: reqData.userId,
                     purpose: reqData.purpose,
+                    skin_type: reqData.skinType,
                 }
 
             });
 
-            await this.database.recommendationProduct.createMany({
-                data: reqData.products.map((id) => ({
-                    recommendationId: recommendation.id,
-                    productId: id
-                }))
-            })
+            if (reqData.products.length > 0) {
+
+                await this.database.recommendationProduct.createMany({
+                    data: reqData.products.map((id) => ({
+                        recommendation_id: recommendation.id,
+                        product_id: id
+                    }))
+                })
+                
+            }
 
             return { errId: null, data: { success: true } };
 

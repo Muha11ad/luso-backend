@@ -1,7 +1,9 @@
 model Recommendation {
   id         String    @id @default(uuid())
+  age        String
   user_id    String
   purpose    String
+  skin_type   String
   created_at DateTime? @default(now())
   updated_at DateTime?
 
@@ -10,11 +12,11 @@ model Recommendation {
 }
 
 model RecommendationProduct {
-  recommendationId String
-  productId        String
+  recommendation_id String
+  product_id        String
 
-  recommendation Recommendation @relation(fields: [recommendationId], references: [id], onDelete: Cascade)
-  product        Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
+  recommendation Recommendation @relation(fields: [recommendation_id], references: [id], onDelete: Cascade)
+  product        Product        @relation(fields: [product_id], references: [id], onDelete: Cascade)
 
-  @@id([recommendationId, productId])
+  @@id([recommendation_id, product_id])
 }
