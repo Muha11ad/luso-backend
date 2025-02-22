@@ -7,9 +7,11 @@ import { OrderCreateDto } from "@/module/admin/order/dto";
 import { Body, Controller, Get, HttpStatus, Param, Post, Res } from "@nestjs/common";
 import { OrderFindService, OrderLifecycleService } from "@/module/admin/order/service";
 import { OrderCreateReq, OrderGetByUserIdReq } from "@/module/admin/order/order.interface";
+import { Public } from "@/shared/decorators";
 
 @Controller()
 @ApiTags(ENDPOINTS.order)
+@Public()
 export class OrderController {
 
   constructor(
