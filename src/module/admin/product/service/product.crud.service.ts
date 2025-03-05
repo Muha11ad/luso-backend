@@ -102,6 +102,7 @@ export class ProductCrudService extends ProductBaseService {
         try {
 
             let imageUrls = []
+            
 
             for (const id of reqData.imageIds) {
 

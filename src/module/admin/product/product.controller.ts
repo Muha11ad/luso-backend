@@ -5,7 +5,7 @@ import { ENDPOINTS } from "@/shared/utils/consts";
 import { setResult } from "@/shared/utils/helpers";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { ProductCrudService, ProductFindService, ProductCategoryService } from "./service";
-import { Put, Get, Body, Post, Param, Delete, Controller, Res, HttpStatus } from "@nestjs/common";
+import { Put, Get, Body, Post, Param, Delete, Controller, Res, HttpStatus, Patch } from "@nestjs/common";
 import { ProductCreateDto, ProductUpdateDto, FilterProductsDto, AddCategoryToProductDto, DeleteCategoryFromProductDto, DeleteImagesFromProductDto } from "./dto";
 import { ProductCategoryAddReq, ProductCategoryDeleteReq, ProductCreateReq, ProductDeleteImageReq, ProductsFilterReq, ProductUpdateReq } from "./product.interface";
 
@@ -182,7 +182,7 @@ export class ProductController {
 
     }
 
-    @Delete("images")
+    @Patch("images")
     async deleteImages(@Res() res: Response, @Body() body: DeleteImagesFromProductDto ) {
 
         const requestData: ProductDeleteImageReq = body;
