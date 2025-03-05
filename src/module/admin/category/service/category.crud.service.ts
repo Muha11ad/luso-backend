@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import { REDIS_ENDPOINT_KEYS } from "@/shared/utils/consts";
 import { CategoryBaseService } from "./category.base.service";
 import { BaseResponse, SuccessRes } from "@/shared/utils/types";
 import { CategoryCreateEntity, CategoryUpdateEntity } from "../entity";
@@ -19,6 +20,8 @@ export class CategoryCrudService extends CategoryBaseService {
         data: categoryEntity.toPrisma(),
 
       });
+
+      await this.redisProvider.del(REDIS_ENDPOINT_KEYS.categoryAll);
 
       return { errId: null, data: { success: true } };
 
@@ -44,6 +47,9 @@ export class CategoryCrudService extends CategoryBaseService {
         data: categoryEntity.toPrisma(),
       });
 
+      await this.redisProvider.del(REDIS_ENDPOINT_KEYS.categoryAll);
+      await this.redisProvider.del(REDIS_ENDPOINT_KEYS.categoryById + reqData.id);
+
       return { errId: null, data: { success: true } };
 
     } catch (error) {
@@ -58,6 +64,9 @@ export class CategoryCrudService extends CategoryBaseService {
     try {
 
       await this.database.category.delete({ where: { id: reqData.id } });
+
+      await this.redisProvider.del(REDIS_ENDPOINT_KEYS.categoryAll);
+      await this.redisProvider.del(REDIS_ENDPOINT_KEYS.categoryById + reqData.id);
 
       return { errId: null, data: { success: true } };
 

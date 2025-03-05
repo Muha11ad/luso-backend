@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { OrderDetailsUpdateEntity } from "../entity";
 import { OrderBaseService } from "./order.base.service";
+import { REDIS_ENDPOINT_KEYS } from "@/shared/utils/consts";
 import { BaseResponse, SuccessRes } from "@/shared/utils/types";
 import { ServiceExceptions } from "@/shared/exceptions/service.exception";
 import { OrderDetailsUpdateReq, OrderUpdateReq, OrderUpdateStatusReq } from "../order.interface";
@@ -23,6 +24,8 @@ export class OrderUpdateService extends OrderBaseService {
                 }
             })
 
+            await this.redisProvider.del(REDIS_ENDPOINT_KEYS.ordersAll)
+
             return { errId: null, data: { success: true } };
 
 
@@ -44,6 +47,8 @@ export class OrderUpdateService extends OrderBaseService {
                 where: { id: reqData.id },
                 data: { status: reqData.status }
             });
+
+            await this.redisProvider.del(REDIS_ENDPOINT_KEYS.ordersAll)
 
             return { errId: null, data: { success: true } };
 
@@ -83,6 +88,8 @@ export class OrderUpdateService extends OrderBaseService {
                     }
                 }
             });
+
+            await this.redisProvider.del(REDIS_ENDPOINT_KEYS.ordersAll)
 
             return { errId: null, data: { success: true } };
 

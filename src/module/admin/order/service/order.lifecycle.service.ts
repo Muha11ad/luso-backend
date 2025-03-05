@@ -4,6 +4,7 @@ import { OrderBaseService } from "./order.base.service";
 import { BaseResponse, SuccessRes } from "@/shared/utils/types";
 import { ServiceExceptions } from "@/shared/exceptions/service.exception";
 import { OrderCreateReq, OrderDetailsCreateReq, OrderIdReq } from "../order.interface";
+import { REDIS_ENDPOINT_KEYS } from "@/shared/utils/consts";
 
 @Injectable()
 export class OrderLifecycleService extends OrderBaseService {
@@ -36,6 +37,8 @@ export class OrderLifecycleService extends OrderBaseService {
 
             });
 
+            await this.redisProvider.del(REDIS_ENDPOINT_KEYS.ordersAll);
+
             return { errId: null, data: { success: true } };
 
         } catch (error) {
@@ -57,6 +60,8 @@ export class OrderLifecycleService extends OrderBaseService {
                     id: reqData.id
                 }
             });
+
+            await this.redisProvider.del(REDIS_ENDPOINT_KEYS.ordersAll);
 
             return { errId: null, data: { success: true } };
 

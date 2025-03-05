@@ -1,19 +1,20 @@
 import { Injectable } from "@nestjs/common";
 import { FolderName } from "@/shared/utils/enums";
+import { REDIS_ENDPOINT_KEYS } from "@/shared/utils/consts";
 import { UploadService } from "../../upload/upload.service";
 import { ProductBaseService } from "./product.base.service";
 import { DatabaseProvider, RedisProvider } from "@/shared/providers";
 import { ProductCreateEntity, ProductUpdateEntity } from "../entity";
 import { BaseResponse, IdReq, SuccessRes } from "@/shared/utils/types";
-import { ProductCreateReq, ProductDeleteImageReq, ProductUpdateReq } from "../product.interface";
 import { ServiceExceptions } from "@/shared/exceptions/service.exception";
+import { ProductCreateReq, ProductDeleteImageReq, ProductUpdateReq } from "../product.interface";
 
 @Injectable()
 export class ProductCrudService extends ProductBaseService {
 
     constructor(
-        public uploadService: UploadService,
         public database: DatabaseProvider,
+        public uploadService: UploadService,
         public redisProvider: RedisProvider
     ) {
         super(database, redisProvider);
@@ -30,6 +31,8 @@ export class ProductCrudService extends ProductBaseService {
                 data: productEntity.toPrisma()
 
             });
+
+            await this.redisProvider.del(REDIS_ENDPOINT_KEYS.productAll);
 
             return { errId: null, data: { success: true } };
 
@@ -54,6 +57,9 @@ export class ProductCrudService extends ProductBaseService {
                 data: productEntity.toPrisma()
             })
 
+            await this.redisProvider.del(REDIS_ENDPOINT_KEYS.productAll);
+            await this.redisProvider.del(REDIS_ENDPOINT_KEYS.productById + reqData.id);
+
             return { errId: null, data: { success: true } };
 
         } catch (error) {
@@ -77,6 +83,9 @@ export class ProductCrudService extends ProductBaseService {
             await this.database.productImages.deleteMany({ where: { product_id: reqData.id } });
 
             await this.uploadService.deleteMultipleFiles({ fileNames: files, folder: FolderName.PRODUCT });
+
+            await this.redisProvider.del(REDIS_ENDPOINT_KEYS.productAll);
+            await this.redisProvider.del(REDIS_ENDPOINT_KEYS.productById + reqData)
 
             return { errId: null, data: { success: true } };
 
@@ -103,6 +112,8 @@ export class ProductCrudService extends ProductBaseService {
             }
 
             await this.uploadService.deleteMultipleFiles({ fileNames: imageUrls, folder: FolderName.PRODUCT });
+
+            await this.redisProvider.del(REDIS_ENDPOINT_KEYS.productAll);
 
             return { errId: null, data: { success: true } };
 

@@ -2,6 +2,7 @@ import { Order } from "@prisma/client";
 import { Injectable } from "@nestjs/common";
 import { BaseResponse } from "@/shared/utils/types";
 import { OrderBaseService } from "./order.base.service";
+import { REDIS_ENDPOINT_KEYS } from "@/shared/utils/consts";
 import { OrderGetByUserIdReq, OrderIdReq } from "../order.interface";
 import { ServiceExceptions } from "@/shared/exceptions/service.exception";
 
@@ -12,11 +13,22 @@ export class OrderFindService extends OrderBaseService {
 
         try {
 
+            const cachedOrders: Order[] | null = await this.redisProvider.get(REDIS_ENDPOINT_KEYS.ordersAll);
+
+            if (cachedOrders) {
+
+                return { errId: null, data: cachedOrders }
+
+            }
+
+
             const orders = await this.database.order.findMany({
                 include: {
                     OrderDetails: true
                 }
             });
+
+            await this.redisProvider.set(REDIS_ENDPOINT_KEYS.ordersAll, orders);
 
             return { errId: null, data: orders };
 
@@ -63,7 +75,7 @@ export class OrderFindService extends OrderBaseService {
                     OrderDetails: true
                 }
             });
-            
+
             return { errId: null, data: orders };
 
         } catch (error) {
@@ -73,6 +85,5 @@ export class OrderFindService extends OrderBaseService {
         }
 
     }
-
 
 }
