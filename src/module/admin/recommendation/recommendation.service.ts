@@ -10,6 +10,7 @@ import { ServiceExceptions } from "@/shared/exceptions/service.exception";
 export class RecommendationService {
 
     constructor(
+        private readonly aiService: AiService,
         private readonly database: DatabaseProvider,
     ) { }
 
