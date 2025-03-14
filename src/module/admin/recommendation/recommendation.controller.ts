@@ -3,6 +3,7 @@ import { CreateRecommendationDto } from "./dto";
 import { ENDPOINTS } from "@/shared/utils/consts";
 import { setResult } from "@/shared/utils/helpers";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+import { AiService } from "@/module/http/services/ai.service";
 import { RecommendationService } from "./recommendation.service";
 import { RecommendationCreateReq } from "./recommendation.interface";
 import { Body, Controller, Get, HttpStatus, Post, Res } from "@nestjs/common";
@@ -10,9 +11,12 @@ import { Body, Controller, Get, HttpStatus, Post, Res } from "@nestjs/common";
 @Controller()
 @ApiBearerAuth()
 @ApiTags(ENDPOINTS.recommendation)
-export class RecommendationController { 
+export class RecommendationController {
 
-    constructor(private readonly recommendationService: RecommendationService) { }
+    constructor(
+        private readonly aiService: AiService,
+        private readonly recommendationService: RecommendationService
+    ) { }
 
     @Get()
     public async getAll(@Res() res: Response) {
@@ -25,8 +29,10 @@ export class RecommendationController {
 
         }
 
+        await this.aiService.getRecommendation();
+
         return res.status(HttpStatus.OK).json(setResult(data, null));
-        
+
     }
 
     @Post()
@@ -43,7 +49,7 @@ export class RecommendationController {
         }
 
         return res.status(HttpStatus.CREATED).json(setResult(data, null));
-        
+
     }
 
 }

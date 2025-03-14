@@ -2,7 +2,9 @@ import { Module } from "@nestjs/common";
 import jwtConfig from "@/configs/jwt.config";
 import { ConfigModule } from "@nestjs/config";
 import appConfigs from "@/configs/app.configs";
+import httpConfig from "@/configs/http.config";
 import fileConfig from "@/configs/file.config";
+import { HttpModule } from "./http/http.module";
 import redisConfig from "@/configs/redis.config";
 import { AdminModule } from "./admin/admin.module";
 import { ThrottlerModule } from "@nestjs/throttler";
@@ -19,14 +21,16 @@ import { throttlerOptions } from "@/configs/throttler.config";
                 jwtConfig,
                 appConfigs,
                 fileConfig,
+                httpConfig,
                 redisConfig,
                 rateLimitConfig,
             ],
             validationSchema: configSchema
-         }),
+        }),
         ThrottlerModule.forRootAsync(throttlerOptions),
+        HttpModule,
         AdminModule,
-        LandingModule,
+        LandingModule
     ]
 })
-export class AppModule {}
+export class AppModule { }

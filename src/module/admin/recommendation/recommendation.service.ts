@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { Recommendation } from "@prisma/client";
 import { DatabaseProvider } from "@/shared/providers";
+import { AiService } from "@/module/http/services/ai.service";
 import { BaseResponse, SuccessRes } from "@/shared/utils/types";
 import { RecommendationCreateReq } from "./recommendation.interface";
 import { ServiceExceptions } from "@/shared/exceptions/service.exception";
@@ -8,7 +9,9 @@ import { ServiceExceptions } from "@/shared/exceptions/service.exception";
 @Injectable()
 export class RecommendationService {
 
-    constructor(private readonly database: DatabaseProvider) { }
+    constructor(
+        private readonly database: DatabaseProvider,
+    ) { }
 
     public async getAll(): Promise<BaseResponse<Recommendation[]>> {
 
@@ -65,7 +68,7 @@ export class RecommendationService {
                 })
                 
             }
-
+            
             return { errId: null, data: { success: true } };
 
 

@@ -10,9 +10,11 @@ import { APP_GUARD, RouterModule } from "@nestjs/core";
 import { ProvidersModule } from "@/shared/providers";
 import { AuthGuard } from "@/shared/guards/auth.guard";
 import { AdminRecommendationModule } from "./recommendation";
+import { HttpModule } from "../http/http.module";
 
 @Module({
     imports: [
+        HttpModule,
         ProvidersModule,
         AdminAuthModule,
         AdminUserModule,

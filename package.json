@@ -23,11 +23,11 @@
     "lint-fix": "eslint \"{src,test}/**/*.ts\" --fix",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand"
   },
-  "prisma" : {
+  "prisma": {
     "seed": "ts-node -r tsconfig-paths/register ./prisma/seed.ts"
-  }
-  ,
+  },
   "dependencies": {
+    "@google/generative-ai": "^0.24.0",
     "@nestjs-modules/mailer": "^2.0.2",
     "@nestjs/cache-manager": "^2.3.0",
     "@nestjs/common": "^10.4.15",
