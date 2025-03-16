@@ -1,54 +1,50 @@
 model Order {
-    id           String @id @default(uuid())
-    user_id      String
-    first_name   String
-    total_price  Int
-    phone_number String
-    delivery_fee Int    @default(0)
-
-    created_at DateTime? @default(now())
-    updated_at DateTime?
-
-    region       Region
-    status       OrderStatus
-    user         User           @relation(fields: [user_id], references: [telegram_id], onDelete: Cascade)
-    OrderDetails OrderDetails[]
+  id           String         @id @default(uuid())
+  user_id      String
+  first_name   String
+  total_price  Int
+  phone_number String
+  delivery_fee Int            @default(0)
+  created_at   DateTime?      @default(now())
+  updated_at   DateTime?
+  region       Region
+  status       OrderStatus
+  user         User           @relation(fields: [user_id], references: [telegram_id], onDelete: Cascade)
+  OrderDetails OrderDetails[]
 }
 
 model OrderDetails {
-    id            String @id @default(uuid())
-    order_id      String
-    quantity      Int
-    product_id    String
-    total_price   Int
-    product_price Int
-    product_name  String
-
-    product Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
-    order   Order   @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  id            String  @id @default(uuid())
+  order_id      String
+  quantity      Int
+  product_id    String
+  total_price   Int
+  product_price Int
+  product_name  String
+  order         Order   @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  product       Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
 }
 
-// Enums 
 enum OrderStatus {
-    Accepted
-    Payed
-    Delivered
-    Canceled
+  Accepted
+  Payed
+  Delivered
+  Canceled
 }
 
 enum Region {
-    Andijon
-    Buxoro
-    Fargona
-    Jizzax
-    Navoiy
-    Xorazm
-    Namangan
-    Sirdaryo
-    Toshkent
-    Samarqand
-    Qashqadaryo
-    Surxondaryo
-    Qoraqalpoghiston
-    Toshkent_viloyati
+  Andijon
+  Buxoro
+  Fargona
+  Jizzax
+  Navoiy
+  Xorazm
+  Namangan
+  Sirdaryo
+  Toshkent
+  Samarqand
+  Qashqadaryo
+  Surxondaryo
+  Qoraqalpoghiston
+  Toshkent_viloyati
 }

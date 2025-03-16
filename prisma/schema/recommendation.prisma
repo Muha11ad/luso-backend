@@ -3,20 +3,8 @@ model Recommendation {
   age        String
   user_id    String
   purpose    String
-  skin_type   String
+  skin_type  String
   created_at DateTime? @default(now())
   updated_at DateTime?
-
-  user     User                    @relation(fields: [user_id], references: [telegram_id], onDelete: Cascade)
-  products RecommendationProduct[]
-}
-
-model RecommendationProduct {
-  recommendation_id String
-  product_id        String
-
-  recommendation Recommendation @relation(fields: [recommendation_id], references: [id], onDelete: Cascade)
-  product        Product        @relation(fields: [product_id], references: [id], onDelete: Cascade)
-
-  @@id([recommendation_id, product_id])
+  user       User      @relation(fields: [user_id], references: [telegram_id], onDelete: Cascade)
 }

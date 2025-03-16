@@ -122,14 +122,6 @@ CREATE TABLE "Recommendation" (
 );
 
 -- CreateTable
-CREATE TABLE "RecommendationProduct" (
-    "recommendation_id" TEXT NOT NULL,
-    "product_id" TEXT NOT NULL,
-
-    CONSTRAINT "RecommendationProduct_pkey" PRIMARY KEY ("recommendation_id","product_id")
-);
-
--- CreateTable
 CREATE TABLE "User" (
     "telegram_id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
@@ -182,8 +174,3 @@ ALTER TABLE "Characteristic" ADD CONSTRAINT "Characteristic_product_id_fkey" FOR
 -- AddForeignKey
 ALTER TABLE "Recommendation" ADD CONSTRAINT "Recommendation_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "User"("telegram_id") ON DELETE CASCADE ON UPDATE CASCADE;
 
--- AddForeignKey
-ALTER TABLE "RecommendationProduct" ADD CONSTRAINT "RecommendationProduct_recommendation_id_fkey" FOREIGN KEY ("recommendation_id") REFERENCES "Recommendation"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "RecommendationProduct" ADD CONSTRAINT "RecommendationProduct_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "Product"("id") ON DELETE CASCADE ON UPDATE CASCADE;

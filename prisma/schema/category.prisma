@@ -1,11 +1,9 @@
 model Category {
-  id          String    @id @default(uuid())
-  name        Json      @unique
-  views       Int       @default(0)
+  id          String            @id @default(uuid())
+  name        Json              @unique
+  views       Int               @default(0)
   description Json
-
-  created_at  DateTime? @default(now())
+  created_at  DateTime?         @default(now())
   updated_at  DateTime?
-
-  Products ProductCategory[]
+  Products    ProductCategory[]
 }

@@ -31,12 +31,12 @@ export class RecommendationController {
 
     }
 
-    @Post()
-    public async create(@Res() res: Response, @Body() body: CreateRecommendationDto) {
+    @Post('generate')
+    public async generate(@Res() res: Response, @Body() body: CreateRecommendationDto) {
 
-        const requestDate: RecommendationCreateReq = body;
+        const reqData: RecommendationCreateReq = body;
 
-        const { errId, data } = await this.recommendationService.create(requestDate);
+        const { errId, data } = await this.recommendationService.generate(reqData);
 
         if (errId) {
 

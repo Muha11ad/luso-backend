@@ -1,7 +1,7 @@
 import { Product } from "@prisma/client";
 
 export interface RecommendationGeneratorReq {
-    age: number;
+    age: string;
     userId: string;
     purpose: string;
     userLang: string

@@ -4,6 +4,7 @@ import { DatabaseProvider } from "@/shared/providers";
 import { AiService } from "@/module/http/services/ai.service";
 import { BaseResponse, SuccessRes } from "@/shared/utils/types";
 import { RecommendationCreateReq } from "./recommendation.interface";
+import { RecommendationGeneratorReq } from "@/module/http/http.types";
 import { ServiceExceptions } from "@/shared/exceptions/service.exception";
 
 @Injectable()
@@ -21,7 +22,6 @@ export class RecommendationService {
             const recommendations = await this.database.recommendation.findMany({
                 include: {
                     user: true,
-                    products: true
                 }
             });
 
@@ -35,20 +35,44 @@ export class RecommendationService {
 
     }
 
-    public async create(reqData: RecommendationCreateReq): Promise<BaseResponse<SuccessRes>> {
+    public async generate(reqData: RecommendationCreateReq): Promise<BaseResponse<string>> {
 
         try {
 
-            for (let id of reqData.products) {
+            const products = await this.database.product.findMany({ include: { Characteristic: true } })
 
-                await this.database.product.findUniqueOrThrow({ where: { id } });
+            const data: RecommendationGeneratorReq = {
+                ...reqData,
+                products,
+            }
+
+            const aiRecommendation = await this.aiService.getRecommendation(data);
+
+            if (aiRecommendation.errId) {
+
+                return { errId: aiRecommendation.errId, data: null }
 
             }
 
+            await this.create(reqData);
+            console.log(aiRecommendation.data);
+            return { errId: null, data: aiRecommendation.data };
+
+        } catch (error) {
+
+            return ServiceExceptions.handle(error, RecommendationService.name, this.generate.name);
+
+        }
+
+    }
+
+    private async create(reqData: RecommendationCreateReq): Promise<BaseResponse<SuccessRes>> {
+
+        try {
+
             await this.database.user.findUniqueOrThrow({ where: { telegram_id: reqData.userId } });
 
-
-            const recommendation = await this.database.recommendation.create({
+            await this.database.recommendation.create({
 
                 data: {
                     age: reqData.age,
@@ -59,17 +83,6 @@ export class RecommendationService {
 
             });
 
-            if (reqData.products.length > 0) {
-
-                await this.database.recommendationProduct.createMany({
-                    data: reqData.products.map((id) => ({
-                        recommendation_id: recommendation.id,
-                        product_id: id
-                    }))
-                })
-                
-            }
-            
             return { errId: null, data: { success: true } };
 
 

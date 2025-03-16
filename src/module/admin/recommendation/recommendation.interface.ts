@@ -3,5 +3,5 @@ export interface RecommendationCreateReq {
     userId: string
     purpose: string
     skinType: string
-    products: string[]
+    userLang: string
 }

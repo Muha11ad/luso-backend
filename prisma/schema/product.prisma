@@ -1,55 +1,49 @@
 model Product {
-    id          String  @id @default(uuid())
-    name        String  @unique
-    sold        Int     @default(0)
-    price       Int
-    views       Int     @default(0)
-    discount    Int     @default(0)
-    available   Boolean
-    instruction Json
-
-    created_at DateTime? @default(now())
-    updated_at DateTime?
-
-    Characteristic  Characteristic?
-    Images          ProductImages[]
-    OrderDetails    OrderDetails[]
-    Categories      ProductCategory[]
-    Recommendations RecommendationProduct[]
+  id             String            @id @default(uuid())
+  name           String            @unique
+  sold           Int               @default(0)
+  price          Int
+  views          Int               @default(0)
+  discount       Int               @default(0)
+  available      Boolean
+  instruction    Json
+  created_at     DateTime?         @default(now())
+  updated_at     DateTime?
+  Characteristic Characteristic?
+  OrderDetails   OrderDetails[]
+  Categories     ProductCategory[]
+  Images         ProductImages[]
 }
 
 model ProductCategory {
-    product_id  String
-    category_id String
+  product_id  String
+  category_id String
+  category    Category @relation(fields: [category_id], references: [id], onDelete: Cascade)
+  product     Product  @relation(fields: [product_id], references: [id], onDelete: Cascade)
 
-    product  Product  @relation(fields: [product_id], references: [id], onDelete: Cascade)
-    category Category @relation(fields: [category_id], references: [id], onDelete: Cascade)
-
-    @@id([product_id, category_id])
+  @@id([product_id, category_id])
 }
 
 model ProductImages {
-    id         String @id @default(uuid())
-    imageUrl   String
-    product_id String
-
-    product Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  id         String  @id @default(uuid())
+  imageUrl   String
+  product_id String
+  product    Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
 }
 
 model Characteristic {
-    id               String   @id @default(uuid())
-    age              Int
-    brand            String
-    caution          Json?
-    volume           String
-    made_in          Json
-    purpose          Json
-    gender           Json
-    skin_type        Json
-    product_id       String   @unique
-    ingredients      Json
-    application_time Json
-    expiration_date  DateTime
-
-    product Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  id               String   @id @default(uuid())
+  age              Int
+  brand            String
+  caution          Json?
+  volume           String
+  made_in          Json
+  purpose          Json
+  gender           Json
+  skin_type        Json
+  product_id       String   @unique
+  ingredients      Json
+  application_time Json
+  expiration_date  DateTime
+  product          Product  @relation(fields: [product_id], references: [id], onDelete: Cascade)
 }

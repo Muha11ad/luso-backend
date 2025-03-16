@@ -1,11 +1,9 @@
 model User {
-    telegram_id String     @id @unique
-    name        String
-    username    String? @unique
-
-    created_at DateTime? @default(now())
-    updated_at DateTime?
-
-    orders          Order[]
-    recommendations Recommendation[]
+  telegram_id     String           @id @unique
+  name            String
+  username        String?          @unique
+  created_at      DateTime?        @default(now())
+  updated_at      DateTime?
+  orders          Order[]
+  recommendations Recommendation[]
 }

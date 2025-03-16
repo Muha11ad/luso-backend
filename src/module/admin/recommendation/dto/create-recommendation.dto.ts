@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsArray, IsNotEmpty, IsString } from "class-validator";
+import { IsNotEmpty, IsString } from "class-validator";
 
 export class CreateRecommendationDto {
 
@@ -23,9 +23,9 @@ export class CreateRecommendationDto {
     @ApiProperty({ type: String, required: true })
         purpose: string
 
-    @IsArray()
+    @IsString()
     @IsNotEmpty()
-    @ApiProperty({ type: Array<String>, required: true })
-        products: string[]
+    @ApiProperty({ type: String, required: true })
+        userLang: string
     
 }
