@@ -5,7 +5,7 @@ export interface CharacteristicCreateReq {
     brand: string;
     volume: string;
     productId: string;
-    expirationDate: string;
+    expirationDate: string | Date;
     madeIn: TranslationType;
     gender: TranslationType;
     purpose: TranslationType

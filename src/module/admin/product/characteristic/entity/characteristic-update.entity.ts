@@ -30,12 +30,13 @@ export class CharacteristicUpdateEntity {
     }
 
     private updateExpirationDate(newData: CharacteristicUpdateReq): void {
-        if (newData?.expirationDate) {
-            const date = new Date(newData.expirationDate);
-            if (!isNaN(date.getTime())) {
-                this.updatingData.expirationDate = date.toISOString();
-            }
+
+        if (newData.expirationDate) {
+        
+            this.updatingData.expirationDate = new Date(newData.expirationDate);
+        
         }
+    
     }
 
     toPrisma(): Prisma.CharacteristicUpdateInput {

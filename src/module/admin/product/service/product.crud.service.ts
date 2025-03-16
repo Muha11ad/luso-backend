@@ -120,7 +120,7 @@ export class ProductCrudService extends ProductBaseService {
 
         } catch (error) {
 
-            return ServiceExceptions.handle(error, ProductCrudService.name, 'deletProductImages');
+            return ServiceExceptions.handle(error, ProductCrudService.name, this.deletProductImages.name);
 
         }
 
