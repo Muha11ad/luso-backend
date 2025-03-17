@@ -1,24 +1,24 @@
+import Groq from "groq-sdk";
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { BaseResponse } from "@/shared/utils/types";
 import { HTTP_CONFIG_KEYS } from "@/configs/http.config";
 import { RecommendationGeneratorReq } from "../http.types";
 import { ServiceExceptions } from "@/shared/exceptions/service.exception";
-import { GenerativeModel, GoogleGenerativeAI } from "@google/generative-ai";
+import { ChatCompletionMessageParam } from "groq-sdk/resources/chat/completions";
 
 @Injectable()
 export class AiService {
 
     private apiKey: string;
-    private model: GenerativeModel;
-    private genAI: GoogleGenerativeAI;
+    private model: string;
+    private groq: Groq;
 
     constructor(private readonly configService: ConfigService) {
 
-        this.apiKey = this.configService.get(HTTP_CONFIG_KEYS.geminiApiKey);
-
-        this.genAI = new GoogleGenerativeAI(this.apiKey);
-        this.model = this.genAI.getGenerativeModel({ model: 'gemini-2.0-flash' })
+        this.apiKey = this.configService.get(HTTP_CONFIG_KEYS.groqApiKey);
+        this.model = "llama-3.1-8b-instant";
+        this.groq = new Groq({ apiKey: this.apiKey });
 
     }
 
@@ -26,11 +26,13 @@ export class AiService {
 
         try {
 
-            const prompt = this.recommedationPromt(reqData);
 
-            const result = await this.model.generateContent(prompt)
+            const response = await this.groq.chat.completions.create({
+                messages: this.recommendationPrompt(reqData),
+                model: this.model,
+            })
 
-            return { errId: null , data: result.response.text() };
+            return { errId: null, data: response.choices[0]?.message?.content || "" };
 
         } catch (error) {
 
@@ -40,20 +42,36 @@ export class AiService {
 
     }
 
-    private recommedationPromt(reqData: RecommendationGeneratorReq) {
+    private recommendationPrompt(reqData: RecommendationGeneratorReq): ChatCompletionMessageParam[] {
+        return [
+            {
+                role: "system",
+                content: "You are an expert cosmetologist. Provide concise, engaging product recommendations."
+            },
+            {
+                role: "user",
+                content: `
+Client details:
+- <b>Age:</b> ${reqData.age}
+- <b>Skin Type:</b> ${reqData.skinType}
+- <b>Purpose:</b> ${reqData.purpose}
 
-        return 'Imagine you are professional comsetologist and you are giving a recommendation to a client with the following age: ' 
-        + reqData.age 
-        + ' and the following skin type: ' 
-        + reqData.skinType + 
-        ' and the following purpose: ' 
-        + reqData.purpose 
-        + ' Give structured, creative response, just send product original name (without translatin it) and the reason for the recommendation. within 90-100 words include emojies, in language : ' 
-        + reqData.userLang
-        + ' Analyze the following products and recommend only from them !!! : ' 
-        + reqData.products
-        + " If not product is suitable, appologise for client, and say that you will inform us (admins) about that , CHOOSE ONLY FROM GIVEN PRODUCTS";
+Only choose from these products: <b>${reqData.products.join(", ")}</b>  
+Do NOT recommend any unlisted products.
 
+<b>Response Guidelines:</b>
+✅ Use structured, engaging language.  
+✅ Provide the <b>exact product name</b> (no translation).  
+✅ Explain why it suits the client.  
+✅ Use <b>HTML formatting</b> (bold text, line breaks).  
+✅ Include emojis for a friendly tone.  
+✅ Keep it <b>concise (90-100 words)</b>.  
+
+<b>If no product is suitable</b>, politely apologize and mention that admins will be informed.  
+
+Reply in: <b>${reqData.userLang}</b>.
+`
+            }
+        ];
     }
-
 }
