@@ -17,7 +17,7 @@ export class AiService {
     constructor(private readonly configService: ConfigService) {
 
         this.apiKey = this.configService.get(HTTP_CONFIG_KEYS.groqApiKey);
-        this.model = "llama-3.1-8b-instant";
+        this.model = "gemma2-9b-it";
         this.groq = new Groq({ apiKey: this.apiKey });
 
     }
@@ -32,6 +32,9 @@ export class AiService {
                 model: this.model,
             })
 
+            console.log(response);
+            console.log(response.choices[0]?.message);
+            
             return { errId: null, data: response.choices[0]?.message?.content || "" };
 
         } catch (error) {
@@ -57,7 +60,7 @@ Client details:
 - <b>Purpose:</b> ${reqData.purpose}
 
 Only choose from these products: <b>${reqData.products.join(", ")}</b>  
-Do NOT recommend any unlisted products.
+Do NOT recommend any unlisted products !!!.
 
 <b>Response Guidelines:</b>
 ✅ Use structured, engaging language.  
@@ -67,9 +70,13 @@ Do NOT recommend any unlisted products.
 ✅ Include emojis for a friendly tone.  
 ✅ Keep it <b>concise (90-100 words)</b>.  
 
-<b>If no product is suitable</b>, politely apologize and mention that admins will be informed.  
-
 Reply in: <b>${reqData.userLang}</b>.
+
+Do NOT recommend any unlisted products !!!.
+
+Treat as dear client.
+
+If no product is suitable from given list, politely apologize and mention that admins will be informed.  
 `
             }
         ];
