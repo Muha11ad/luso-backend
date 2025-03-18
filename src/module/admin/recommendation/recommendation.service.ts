@@ -45,7 +45,7 @@ export class RecommendationService {
                 ...reqData,
                 products,
             }
-
+            
             const aiRecommendation = await this.aiService.getRecommendation(data);
 
             if (aiRecommendation.errId) {
@@ -54,8 +54,8 @@ export class RecommendationService {
 
             }
 
-            await this.create(reqData);
-            console.log(aiRecommendation.data);
+            // await this.create(reqData);
+
             return { errId: null, data: aiRecommendation.data };
 
         } catch (error) {

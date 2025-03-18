@@ -1,0 +1,1 @@
+export { LandingRecommendationModule } from "./recommendation.module";

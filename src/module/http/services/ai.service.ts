@@ -1,79 +1,74 @@
-import OpenAI from "openai";
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { BaseResponse } from "@/shared/utils/types";
 import { HTTP_CONFIG_KEYS } from "@/configs/http.config";
 import { RecommendationGeneratorReq } from "../http.types";
 import { ServiceExceptions } from "@/shared/exceptions/service.exception";
-import { ChatCompletionMessageParam } from "openai/resources/chat/completions";
+import { GenerativeModel, GoogleGenerativeAI } from "@google/generative-ai";
 
 @Injectable()
 export class AiService {
 
     private apiKey: string;
-    private model: string;
-    private openai: OpenAI;
+    private model: GenerativeModel;
+    private genAI: GoogleGenerativeAI;
 
     constructor(private readonly configService: ConfigService) {
+
         this.apiKey = this.configService.get(HTTP_CONFIG_KEYS.aiApiKey);
-        this.model = "qwen2.5-72b-instruct";
-        this.openai = new OpenAI({
-            apiKey: this.apiKey,
-            baseURL: "https://dashscope-intl.aliyuncs.com/compatible-mode/v1"
-        });
+
+        this.genAI = new GoogleGenerativeAI(this.apiKey);
+        this.model = this.genAI.getGenerativeModel({ model: 'gemini-2.0-flash' })
+
     }
 
     public async getRecommendation(reqData: RecommendationGeneratorReq): Promise<BaseResponse<string>> {
+
         try {
-            const response = await this.openai.chat.completions.create({
-                messages: this.recommendationPrompt(reqData),
-                model: this.model,
-            });
 
-            console.log(response);
-            console.log(response.choices[0]?.message);
+            const prompt = this.recommendationPrompt(reqData);
 
-            return { errId: null, data: response.choices[0]?.message?.content || "" };
+            const result = await this.model.generateContent(prompt)
+
+            return { errId: null, data: result.response.text() };
 
         } catch (error) {
+
             return ServiceExceptions.handle(error, AiService.name, this.getRecommendation.name);
+
         }
+
     }
 
-    private recommendationPrompt(reqData: RecommendationGeneratorReq): ChatCompletionMessageParam[] {
-        return [
-            {
-                role: "system",
-                content: "You are an expert cosmetologist. Provide concise, engaging product recommendations."
-            },
-            {
-                role: "user",
-                content: `
-Client details:
-- <b>Age:</b> ${reqData.age}
-- <b>Skin Type:</b> ${reqData.skinType}
-- <b>Purpose:</b> ${reqData.purpose}
+    private recommendationPrompt(reqData: RecommendationGeneratorReq) {
+        return (
+            `You are an **expert cosmetologist** providing tailored product recommendations.
 
-Only choose from these products: <b>${reqData.products.join(", ")}</b>  
-Do NOT recommend any unlisted products !!!
+                ### Client Details  
+                    - **Age:** ${reqData.age}  
+                    - **Skin Type:** ${reqData.skinType}  
+                    - **Purpose:** ${reqData.purpose}  
 
-<b>Response Guidelines:</b>
-✅ Use structured, engaging language.  
-✅ Provide the <b>exact product name</b> (no translation).  
-✅ Explain why it suits the client.  
-✅ Use <b>HTML formatting</b> (bold text, line breaks).  
-✅ Include emojis for a friendly tone.  
-✅ Keep it <b>concise (90-100 words)</b>.  
+                ### Response Guidelines  
+                    ✅ Use **structured, engaging language**.  
+                    ✅ Mention the **exact product name** (no translation).  
+                    ✅ Explain **why it suits the client**.  
+                    ✅ Use **markdown formatting** for clarity (bold, bullet points, line breaks).  
+                    ✅ Include **emojis** for a friendly tone.  
+                    ✅ Keep it **concise (90-100 words)**.  
 
-Reply in: <b>${reqData.userLang}</b>.
+                📝 **Reply in:** ${reqData.userLang}  
 
-Do NOT recommend any unlisted products !!!
+                ### Important Notes  
+                    - Address the client warmly and professionally.  
+                    - If no suitable product is found, **politely apologize** and mention that the admins will be informed.
+                
+                ### Available Products
+                    Only recommend from the following list: **${reqData.products}**  
+                    ⚠️ **Do NOT suggest unlisted products!**  
 
-Treat as dear client.
-
-If no product is suitable from the given list, politely apologize and mention that admins will be informed.
-`
-            }
-        ];
+                Make text suitable for telegram reply with pars_mode: "MarkdownV2 while escaping this chars _ * [ ] ( ) ~  > # + - = | {}. !
+"`
+        )
     }
 }

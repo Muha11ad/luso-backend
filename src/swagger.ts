@@ -10,6 +10,7 @@ import { AdminCategoryModule } from "./module/admin/category";
 import { LandingProductModule } from "./module/landing/product";
 import { LandingCategoryModule } from "./module/landing/category";
 import { AdminRecommendationModule } from "./module/admin/recommendation";
+import { LandingRecommendationModule } from "./module/landing/recommendation";
 import { DocumentBuilder, OpenAPIObject, SwaggerModule } from "@nestjs/swagger";
 
 export function createSwaggerDocuments(app: INestApplication): OpenAPIObject[] {
@@ -37,7 +38,6 @@ export function createSwaggerDocuments(app: INestApplication): OpenAPIObject[] {
         .setTitle("Landing API docs")
         .setDescription("Landing API description")
         .setVersion("1.0")
-        .addBearerAuth()
         .build();
 
     const landingDocument = SwaggerModule.createDocument(app, landingConfig, {
@@ -46,6 +46,7 @@ export function createSwaggerDocuments(app: INestApplication): OpenAPIObject[] {
             LandingOrderModule,
             LandingProductModule,
             LandingCategoryModule,
+            LandingRecommendationModule
         ]
     });
 

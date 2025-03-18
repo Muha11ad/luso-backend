@@ -67,7 +67,10 @@ export class UserService {
 
         try {
 
-            const user = await this.database.user.findUniqueOrThrow({ where: { telegram_id: reqData.id } });
+            const user = await this.database.user.findUniqueOrThrow({ 
+                where: { telegram_id: reqData.id } ,
+                include: { orders: true }
+            });
 
             return { errId: null, data: user };
 

@@ -5,6 +5,7 @@ import { LandingOrderModule } from "./order";
 import { LandingProductModule } from "./product";
 import { ENDPOINTS } from "@/shared/utils/consts";
 import { LandingCategoryModule } from "./category";
+import { LandingRecommendationModule } from "./recommendation";
 
 @Module({
     imports: [
@@ -12,6 +13,7 @@ import { LandingCategoryModule } from "./category";
         LandingOrderModule,
         LandingProductModule,
         LandingCategoryModule,
+        LandingRecommendationModule,
         RouterModule.register([
             {
                 path: 'landing',
@@ -32,6 +34,10 @@ import { LandingCategoryModule } from "./category";
                     {
                         path: ENDPOINTS.category,
                         module: LandingCategoryModule
+                    },
+                    {
+                        path: ENDPOINTS.recommendation,
+                        module: LandingRecommendationModule
                     },
 
                 ]
