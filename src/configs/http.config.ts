@@ -1,10 +1,12 @@
 import { registerAs } from "@nestjs/config";
 
 export default registerAs("http", () => ({
-    AI_API_KEY: process.env.AI_API_KEY,
+    aiApiKey: process.env.AI_API_KEY,
+    proxyUrl: process.env.PROXY_URL,
+
 }))
 
 export const HTTP_CONFIG_KEYS = {
-    aiApiKey: 'http.AI_API_KEY',
-
+    aiApiKey: 'http.aiApiKey',
+    proxyUrl: 'http.proxyUrl',
 }
