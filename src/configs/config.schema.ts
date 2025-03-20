@@ -32,7 +32,7 @@ export const configSchema = Joi.object({
 
     AI_API_KEY: Joi.string(),
     AI_BASE_URL: Joi.string(),
-    AI_MODEL_KEY: Joi.string(),
+    AI_MODEL: Joi.string(),
 
     PROXY_URL: Joi.string(),
     PROXY_USERNAME: Joi.string(),
