@@ -16,7 +16,7 @@ export class AiService {
         this.apiKey = this.configService.get(HTTP_CONFIG_KEYS.aiApiKey);
 
         const proxyUrl = this.configService.get(HTTP_CONFIG_KEYS.proxyUrl);
-        const agent = proxyUrl ? new HttpsProxyAgent(proxyUrl) : undefined;
+        const agent = proxyUrl ? new HttpsProxyAgent(`http://vefjfxoe:u35scaps8q94@38.154.227.167:5868`) : undefined;
 
         this.axiosInstance = axios.create({
             baseURL: "https://generativelanguage.googleapis.com",
