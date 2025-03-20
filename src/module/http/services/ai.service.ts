@@ -70,7 +70,7 @@ export class AiService {
             `✅ Explain why it suits the client. and also include instructions\n` +
             `✅ Include emojis for a friendly tone.\n` +
             `✅ Keep it **concise (90-100 words)**.\n\n` +
-            `✅ Say that they can buy this product from our min-app (i provided mini-app link).\n\n` +
+            `✅ Say that they can buy this product from our min-app nothing about link.\n\n` +
             `📝 **Reply in:** ${reqData.userLang}\n\n` +
             `### Important Notes\n` +
             `- Address the client warmly and professionally.\n` +
