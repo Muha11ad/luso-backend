@@ -23,6 +23,10 @@ export class AiService {
         this.axiosInstance = axios.create({
             baseURL: this.configService.get(HTTP_CONFIG_KEYS.aiBaseUrl),
             httpsAgent: agent,
+            auth:{
+                username: proxyUsername,
+                password: proxyPassword
+            },
             headers: {
                 Authorization: `Bearer ${this.apiKey}`,
                 "Content-Type": "application/json",
