@@ -30,5 +30,13 @@ export const configSchema = Joi.object({
     JWT_ACCESS_EXPIRES: Joi.string(),
     JWT_REFRESH_EXPIRES: Joi.string(),
 
+    AI_API_KEY: Joi.string(),
+    AI_BASE_URL: Joi.string(),
+    AI_MODEL_KEY: Joi.string(),
+
+    PROXY_URL: Joi.string(),
+    PROXY_USERNAME: Joi.string(),
+    PROXY_PASSWORD: Joi.string(),
+
 }).options({ presence: "required" });
 

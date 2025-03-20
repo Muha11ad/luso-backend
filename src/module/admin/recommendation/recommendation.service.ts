@@ -54,7 +54,7 @@ export class RecommendationService {
 
             }
 
-            // await this.create(reqData);
+            await this.create(reqData);
 
             return { errId: null, data: aiRecommendation.data };
 
