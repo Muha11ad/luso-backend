@@ -14,12 +14,12 @@ export class UserService {
 
         try {
 
-            const users = await this.database.user.findMany();
+            const users = await this.database.user.findMany({orderBy: {created_at: 'asc'}});
             return { errId: null, data: users };
 
         } catch (error) {
 
-            return ServiceExceptions.handle(error, UserService.name, 'findAll');
+            return ServiceExceptions.handle(error, UserService.name, this.getAll.name);
 
         }
 
@@ -43,7 +43,7 @@ export class UserService {
 
         } catch (error) {
 
-            return ServiceExceptions.handle(error, UserService.name, 'delete');
+            return ServiceExceptions.handle(error, UserService.name, this.delete.name);
 
         }
 
@@ -51,7 +51,7 @@ export class UserService {
 
     public async checkExistOrCreate(reqData: UserCreateReq): Promise<BaseResponse<User>> {
 
-        const user = await this.database.user.findUnique({ where: { telegram_id: reqData.telegramId } });
+        const user = await this.database.user.findUnique({ where: { telegram_id: reqData.telegramId }, include: { orders: true } });
 
         if (user) {
 
@@ -76,7 +76,7 @@ export class UserService {
 
         } catch (error) {
 
-            return ServiceExceptions.handle(error, UserService.name, 'getById');
+            return ServiceExceptions.handle(error, UserService.name, this.getById.name);
 
         }
 

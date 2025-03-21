@@ -22,14 +22,15 @@ export class RecommendationService {
             const recommendations = await this.database.recommendation.findMany({
                 include: {
                     user: true,
-                }
+                },
+                orderBy: { created_at: 'asc' }
             });
 
             return { errId: null, data: recommendations };
 
         } catch (error) {
 
-            return ServiceExceptions.handle(error, RecommendationService.name, 'getAll');
+            return ServiceExceptions.handle(error, RecommendationService.name, this.getAll.name);
 
         }
 
@@ -39,13 +40,27 @@ export class RecommendationService {
 
         try {
 
-            const products = await this.database.product.findMany({ include: { Characteristic: true } })
+            const products = await this.database.product.findMany({
+                select: {
+                    name: true,
+                    instruction: true,
+                    Characteristic: {
+                        select: {
+                            age: true,
+                            purpose: true,
+                            skin_type: true,
+                            ingredients: true,
+                            application_time: true,
+                        }
+                    }
+                }
+            });
 
             const data: RecommendationGeneratorReq = {
                 ...reqData,
                 products,
             }
-            
+
             const aiRecommendation = await this.aiService.getRecommendation(data);
 
             if (aiRecommendation.errId) {
