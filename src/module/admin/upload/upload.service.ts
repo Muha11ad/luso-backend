@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { ensureDir, writeFile, unlink } from "fs-extra";
+import { FILE_CONFIG_KEYS } from "@/configs/file.config";
 import { convertImageToWebP } from "@/shared/utils/helpers";
 import { BaseResponse, SuccessRes } from "@/shared/utils/types";
 import { ServiceExceptions } from "@/shared/exceptions/service.exception";
@@ -17,8 +18,8 @@ export class UploadService {
 
     constructor(private readonly config: ConfigService) {
 
-        this.baseUrl = this.config.get<string>("file.origin"),
-        this.pathToUpload =  this.config.get<string>("file.pathToUpload")
+        this.baseUrl = this.config.get<string>(FILE_CONFIG_KEYS.origin),
+        this.pathToUpload =  this.config.get<string>(FILE_CONFIG_KEYS.pathToUpload);
 
     }
 
@@ -45,7 +46,7 @@ export class UploadService {
 
         } catch (error) {
 
-            return ServiceExceptions.handle(error, UploadService.name, 'saveMultipleFiles');
+            return ServiceExceptions.handle(error, UploadService.name, this.saveMultipleFiles.name);
 
         }
     }
@@ -69,7 +70,7 @@ export class UploadService {
 
         } catch (error) {
 
-            return ServiceExceptions.handle(error, UploadService.name, 'deleteMultipleFiles');
+            return ServiceExceptions.handle(error, UploadService.name, this.deleteMultipleFiles.name);
 
         }
     }
@@ -81,8 +82,7 @@ export class UploadService {
             const uploadFolder = path.resolve(this.pathToUpload, reqData.folder);
             await ensureDir(uploadFolder);
 
-            const fileExtension = ".webp";
-            const uniqueFileName = `${uuidv4()}${fileExtension}`;
+            const uniqueFileName = `${uuidv4()}.webp`;
             const webpBuffer = await convertImageToWebP(reqData.file);
 
             const filePath = path.join(uploadFolder, uniqueFileName);
@@ -93,7 +93,7 @@ export class UploadService {
 
         } catch (error) {
 
-            return ServiceExceptions.handle(error, UploadService.name, 'saveFile');
+            return ServiceExceptions.handle(error, UploadService.name, this.saveFile.name);
 
         }
     }
@@ -111,7 +111,7 @@ export class UploadService {
 
         } catch (error) {
 
-            return ServiceExceptions.handle(error, UploadService.name, 'deleteFile');
+            return ServiceExceptions.handle(error, UploadService.name, this.deleteFile.name);
 
         }
     }

@@ -9,3 +9,9 @@ export default registerAs("jwt", () => ({
 
 }))
 
+export const JWT_CONFIG_KEYS = {
+    accessExpires: "jwt.accessExpires",
+    refreshExpires: "jwt.refreshExpires",
+    accessSecret: "jwt.accessSecret",
+    refreshSecret: "jwt.refreshSecret"
+}

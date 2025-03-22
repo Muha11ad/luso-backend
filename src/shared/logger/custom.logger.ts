@@ -1,6 +1,6 @@
 import { Logger } from "@nestjs/common";
-import appConfigs from "@/configs/app.configs";
 import { ConfigService } from "@nestjs/config";
+import appConfigs, { APP_CONFIG_KEYS } from "@/configs/app.configs";
 
 const logConfigService = new ConfigService({ app: appConfigs() });
 
@@ -14,7 +14,7 @@ export class CustomLogger extends Logger {
     
     log(message: string, context?: string): void {
         
-        if (logConfigService.get("app.log.info")) {
+        if (logConfigService.get(APP_CONFIG_KEYS.log.info)) {
             
             const arrArgs = [message];
             if(context) arrArgs.push(context);
@@ -27,7 +27,7 @@ export class CustomLogger extends Logger {
     
     error(message: string, stack?: string, context?: string): void {
         
-        if (logConfigService.get("app.log.error")) {
+        if (logConfigService.get(APP_CONFIG_KEYS.log.error)) {
 
             const arrArgs = [message];
             if(stack) arrArgs.push(stack);
@@ -41,7 +41,7 @@ export class CustomLogger extends Logger {
     
     warn(message: string, context?: string): void {
         
-        if (logConfigService.get("app.log.warn")) {
+        if (logConfigService.get(APP_CONFIG_KEYS.log.warn)) {
     
             const arrArgs = [message];
             if(context) arrArgs.push(context);
@@ -54,7 +54,7 @@ export class CustomLogger extends Logger {
     
     debug(message: string, context?: string): void {
         
-        if (logConfigService.get("app.log.debug")) {
+        if (logConfigService.get(APP_CONFIG_KEYS.log.debug)) {
             
             const arrArgs = [message];
             if(context) arrArgs.push(context);

@@ -2,9 +2,10 @@ import { Injectable } from "@nestjs/common";
 import { Recommendation } from "@prisma/client";
 import { DatabaseProvider } from "@/shared/providers";
 import { AiService } from "@/module/http/services/ai.service";
-import { BaseResponse, SuccessRes } from "@/shared/utils/types";
 import { RecommendationCreateReq } from "./recommendation.interface";
+import { RECOMMENDATION_EXCLUDED_USERS } from "@/shared/utils/consts";
 import { RecommendationGeneratorReq } from "@/module/http/http.types";
+import { BaseResponse, IdReq, SuccessRes } from "@/shared/utils/types";
 import { ServiceExceptions } from "@/shared/exceptions/service.exception";
 
 @Injectable()
@@ -23,7 +24,7 @@ export class RecommendationService {
                 include: {
                     user: true,
                 },
-                orderBy: { created_at: 'asc' }
+                orderBy: { created_at: 'desc' }
             });
 
             return { errId: null, data: recommendations };
@@ -81,9 +82,26 @@ export class RecommendationService {
 
     }
 
+    public async delete(reqData: IdReq): Promise<BaseResponse<SuccessRes>> {
+
+        try {
+
+            await this.database.recommendation.delete({ where: { id: reqData.id } });
+
+            return { errId: null, data: { success: true } };
+
+        } catch (error) {
+
+            return ServiceExceptions.handle(error, RecommendationService.name, 'delete');
+        }
+
+    }
+
     private async create(reqData: RecommendationCreateReq): Promise<BaseResponse<SuccessRes>> {
 
         try {
+
+            if (RECOMMENDATION_EXCLUDED_USERS.has(reqData.userId)) return { errId: null, data: { success: true } };
 
             await this.database.user.findUniqueOrThrow({ where: { telegram_id: reqData.userId } });
 
@@ -97,6 +115,7 @@ export class RecommendationService {
                 }
 
             });
+
 
             return { errId: null, data: { success: true } };
 

@@ -14,7 +14,7 @@ export class UserService {
 
         try {
 
-            const users = await this.database.user.findMany({orderBy: {created_at: 'asc'}});
+            const users = await this.database.user.findMany({ orderBy: { created_at: 'desc' } });
             return { errId: null, data: users };
 
         } catch (error) {
@@ -22,9 +22,6 @@ export class UserService {
             return ServiceExceptions.handle(error, UserService.name, this.getAll.name);
 
         }
-
-
-
     }
 
     public async delete(reqData: UserIdReq): Promise<BaseResponse<SuccessRes>> {
@@ -36,7 +33,7 @@ export class UserService {
                 where: {
                     telegram_id: reqData.id
                 }
-            
+
             });
 
             return { errId: null, data: { success: true } };
@@ -67,8 +64,8 @@ export class UserService {
 
         try {
 
-            const user = await this.database.user.findUniqueOrThrow({ 
-                where: { telegram_id: reqData.id } ,
+            const user = await this.database.user.findUniqueOrThrow({
+                where: { telegram_id: reqData.id },
                 include: { orders: true }
             });
 

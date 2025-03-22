@@ -28,7 +28,7 @@ export class UploadController {
         @Body() body: UploadImagesBodyDto,
         @UploadedFiles(new FileValidatePipe) images: FilesType,
     ) {
-        
+
         const requestData: UploadMultipliFilesReq = {
             files: images,
             folder: param.folder,

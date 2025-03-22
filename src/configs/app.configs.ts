@@ -12,3 +12,16 @@ export default registerAs("app", () => ({
     debug: process.env.APP_LOG_DEBUG,
   },
 }));
+
+export const APP_CONFIG_KEYS = {
+  mode: "app.mode",
+  port: "app.port",
+  apiUrl: "app.apiUrl",
+  isProduction: "app.isProduction",
+  log: {
+    info: "app.log.info",
+    error: "app.log.error",
+    warn: "app.log.warn",
+    debug: "app.log.debug",
+  },
+}

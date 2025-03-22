@@ -9,6 +9,13 @@ export default registerAs("redis", () => ({
     reset: Number(process.env.REDIS_CLEAR_TTL),
 }))
 
+const REDIS_CONFIG_KEYS = {
+    host: "redis.host",
+    port: "redis.port",
+    reset: "redis.reset",
+    password: "redis.password",
+}
+
 export const redisOptions: CacheModuleAsyncOptions = {
     imports: [ConfigModule],
     useFactory: async (config: ConfigService) => {
@@ -17,19 +24,18 @@ export const redisOptions: CacheModuleAsyncOptions = {
 
             const store = await redisStore({
                 socket: {
-                    host: config.get("redis.host"),
-                    port: config.get("redis.port"),
+                    host: config.get(REDIS_CONFIG_KEYS.host),
+                    port: config.get(REDIS_CONFIG_KEYS.port),
                 }
             });
 
             return {
                 store,
-                ttl: config.get("redis.reset")
+                ttl: config.get(REDIS_CONFIG_KEYS.reset),
             };
     
         } catch (error) {
 
-            console.error("Error connecting to Redis:", error);
             throw error;
     
         }
