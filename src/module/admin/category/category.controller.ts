@@ -25,11 +25,7 @@ export class CategoryController {
 
         const { errId, data } = await this.findService.findAll();
 
-        if (errId) {
-
-            return res.status(HttpStatus.BAD_REQUEST).json(setResult(null, errId));
-
-        }
+        if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
 
         return res.status(HttpStatus.OK).jsonp(setResult(data, null));
 
@@ -42,11 +38,7 @@ export class CategoryController {
 
         const { errId, data } = await this.crudService.create(requestData);
 
-        if (errId) {
-
-            return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
-
-        }
+        if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
 
         return res.status(HttpStatus.CREATED).jsonp(setResult(data, null));
 
@@ -59,11 +51,7 @@ export class CategoryController {
 
         const { errId, data } = await this.crudService.update(requestData);
 
-        if (errId) {
-
-            return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
-
-        }
+        if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
 
         return res.status(HttpStatus.OK).jsonp(setResult(data, null));
 
@@ -76,11 +64,7 @@ export class CategoryController {
 
         const { errId, data } = await this.crudService.delete(requestData);
 
-        if (errId) {
-
-            return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
-
-        }
+        if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
 
         return res.status(HttpStatus.OK).jsonp(setResult(data, null));
 
@@ -94,11 +78,7 @@ export class CategoryController {
 
         const { errId, data } = await this.categoryProductService.addProductToCategory(requestData);
 
-        if (errId) {
-
-            return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
-
-        }
+        if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
 
         return res.status(HttpStatus.CREATED).jsonp(setResult(data, null));
 
@@ -111,11 +91,7 @@ export class CategoryController {
 
         const { errId, data: result } = await this.categoryProductService.deleteProductFromCategory(requestData);
 
-        if (errId) {
-
-            return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
-
-        }
+        if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
 
         return res.status(HttpStatus.OK).jsonp(setResult(result, null));
 

@@ -10,7 +10,7 @@ import { FilesInterceptor } from "@nestjs/platform-express";
 import { ApiBearerAuth, ApiConsumes, ApiTags } from "@nestjs/swagger";
 import { DeleteMultipleFilesDto } from "./dto/delete-multiple-files.dto";
 import { UploadDeleteMultipleFilesReq, UploadMultipliFilesReq } from "./upload.interface";
-import { Body, Controller, Delete, HttpStatus, Param, Post, Res, UploadedFiles, UseInterceptors, UsePipes } from "@nestjs/common";
+import { Body, Controller, Delete, HttpStatus, Param, Post, Res, UploadedFiles, UseInterceptors} from "@nestjs/common";
 
 @Controller()
 @ApiBearerAuth()
@@ -36,11 +36,7 @@ export class UploadController {
 
         const { errId, data } = await this.uploadService.saveMultipleFiles(requestData);
 
-        if (errId) {
-
-            return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
-
-        }
+        if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
 
         return res.status(HttpStatus.CREATED).jsonp(setResult(data, null));
 
@@ -56,11 +52,7 @@ export class UploadController {
 
         const { errId, data } = await this.uploadService.deleteMultipleFiles(requestData);
 
-        if (errId) {
-
-            return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
-
-        }
+        if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
 
         return res.status(HttpStatus.OK).jsonp(setResult(data, null));
 

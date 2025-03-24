@@ -2,13 +2,13 @@ import { Response } from "express";
 import { ReqIdDto } from "@/shared/dto";
 import { ApiTags } from "@nestjs/swagger";
 import { IdReq } from "@/shared/utils/types";
+import { Public } from "@/shared/decorators";
 import { ENDPOINTS } from "@/shared/utils/consts";
 import { setResult } from "@/shared/utils/helpers";
 import { FilterProductsDto } from "@/module/admin/product/dto";
 import { ProductsFilterReq } from "@/module/admin/product/product.interface";
 import { ProductCategoryService, ProductFindService } from "@/module/admin/product/service";
-import { Get, Body, Post, Param, Controller, UseInterceptors, Res, HttpStatus } from "@nestjs/common";
-import { Public } from "@/shared/decorators";
+import { Get, Body, Post, Param, Controller, Res, HttpStatus } from "@nestjs/common";
 
 @Controller()
 @ApiTags(ENDPOINTS.product)
@@ -25,9 +25,7 @@ export class ProductController {
 
         const { errId, data } = await this.findService.findAll();
 
-        if (errId) {
-            return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
-        }
+        if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
 
         return res.status(HttpStatus.OK).jsonp(setResult(data, null));
     }
@@ -39,9 +37,8 @@ export class ProductController {
 
         const { errId, data } = await this.findService.findById(requestData);
 
-        if (errId) {
-            return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
-        }
+        if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
+        
 
         return res.status(HttpStatus.OK).jsonp(setResult(data, null));
     }
@@ -53,9 +50,7 @@ export class ProductController {
 
         const { errId, data: products } = await this.findService.findByFilter(requestData);
 
-        if (errId) {
-            return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
-        }
+        if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
 
         return res.status(HttpStatus.OK).jsonp(setResult(products, null));
 
@@ -68,11 +63,7 @@ export class ProductController {
 
         const { errId, data } = await this.productCategoryService.getProductByCategoryId(requestData);
 
-        if (errId) {
-
-            return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
-
-        }
+        if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
 
         return res.status(HttpStatus.OK).jsonp(setResult(data, null));
 

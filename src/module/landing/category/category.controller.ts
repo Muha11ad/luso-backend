@@ -2,9 +2,9 @@ import { Response } from "express";
 import { ApiTags } from "@nestjs/swagger";
 import { Public } from "@/shared/decorators";
 import { ENDPOINTS } from "@/shared/utils/consts";
-import { setResult } from "@/shared/utils/helpers";
-import { Controller, Get, } from "@nestjs/common";
 import { HttpStatus, Res } from "@nestjs/common";
+import { Controller, Get, } from "@nestjs/common";
+import { setResult } from "@/shared/utils/helpers";
 import { CategoryFindService } from "@/module/admin/category/service";
 
 @Controller()
@@ -21,11 +21,7 @@ export class CategoryController {
 
         const { errId, data } = await this.findService.findAll();
 
-        if (errId) {
-
-            return res.status(HttpStatus.BAD_GATEWAY).send(setResult(null, errId));
-
-        }
+        if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
 
         return res.status(HttpStatus.OK).send(setResult(data, null));
 

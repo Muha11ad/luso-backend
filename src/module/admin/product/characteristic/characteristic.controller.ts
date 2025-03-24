@@ -23,11 +23,7 @@ export class CharacteristicController {
 
     const { errId, data } = await this.characteristicService.create(requestData);
 
-    if (errId) {
-
-      return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(data, errId));
-
-    }
+    if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
 
     return res.status(HttpStatus.CREATED).jsonp(setResult(data, errId));
 
@@ -43,11 +39,7 @@ export class CharacteristicController {
 
     const { errId, data } = await this.characteristicService.update(requestData);
 
-    if (errId) {
-
-      return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(data, errId));
-
-    }
+    if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
 
     return res.status(HttpStatus.OK).jsonp(setResult(data, errId));
 
@@ -60,11 +52,7 @@ export class CharacteristicController {
 
     const { errId, data } = await this.characteristicService.delete(requestData);
 
-    if (errId) {
-
-      return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(data, errId));
-
-    }
+    if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
 
     return res.status(HttpStatus.OK).jsonp(setResult(data, errId));
 
