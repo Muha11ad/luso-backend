@@ -6,11 +6,11 @@ import { ENDPOINTS } from "@/shared/utils/consts";
 import { setResult } from "@/shared/utils/helpers";
 import { TelegramIdDto, UserCreateDto } from "./dto";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
-import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Res, UseInterceptors } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Res } from "@nestjs/common";
 
 @Controller()
-@ApiTags(ENDPOINTS.user)
 @ApiBearerAuth()
+@ApiTags(ENDPOINTS.user)
 export class UserController {
 
     constructor(private readonly userService: UserService) { }
@@ -20,11 +20,7 @@ export class UserController {
 
         const { errId, data } = await this.userService.getAll();
 
-        if (errId) {
-
-            return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
-        
-        }
+        if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
 
         return res.status(HttpStatus.OK).jsonp(setResult(data, null));
 
@@ -37,11 +33,7 @@ export class UserController {
 
         const { errId, data } = await this.userService.getById(requestData)
 
-        if (errId) {
-
-            return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
-
-        }
+        if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId))
 
         return res.status(HttpStatus.OK).jsonp(setResult(data, null));
 
@@ -54,11 +46,7 @@ export class UserController {
 
         const { errId, data: user } = await this.userService.checkExistOrCreate(requestData);
 
-        if (errId) {
-
-            return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
-        
-        }
+        if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
 
         return res.status(HttpStatus.OK).jsonp(setResult(user, null));
 
@@ -71,11 +59,7 @@ export class UserController {
 
         const { errId } = await this.userService.delete(requestData);
 
-        if (errId) {
-
-            return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
-
-        }
+        if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId))
 
         return res.status(HttpStatus.OK).jsonp(setResult({ success: true }, null));
 

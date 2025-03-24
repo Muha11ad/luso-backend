@@ -24,9 +24,7 @@ export class AuthController {
 
         const { errId, data } = await this.authService.validate(requestData);
 
-        if (errId) {
-            return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
-        }
+        if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
 
         return res.status(HttpStatus.OK).jsonp(setResult(data, null));
 
@@ -40,11 +38,7 @@ export class AuthController {
 
         const { errId, data } = await this.authService.refreshToken(requestData);
 
-        if (errId) {
-
-            return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
-       
-        }
+        if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
 
         return res.status(HttpStatus.OK).jsonp(setResult(data, null));
 

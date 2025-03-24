@@ -25,11 +25,7 @@ export class OrderController {
 
     const { errId, data } = await this.findService.findAll();
 
-    if (errId) {
-
-      return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
-
-    }
+    if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
 
     return res.status(HttpStatus.OK).jsonp(setResult(data, null));
   }
@@ -41,11 +37,9 @@ export class OrderController {
 
     const { errId, data } = await this.findService.findById(requestData);
 
-    if (errId) {
+    if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
 
-      return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
-
-    }
+    
 
     return res.status(HttpStatus.OK).jsonp(setResult(data, null));
 
@@ -60,11 +54,7 @@ export class OrderController {
 
     const { errId, data } = await this.findService.findByUserId(requestData);
 
-    if (errId) {
-
-      return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
-
-    }
+    if (errId)  return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
 
     return res.status(HttpStatus.OK).jsonp(setResult(data, null));
 
@@ -77,11 +67,7 @@ export class OrderController {
 
     const { errId, data } = await this.lifecycleService.create(requestData);
 
-    if (errId) {
-
-      return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
-
-    }
+    if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
 
     return res.status(HttpStatus.CREATED).jsonp(setResult(data, null));
 
@@ -94,11 +80,9 @@ export class OrderController {
 
     const { errId, data } = await this.lifecycleService.delete(requestData);
 
-    if (errId) {
+    if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
 
-      return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
 
-    }
 
     return res.status(HttpStatus.OK).jsonp(setResult(data, null));
 
@@ -114,11 +98,7 @@ export class OrderController {
 
     const { errId, data: result } = await this.updateService.update(requestData);
 
-    if (errId) {
-
-      return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
-
-    }
+    if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
 
     return res.status(HttpStatus.OK).jsonp(setResult(result, null));
 
@@ -134,11 +114,7 @@ export class OrderController {
 
     const { errId, data } = await this.updateService.updateStatus(requestData);
 
-    if (errId) {
-
-      return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
-
-    }
+    if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
 
     return res.status(HttpStatus.OK).jsonp(setResult(data, null));
 
@@ -155,11 +131,7 @@ export class OrderController {
 
     const { errId, data } = await this.updateService.updateDetails(requestData);
 
-    if (errId) {
-
-      return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
-
-    }
+    if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
 
     return res.status(HttpStatus.OK).jsonp(setResult(data, null));
 

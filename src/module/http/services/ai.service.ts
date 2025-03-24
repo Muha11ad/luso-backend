@@ -32,7 +32,7 @@ export class AiService {
                 "Content-Type": "application/json",
             },
         });
-    }
+    }r
 
     public async getRecommendation(reqData: RecommendationGeneratorReq): Promise<BaseResponse<string>> {
 
