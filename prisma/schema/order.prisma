@@ -20,7 +20,6 @@ model OrderDetails {
   product_id    String
   total_price   Int
   product_price Int
-  product_name  String
   order         Order   @relation(fields: [order_id], references: [id], onDelete: Cascade)
   product       Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
 }

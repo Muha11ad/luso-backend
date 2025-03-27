@@ -4,6 +4,7 @@ import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { MyError } from "@/shared/utils/error";
 import { BaseResponse } from "@/shared/utils/types";
+import { JWT_CONFIG_KEYS } from "@/configs/jwt.config";
 import { REFRESH_TOKEN_KEY } from "@/shared/utils/consts";
 import { DatabaseProvider, RedisProvider } from "@/shared/providers";
 import { ServiceExceptions } from "@/shared/exceptions/service.exception";
@@ -27,11 +28,7 @@ export class AuthService {
 
       const comparePassword = await bcrypt.compare(reqData.password, isEmailExist.password);
 
-      if (!comparePassword) {
-
-        return { errId: MyError.INVALID_PASSWORD.errId, data: null };
-
-      }
+      if (!comparePassword) return { errId: MyError.INVALID_PASSWORD.errId, data: null };
 
       const access = this.generateAccessToken(reqData.email);
       const refresh = this.generateRefreshToken(reqData.email);
@@ -54,21 +51,9 @@ export class AuthService {
 
       const oldRefresh = await this.redis.get(REFRESH_TOKEN_KEY)
 
-      if (!oldRefresh) {
-
-        return { errId: MyError.UNAUTHORIZED.errId, data: null };
-
-      }
-
-      if (oldRefresh !== reqData.refreshToken) {
-
-        return { errId: MyError.UNAUTHORIZED.errId, data: null };
-
-      }
-
-      const refreshSecret = this.config.get("jwt").refreshSecret
-
-      const { email } = this.jwtService.verify(reqData.refreshToken, { secret: refreshSecret });
+      if (oldRefresh !== reqData.refreshToken) return { errId: MyError.UNAUTHORIZED.errId, data: null };
+      
+      const { email } = this.jwtService.verify(reqData.refreshToken, { secret: this.config.get(JWT_CONFIG_KEYS.refreshSecret) });
 
       const access = this.generateAccessToken(email);
 
@@ -77,7 +62,7 @@ export class AuthService {
 
     } catch (error) {
 
-      return ServiceExceptions.handle(error, AuthService.name, "refreshToken");
+      return ServiceExceptions.handle(error, AuthService.name, this.refreshToken.name);
 
     }
 
@@ -95,7 +80,6 @@ export class AuthService {
   private generateRefreshToken(email: string): string {
 
     const { refreshExpires, refreshSecret } = this.config.get("jwt");
-
 
     return this.jwtService.sign({ email }, { secret: refreshSecret, expiresIn: refreshExpires });
 

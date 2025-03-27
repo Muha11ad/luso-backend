@@ -5,7 +5,6 @@ import { OrderStatus, Region } from "@prisma/client";
 export interface OrderDetailsCreateReq {
     quantity: number;
     productId: string;
-    productName: string;
     productPrice: number;
 }
 

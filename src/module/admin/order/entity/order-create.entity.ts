@@ -50,15 +50,15 @@ export class OrderCreateEntity {
 
     }
 
-    public toOrderDetails(orderId: string): Prisma.OrderDetailsCreateManyInput[] {
+    public toOrderDetails(orderId: string, cacheProductNames: Map<string, string>): Prisma.OrderDetailsCreateManyInput[] {
         return this.orderDetailsWithTotalPrice().map((detail) => (
             {
                 order_id: orderId,
                 quantity: detail.quantity,
                 product_id: detail.productId,
                 total_price: detail.total_price,
-                product_name: detail.productName,
                 product_price: detail.productPrice,
+                product_name: cacheProductNames.get(detail.productId),
             }
         ))
     }

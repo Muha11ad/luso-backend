@@ -22,11 +22,6 @@ export class OrderDetailsDto {
     @ApiProperty({ type: String, required: true })
         productId: string;
 
-    @IsString()
-    @IsNotEmpty()
-    @ApiProperty({ type: String, required: true })
-        productName: string;
-
 }
 
 export class OrderCreateDto {

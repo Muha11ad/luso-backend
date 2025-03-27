@@ -15,7 +15,7 @@ export class OrderLifecycleService extends OrderBaseService {
 
             await this.database.user.findUniqueOrThrow({ where: { telegram_id: reqData.userId } });
 
-            await this.checkProductExists(reqData.orderDetails);
+            const cacheProductNames = await this.checkProductExists(reqData.orderDetails);
 
             const newOrder = new OrderCreateEntity(reqData);
             await this.database.$transaction(async (tx) => {
@@ -23,7 +23,7 @@ export class OrderLifecycleService extends OrderBaseService {
                 const createdOrder = await tx.order.create({ data: newOrder.toPrisma() });
 
                 await tx.orderDetails.createMany({
-                    data: newOrder.toOrderDetails(createdOrder.id)
+                    data: newOrder.toOrderDetails(createdOrder.id, cacheProductNames)
                 });
 
                 for (const detail of reqData.orderDetails) {
@@ -73,17 +73,23 @@ export class OrderLifecycleService extends OrderBaseService {
 
     }
 
-    private async checkProductExists(orderDetails: OrderDetailsCreateReq[]): Promise<void> {
+    private async checkProductExists(orderDetails: OrderDetailsCreateReq[]): Promise<Map<string, string>> {
+
+        const map = new Map()
 
         for (const detail of orderDetails) {
 
-            await this.database.product.findUniqueOrThrow({
+            const product = await this.database.product.findUniqueOrThrow({
                 where: {
                     id: detail.productId
                 }
             });
 
+            map.set(product.id, product.name);
+
         }
+
+        return map;
 
     }
 
