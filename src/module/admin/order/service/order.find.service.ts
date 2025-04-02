@@ -29,7 +29,7 @@ export class OrderFindService extends OrderBaseService {
                 orderBy: {
                     created_at: 'desc'
                 },
-                skip: reqData.pagination.offset,
+                skip: reqData.pagination.offset || undefined,
                 take: reqData.pagination.limit,
 
             });

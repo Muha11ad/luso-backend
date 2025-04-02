@@ -34,7 +34,7 @@ export class AuthGuard implements CanActivate {
 
         if (!accessToken) {
 
-            throw new UnauthorizedException(MyError.INVALID_TOKEN.message);
+            throw new UnauthorizedException(MyError.TOKEN_NOT_PROVIDED.message);
 
         }
 
@@ -48,6 +48,8 @@ export class AuthGuard implements CanActivate {
 
         } catch (error) {
 
+            console.log(error);
+            
             throw new UnauthorizedException(error.message || MyError.INVALID_TOKEN.message);
 
         }
@@ -82,40 +84,51 @@ export class AuthGuard implements CanActivate {
         }
     }
 
-    private async handleTokenExpiration(
-        decodedAccessToken: JWTDecoded,
-        refreshToken: string | undefined,
-        res: Response
-    ): Promise<void> {
-        const currentTime = Date.now();
+    private async handleTokenExpiration(decodedAccessToken: JWTDecoded, refreshToken: string | undefined, res: Response): Promise<void> {
+
+        const currentTime = Math.floor(Date.now() / 1000); // Convert to seconds
+
 
         if (decodedAccessToken.exp > currentTime) return;
 
         if (!refreshToken) {
-            throw new UnauthorizedException(MyError.INVALID_TOKEN.message);
+
+            throw new UnauthorizedException(MyError.TOKEN_EXPIRED.message);
+
         }
 
         const decodedRefreshToken = await this.verifyRefreshToken(refreshToken);
 
         if (decodedRefreshToken.email !== decodedAccessToken.email) {
-            throw new UnauthorizedException(MyError.INVALID_TOKEN.message);
+
+            throw new UnauthorizedException(MyError.USER_NOT_ADMIN.message);
+
         }
 
         if (decodedRefreshToken.exp < currentTime) {
-            throw new UnauthorizedException(MyError.INVALID_TOKEN.message);
+
+            throw new UnauthorizedException(MyError.TOKEN_EXPIRED.message);
+
         }
 
         const newAccessToken = await this.generateNewAccessToken(decodedRefreshToken.email);
+
         res.cookie(TOKEN_KEYS.acccessToken, newAccessToken);
+
     }
 
     private async verifyRefreshToken(refreshToken: string): Promise<JWTDecoded> {
+
         const refreshSecret = this.config.get<string>(JWT_CONFIG_KEYS.refreshSecret);
 
         try {
+
             return await this.jwtService.verifyAsync<JWTDecoded>(refreshToken, { secret: refreshSecret });
+        
         } catch {
+        
             throw new UnauthorizedException(MyError.INVALID_TOKEN.message);
+        
         }
     }
 

@@ -26,6 +26,9 @@ export class MyError {
 
   public static USER_NOT_ADMIN = new MyError(210, false, "User is not an admin");
 
+  public static TOKEN_EXPIRED = new MyError(220, false, "Token expired");
+  public static TOKEN_NOT_PROVIDED = new MyError(220, false, "Token not provided");
+  
 
   
   constructor(public readonly errId: number, public readonly isFriendly: boolean, public readonly message: string) { }
