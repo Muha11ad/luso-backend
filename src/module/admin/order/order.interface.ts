@@ -1,6 +1,11 @@
-import { OrderStatus, Region } from "@prisma/client";
+import { PaginationType } from "@/shared/utils/types";
+import { Order, OrderStatus, Region } from "@prisma/client";
 
 
+
+export interface OrderGetAllReq {
+    pagination: PaginationType;
+}
 
 export interface OrderDetailsCreateReq {
     quantity: number;
@@ -41,4 +46,9 @@ export interface OrderIdReq {
 
 export interface OrderGetByUserIdReq {
     userId: string;
+}
+
+export interface CachedOrders{
+    orders: Order[];
+    total: number;
 }

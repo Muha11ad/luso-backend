@@ -11,3 +11,8 @@ export interface AuthTokens {
 export interface AuthRefreshReq {
     refreshToken: string;
 }
+export interface JWTDecoded {
+    email: string,
+    iat: number,
+    exp: number,
+}

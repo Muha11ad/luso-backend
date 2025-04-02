@@ -1,10 +1,13 @@
+import { Request } from "express";
 import { Reflector } from "@nestjs/core";
 import { JwtService } from "@nestjs/jwt";
 import { MyError } from "../utils/error";
+import { TOKEN_KEYS } from "../utils/consts";
 import { IS_PUBLIC_KEY } from "../decorators";
 import { ConfigService } from "@nestjs/config";
 import { DatabaseProvider } from "../providers";
 import { JWT_CONFIG_KEYS } from "@/configs/jwt.config";
+import { JWTDecoded } from "@/module/admin/auth/auth.interface";
 import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from "@nestjs/common";
 
 @Injectable()
@@ -27,25 +30,32 @@ export class AuthGuard implements CanActivate {
         if (isPublic) return true;
 
         const request = context.switchToHttp().getRequest<Request>();
-        
-        let token = request.headers["authorization"];
 
-        if (!token) throw new UnauthorizedException(MyError.INVALID_TOKEN.message);
+        // req from swagger and telegram
+        let accessToken = request.headers["authorization"];
+        let refreshToken: string | undefined
 
-        if (token.startsWith('Bearer ')) token = token.slice(7, token.length).trimLeft();
+        if (!accessToken) {
+
+            accessToken = request.cookies[TOKEN_KEYS.acccessToken];
+            refreshToken = request.cookies[TOKEN_KEYS.refreshToken];
+
+        }
+
+        if (!accessToken) throw new UnauthorizedException(MyError.INVALID_TOKEN.message);
+
+        // extract token from bearer token
+        accessToken = accessToken.split(" ")[1];
 
         try {
 
             const accessSecret = this.config.get(JWT_CONFIG_KEYS.accessSecret);
 
-            const result = await this.jwtService.verify(token, { secret: accessSecret });
+            const decodedAccessToken: JWTDecoded = await this.jwtService.verify(accessToken, { secret: accessSecret });
 
+            await this.checkAdminEmail(decodedAccessToken);
 
-            if (!result.email) throw new UnauthorizedException(MyError.INVALID_TOKEN.message);
-
-            const admin = await this.database.admin.findUnique({ where: { email: result.email } });
-
-            if (!admin) throw new UnauthorizedException(MyError.USER_NOT_ADMIN.message);
+            await this.handleTokenExpr(decodedAccessToken, refreshToken);
 
             return true;
 
@@ -57,4 +67,25 @@ export class AuthGuard implements CanActivate {
 
     }
 
+    private async checkAdminEmail(accessToken: JWTDecoded) {
+
+        const admin = await this.database.admin.findUnique({ where: { email: accessToken.email } });
+
+        if (!admin) throw new UnauthorizedException(MyError.USER_NOT_ADMIN.message);
+
+    }
+
+    private async handleTokenExpr(accessToken: JWTDecoded, refreshToken: string) {
+
+        if (accessToken.iat < Date.now()) {
+
+            const refreshSecret = this.config.get(JWT_CONFIG_KEYS.refreshSecret);
+            
+            const decodedRefreshToken: JWTDecoded = await this.jwtService.verify(refreshToken, { secret: refreshSecret });
+
+
+
+        }
+
+    }
 }

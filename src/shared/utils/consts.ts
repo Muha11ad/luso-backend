@@ -34,3 +34,8 @@ export const RECOMMENDATION_EXCLUDED_USERS = new Set([
 export const ALLOWED_MIME_TYPES = new Set(["image/jpeg", "image/png"]);
 
 export const FILE_FORMAT = new Set(["jpeg", "png", "webp"]);
+
+export const TOKEN_KEYS = {
+    acccessToken: "access",
+    refreshToken : "refresh",
+}

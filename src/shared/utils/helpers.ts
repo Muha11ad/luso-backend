@@ -3,7 +3,8 @@ import * as bcrypt from "bcrypt";
 import { MyError } from "./error";
 import { FILE_FORMAT } from "./consts";
 import { BadRequestException } from "@nestjs/common";
-import { FileType, HttpResponse, TranslationType } from "./types";
+import { FileType, HttpResponse, PaginationType, TranslationType } from "./types";
+import { PaginationDto } from "@/module/admin/order/dto/pagination.dto";
 
 export function setResult(data: any, errorId: number): HttpResponse {
 
@@ -76,4 +77,15 @@ export function hashPassword(password: string): string {
 
 export function isPasswordValid(password: string, hashPassword: string): boolean {
   return bcrypt.compareSync(password, hashPassword);
+}
+
+export function handlePagination(query: PaginationDto): PaginationType {
+
+  const offset = query.perPage * (query.page - 1);
+
+  return {
+    limit: query.perPage,
+    offset: offset
+  };
+
 }

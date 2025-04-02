@@ -1,5 +1,6 @@
 import { NestFactory } from "@nestjs/core";
 import { getCorsOptions } from "./configs";
+import * as cookieParser from 'cookie-parser';
 import { ConfigService } from "@nestjs/config";
 import { AppModule } from "./module/app.module";
 import { ValidationPipe } from "@nestjs/common";
@@ -12,6 +13,7 @@ async function bootstrap() {
     const app = await NestFactory.create(AppModule);
     const appConfigService = app.get(ConfigService);
     app.setGlobalPrefix("api");
+    app.use(cookieParser())
     app.useGlobalFilters(new GlobalExceptionFilter())
     app.enableCors(getCorsOptions());
     app.useGlobalPipes(new ValidationPipe());

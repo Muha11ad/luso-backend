@@ -20,9 +20,9 @@ export interface BaseResponse<T> {
 }
 
 export interface HttpResponse {
-        data: any;
-        error: ErrorObject;
-        success: boolean;
+    data: any;
+    error: ErrorObject;
+    success: boolean;
 }
 
 export interface SuccessRes {
@@ -37,3 +37,7 @@ export interface UserIdReq {
     id: string;
 }
 
+export interface PaginationType {
+    limit: number;
+    offset: number;
+}

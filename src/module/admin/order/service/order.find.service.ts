@@ -3,21 +3,21 @@ import { Injectable } from "@nestjs/common";
 import { BaseResponse } from "@/shared/utils/types";
 import { OrderBaseService } from "./order.base.service";
 import { REDIS_ENDPOINT_KEYS } from "@/shared/utils/consts";
-import { OrderGetByUserIdReq, OrderIdReq } from "../order.interface";
 import { ServiceExceptions } from "@/shared/exceptions/service.exception";
+import { CachedOrders, OrderGetAllReq, OrderGetByUserIdReq, OrderIdReq } from "../order.interface";
 
 @Injectable()
 export class OrderFindService extends OrderBaseService {
 
-    public async findAll(): Promise<BaseResponse<Order[]>> {
+    public async findAll(reqData: OrderGetAllReq): Promise<BaseResponse<Order[]>> {
 
         try {
 
-            const cachedOrders: Order[] | null = await this.redisProvider.get(REDIS_ENDPOINT_KEYS.ordersAll);
+            const cachedData: CachedOrders | null = await this.redisProvider.get(REDIS_ENDPOINT_KEYS.ordersAll);
 
-            if (cachedOrders) {
+            if (cachedData) {
 
-                return { errId: null, data: cachedOrders }
+                return { errId: null, data: cachedData.orders, total: cachedData.total };
 
             }
 
@@ -25,17 +25,30 @@ export class OrderFindService extends OrderBaseService {
             const orders = await this.database.order.findMany({
                 include: {
                     OrderDetails: true
-                }
+                },
+                orderBy: {
+                    created_at: 'desc'
+                },
+                skip: reqData.pagination.offset,
+                take: reqData.pagination.limit,
+
             });
 
-            await this.redisProvider.set(REDIS_ENDPOINT_KEYS.ordersAll, orders);
+            const total = await this.database.order.count();
 
-            return { errId: null, data: orders };
+            const cachingData = {
+                orders: orders,
+                total: total
+            }
+
+            await this.redisProvider.set(REDIS_ENDPOINT_KEYS.ordersAll, cachingData);
+
+            return { errId: null, data: orders, total };
 
 
         } catch (error) {
 
-            return ServiceExceptions.handle(error, OrderFindService.name, 'findAll');
+            return ServiceExceptions.handle(error, OrderFindService.name, this.findAll.name);
 
         }
 
@@ -58,7 +71,7 @@ export class OrderFindService extends OrderBaseService {
 
         } catch (error) {
 
-            return ServiceExceptions.handle(error, OrderFindService.name, 'findById');
+            return ServiceExceptions.handle(error, OrderFindService.name, this.findById.name);
 
         }
     }
@@ -80,7 +93,7 @@ export class OrderFindService extends OrderBaseService {
 
         } catch (error) {
 
-            return ServiceExceptions.handle(error, OrderFindService.name, 'findByUserId');
+            return ServiceExceptions.handle(error, OrderFindService.name, this.findByUserId.name);
 
         }
 

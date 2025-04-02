@@ -2,12 +2,13 @@ import { Response } from "express";
 import { ReqIdDto } from "@/shared/dto";
 import { TelegramIdDto } from "../user/dto";
 import { ENDPOINTS } from "@/shared/utils/consts";
-import { setResult } from "@/shared/utils/helpers";
+import { PaginationDto } from "./dto/pagination.dto";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+import { handlePagination, setResult } from "@/shared/utils/helpers";
 import { OrderFindService, OrderUpdateService, OrderLifecycleService } from "./service";
 import { OrderCreateDto, OrderUpdateDto, OrderStatusUpdateDto, OrderDetailsUpdateDto } from "./dto";
-import { Put, Get, Body, Post, Param, Delete, Controller, Res, HttpStatus, Patch } from "@nestjs/common";
-import { OrderCreateReq, OrderDetailsUpdateReq, OrderGetByUserIdReq, OrderIdReq, OrderUpdateReq, OrderUpdateStatusReq } from "./order.interface";
+import { Put, Get, Body, Post, Param, Delete, Controller, Res, HttpStatus, Patch, Query } from "@nestjs/common";
+import { OrderCreateReq, OrderDetailsUpdateReq, OrderGetAllReq, OrderGetByUserIdReq, OrderIdReq, OrderUpdateReq, OrderUpdateStatusReq } from "./order.interface";
 
 @Controller()
 @ApiBearerAuth()
@@ -21,13 +22,17 @@ export class OrderController {
   ) { }
 
   @Get('all')
-  async getAllOrders(@Res() res: Response) {
+  async getAllOrders(@Res() res: Response, @Query() query: PaginationDto) {
 
-    const { errId, data } = await this.findService.findAll();
+    const reqData: OrderGetAllReq = {
+      pagination: handlePagination(query)
+    }
+
+    const { errId, data, total } = await this.findService.findAll(reqData);
 
     if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
 
-    return res.status(HttpStatus.OK).jsonp(setResult(data, null));
+    return res.status(HttpStatus.OK).jsonp(setResult({ data, total }, null));
   }
 
   @Get(":id")
@@ -39,7 +44,7 @@ export class OrderController {
 
     if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
 
-    
+
 
     return res.status(HttpStatus.OK).jsonp(setResult(data, null));
 
@@ -54,7 +59,7 @@ export class OrderController {
 
     const { errId, data } = await this.findService.findByUserId(requestData);
 
-    if (errId)  return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
+    if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
 
     return res.status(HttpStatus.OK).jsonp(setResult(data, null));
 

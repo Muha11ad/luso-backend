@@ -26,6 +26,9 @@ export class AuthController {
 
         if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
 
+        res.cookie('access', data.access)
+        res.cookie('refresh', data.refresh)
+
         return res.status(HttpStatus.OK).jsonp(setResult(data, null));
 
     }
