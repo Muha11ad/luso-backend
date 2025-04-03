@@ -32,7 +32,7 @@ export class OrderController {
 
     if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
 
-    return res.status(HttpStatus.OK).jsonp(setResult({ data, total }, null));
+    return res.status(HttpStatus.OK).jsonp(setResult({ orders: data, total }, null));
   }
 
   @Get(":id")

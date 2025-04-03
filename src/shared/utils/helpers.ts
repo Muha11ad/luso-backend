@@ -81,6 +81,9 @@ export function isPasswordValid(password: string, hashPassword: string): boolean
 
 export function handlePagination(query: PaginationDto): PaginationType {
 
+  query.page = Number(query.page) || 1;
+  query.perPage = Number(query.perPage) || 10;
+
   const offset = query.perPage * (query.page - 1);
 
   return {

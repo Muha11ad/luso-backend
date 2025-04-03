@@ -3,7 +3,10 @@ import { OrderCreateReq } from "../order.interface";
 
 export class OrderCreateEntity {
 
-    constructor(private readonly data: OrderCreateReq) { }
+    constructor(
+        private readonly data: OrderCreateReq,
+        private readonly isFirtstOrder: Boolean
+    ) { }
 
     private orderDetailsWithTotalPrice(){
         return this.data.orderDetails.map((detail) => {
@@ -17,11 +20,13 @@ export class OrderCreateEntity {
 
     private get orderTotalPrice(): number {
 
-        return this.orderDetailsWithTotalPrice().reduce(
+        const total_price = this.orderDetailsWithTotalPrice().reduce(
             (acc, detail) => acc + detail.total_price,
             0
         );
 
+        return this.isFirtstOrder ? Math.round(total_price * 0.6) : total_price;
+        
     }
 
     private get orderDeliveryFee(): number {

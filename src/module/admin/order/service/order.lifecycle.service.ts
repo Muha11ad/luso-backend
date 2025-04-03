@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
 import { OrderCreateEntity } from "../entity";
 import { OrderBaseService } from "./order.base.service";
+import { REDIS_ENDPOINT_KEYS } from "@/shared/utils/consts";
 import { BaseResponse, SuccessRes } from "@/shared/utils/types";
 import { ServiceExceptions } from "@/shared/exceptions/service.exception";
 import { OrderCreateReq, OrderDetailsCreateReq, OrderIdReq } from "../order.interface";
-import { REDIS_ENDPOINT_KEYS } from "@/shared/utils/consts";
 
 @Injectable()
 export class OrderLifecycleService extends OrderBaseService {
@@ -13,11 +13,14 @@ export class OrderLifecycleService extends OrderBaseService {
 
         try {
 
-            await this.database.user.findUniqueOrThrow({ where: { telegram_id: reqData.userId } });
+            const user = await this.database.user.findUniqueOrThrow({ where: { telegram_id: reqData.userId }, select: { orders: true } });
 
             const cacheProductNames = await this.checkProductExists(reqData.orderDetails);
 
-            const newOrder = new OrderCreateEntity(reqData);
+            const userHasOrder: Boolean = user.orders.length === 0;
+
+            const newOrder = new OrderCreateEntity(reqData, userHasOrder);
+
             await this.database.$transaction(async (tx) => {
 
                 const createdOrder = await tx.order.create({ data: newOrder.toPrisma() });
