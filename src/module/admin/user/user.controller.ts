@@ -1,13 +1,14 @@
-import { Response } from "express";
 import { UserService } from "./user.service";
 import { UserIdReq } from "@/shared/utils/types";
-import { UserCreateReq, UserGetAllReq } from "./user.interface";
-import { ENDPOINTS } from "@/shared/utils/consts";
-import { handlePagination, setResult } from "@/shared/utils/helpers";
 import { TelegramIdDto, UserCreateDto } from "./dto";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
-import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Query, Res } from "@nestjs/common";
 import { PaginationDto } from "../order/dto/pagination.dto";
+import { UserCreateReq, UserGetAllReq } from "./user.interface";
+import { CacheDelete } from "@/shared/decorators/cache.decorator";
+import { CacheInterceptor, CacheKey } from "@nestjs/cache-manager";
+import { handlePagination, setResult } from "@/shared/utils/helpers";
+import { ENDPOINTS, REDIS_ENDPOINT_KEYS } from "@/shared/utils/consts";
+import { Body, Controller, Delete, Get, Param, Post, Query, UseInterceptors } from "@nestjs/common";
 
 @Controller()
 @ApiBearerAuth()
@@ -17,7 +18,9 @@ export class UserController {
     constructor(private readonly userService: UserService) { }
 
     @Get('all')
-    async getAll(@Res() res: Response, @Query() query: PaginationDto) {
+    @UseInterceptors(CacheInterceptor)
+    @CacheKey(REDIS_ENDPOINT_KEYS.userAll)
+    async getAll(@Query() query: PaginationDto) {
 
         const requestData: UserGetAllReq = {
             pagination: handlePagination(query)
@@ -25,48 +28,41 @@ export class UserController {
 
         const { errId, data, total } = await this.userService.getAll(requestData);
 
-        if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
-
-        return res.status(HttpStatus.OK).jsonp(setResult({ users: data, total }, null));
+        return setResult({ total, users: data }, errId);
 
     }
 
     @Get(":telegramId")
-    async getById(@Res() res: Response, @Param() param: TelegramIdDto) {
+    async getById(@Param() param: TelegramIdDto) {
 
         const requestData: UserIdReq = { id: param.telegramId };
 
         const { errId, data } = await this.userService.getById(requestData)
 
-        if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId))
-
-        return res.status(HttpStatus.OK).jsonp(setResult(data, null));
+        return setResult({ users: data }, errId);
 
     }
 
     @Post()
-    async getOrCreate(@Res() res: Response, @Body() body: UserCreateDto) {
+    @CacheDelete(REDIS_ENDPOINT_KEYS.userAll)
+    async getOrCreate(@Body() body: UserCreateDto) {
 
         const requestData: UserCreateReq = body
 
-        const { errId, data: user } = await this.userService.checkExistOrCreate(requestData);
+        const { errId, data } = await this.userService.checkExistOrCreate(requestData);
 
-        if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
-
-        return res.status(HttpStatus.OK).jsonp(setResult(user, null));
+        return setResult({ users: data }, errId);
 
     }
 
     @Delete(":telegramId")
-    async delete(@Res() res: Response, @Param() param: TelegramIdDto) {
+    async delete(@Param() param: TelegramIdDto) {
 
         const requestData: UserIdReq = { id: param.telegramId };
 
-        const { errId } = await this.userService.delete(requestData);
+        const { errId, data } = await this.userService.delete(requestData);
 
-        if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId))
-
-        return res.status(HttpStatus.OK).jsonp(setResult({ success: true }, null));
+        return setResult({ users: data }, errId);
 
     }
 

@@ -16,6 +16,7 @@ export const REDIS_ENDPOINT_KEYS = {
     categoryById: "api/category",
     productAll: "api/product/all",
     categoryAll: "api/category/all",
+    recommendationAll: "api/recommendation/all",
 }
 
 export const REFRESH_TOKEN_KEY = "refreshToken"

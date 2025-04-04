@@ -1,4 +1,3 @@
-import { Response } from "express";
 import { ReqIdDto } from "@/shared/dto";
 import { IdReq } from "@/shared/utils/types";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
@@ -7,7 +6,7 @@ import { CacheInterceptor, CacheKey } from "@nestjs/cache-manager";
 import { handlePagination, setResult } from "@/shared/utils/helpers";
 import { ENDPOINTS, REDIS_ENDPOINT_KEYS } from "@/shared/utils/consts";
 import { ProductCrudService, ProductFindService, ProductCategoryService } from "./service";
-import { Put, Get, Body, Post, Param, Delete, Controller, Res, HttpStatus, Patch, Query, UseInterceptors } from "@nestjs/common";
+import { Put, Get, Body, Post, Param, Delete, Controller, Patch, Query, UseInterceptors } from "@nestjs/common";
 import { ProductCreateDto, ProductUpdateDto, FilterProductsDto, AddCategoryToProductDto, DeleteCategoryFromProductDto, DeleteImagesFromProductDto } from "./dto";
 import { ProductCategoryAddReq, ProductCategoryDeleteReq, ProductCreateReq, ProductDeleteImageReq, ProductGetAllReq, ProductsFilterReq, ProductUpdateReq } from "./product.interface";
 
@@ -31,54 +30,49 @@ export class ProductController {
             pagination: handlePagination(query),
         }
 
-        const { errId, data } = await this.findService.findAll(requestData);
+        const { errId, data, total } = await this.findService.findAll(requestData);
 
-        return setResult(data, errId);
+        return setResult({ total, products: data }, errId);
 
     }
 
     @Get("/:id")
-    async getById(@Res() res: Response, @Param() param: ReqIdDto) {
+    async getById(@Param() param: ReqIdDto) {
 
         const requestData: IdReq = param;
 
         const { errId, data } = await this.findService.findById(requestData);
 
-        if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
+        return setResult({ products: data }, errId);
 
-        return res.status(HttpStatus.OK).jsonp(setResult(data, null));
     }
 
     @Post("/filter")
-    async getByFilter(@Res() res: Response, @Body() body: FilterProductsDto) {
+    async getByFilter(@Body() body: FilterProductsDto) {
 
         const requestData: ProductsFilterReq = body
 
-        const { errId, data: products } = await this.findService.findByFilter(requestData);
+        const { errId, data } = await this.findService.findByFilter(requestData);
 
-        if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
-
-        return res.status(HttpStatus.OK).jsonp(setResult(products, null));
+        return setResult({ products: data }, errId);
 
     }
 
     @Post()
     @Delete(REDIS_ENDPOINT_KEYS.productAll)
-    async create(@Res() res: Response, @Body() body: ProductCreateDto) {
+    async create(@Body() body: ProductCreateDto) {
 
         const requestData: ProductCreateReq = body;
 
         const { errId, data } = await this.crudService.create(requestData);
 
-        if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
-
-        return res.status(HttpStatus.CREATED).jsonp(setResult(data, null));
+        return setResult({ products: data }, errId);
 
     }
 
     @Put("/:id")
     @Delete(REDIS_ENDPOINT_KEYS.productAll)
-    async update(@Res() res: Response, @Param() param: ReqIdDto, @Body() body: ProductUpdateDto) {
+    async update(@Param() param: ReqIdDto, @Body() body: ProductUpdateDto) {
 
         const reqData: ProductUpdateReq = {
             ...body,
@@ -87,29 +81,25 @@ export class ProductController {
 
         const { errId, data } = await this.crudService.update(reqData);
 
-        if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
-
-        return res.status(HttpStatus.OK).jsonp(setResult(data, null));
+        return setResult({ products: data }, errId);
 
     }
 
     @Delete("/:id")
     @Delete(REDIS_ENDPOINT_KEYS.productAll)
-    async delete(@Res() res: Response, @Param() param: ReqIdDto) {
+    async delete(@Param() param: ReqIdDto) {
 
         const requestData: IdReq = param;
 
         const { errId, data } = await this.crudService.delete(requestData);
 
-        if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
-
-        return res.status(HttpStatus.OK).jsonp(setResult(data, null));
+        return setResult({ products: data }, errId);
 
     }
 
     @Post("category/:id")
     @Delete(REDIS_ENDPOINT_KEYS.productAll)
-    async addCategoryToProduct(@Res() res: Response, @Param() param: ReqIdDto, @Body() body: AddCategoryToProductDto) {
+    async addCategoryToProduct(@Param() param: ReqIdDto, @Body() body: AddCategoryToProductDto) {
 
         const requestData: ProductCategoryAddReq = {
             ...body,
@@ -118,15 +108,13 @@ export class ProductController {
 
         const { errId, data } = await this.productCategoryService.addCategoryToProduct(requestData);
 
-        if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
-
-        return res.status(HttpStatus.OK).jsonp(setResult(data, null));
+        return setResult({ products: data }, errId);
 
     }
 
     @Delete("category/:id")
     @Delete(REDIS_ENDPOINT_KEYS.productAll)
-    async deleteCategoryFromProduct(@Res() res: Response, @Param() param: ReqIdDto, @Body() body: DeleteCategoryFromProductDto) {
+    async deleteCategoryFromProduct(@Param() param: ReqIdDto, @Body() body: DeleteCategoryFromProductDto) {
 
         const requestData: ProductCategoryDeleteReq = {
             ...body,
@@ -135,37 +123,31 @@ export class ProductController {
 
         const { errId, data } = await this.productCategoryService.deleteCategoryFromProduct(requestData);
 
-        if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
-
-        return res.status(HttpStatus.OK).jsonp(setResult(data, null));
+        return setResult({ products: data }, errId);
 
     }
 
     @Get("category/:id")
     @Delete(REDIS_ENDPOINT_KEYS.productAll)
-    async getCategoriesByProduct(@Res() res: Response, @Param() param: ReqIdDto) {
+    async getCategoriesByProduct(@Param() param: ReqIdDto) {
 
         const requestData: IdReq = param;
 
         const { errId, data } = await this.productCategoryService.getProductByCategoryId(requestData);
 
-        if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
-
-        return res.status(HttpStatus.OK).jsonp(setResult(data, null));
+        return setResult({ products: data }, errId);
 
     }
     // this should be delete method, but in delete it is not working
     @Patch("images")
     @Delete(REDIS_ENDPOINT_KEYS.productAll)
-    async deleteImages(@Res() res: Response, @Body() body: DeleteImagesFromProductDto) {
+    async deleteImages(@Body() body: DeleteImagesFromProductDto) {
 
         const requestData: ProductDeleteImageReq = body;
 
         const { errId, data } = await this.crudService.deletProductImages(requestData);
 
-        if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
-
-        return res.status(HttpStatus.OK).jsonp(setResult(data, null));
+        return setResult({ products: data }, errId);
 
     }
 

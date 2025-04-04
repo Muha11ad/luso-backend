@@ -20,7 +20,9 @@ export class ProductFindService extends ProductBaseService {
 
             });
 
-            return { errId: null, data: products };
+            const total = await this.database.product.count({});
+
+            return { errId: null, data: products, total };
 
 
         } catch (error) {

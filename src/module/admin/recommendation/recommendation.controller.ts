@@ -1,13 +1,14 @@
-import { Response } from "express";
 import { ReqIdDto } from "@/shared/dto";
 import { IdReq } from "@/shared/utils/types";
-import { ENDPOINTS } from "@/shared/utils/consts";
+import { CacheKey } from "@nestjs/cache-manager";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { PaginationDto } from "../order/dto/pagination.dto";
 import { RecommendationService } from "./recommendation.service";
+import { CacheDelete } from "@/shared/decorators/cache.decorator";
 import { RecommendationGetAllReq } from "./recommendation.interface";
 import { handlePagination, setResult } from "@/shared/utils/helpers";
-import { Controller, Delete, Get, Param, Query, Res } from "@nestjs/common";
+import { Controller, Delete, Get, Param, Query } from "@nestjs/common";
+import { ENDPOINTS, REDIS_ENDPOINT_KEYS } from "@/shared/utils/consts";
 
 @Controller()
 @ApiBearerAuth()
@@ -19,6 +20,7 @@ export class RecommendationController {
     ) { }
 
     @Get()
+    @CacheKey(REDIS_ENDPOINT_KEYS.recommendationAll)
     public async getAll(@Query() query: PaginationDto) {
 
         const reqData: RecommendationGetAllReq = {
@@ -32,7 +34,8 @@ export class RecommendationController {
     }
 
     @Delete(':id')
-    async deleteAll(@Res() res: Response, @Param() param: ReqIdDto) {
+    @CacheDelete(REDIS_ENDPOINT_KEYS.recommendationAll)
+    async delete(@Param() param: ReqIdDto) {
 
         const reqData: IdReq = param
 

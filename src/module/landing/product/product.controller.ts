@@ -1,4 +1,3 @@
-import { Response } from "express";
 import { ReqIdDto } from "@/shared/dto";
 import { ApiTags } from "@nestjs/swagger";
 import { IdReq } from "@/shared/utils/types";
@@ -10,11 +9,11 @@ import { ENDPOINTS, REDIS_ENDPOINT_KEYS } from "@/shared/utils/consts";
 import { PaginationDto } from "@/module/admin/order/dto/pagination.dto";
 import { ProductCategoryService, ProductFindService } from "@/module/admin/product/service";
 import { ProductGetAllReq, ProductsFilterReq } from "@/module/admin/product/product.interface";
-import { Get, Body, Post, Param, Controller, Res, HttpStatus, UseInterceptors, Query } from "@nestjs/common";
+import { Get, Body, Post, Param, Controller, UseInterceptors, Query } from "@nestjs/common";
 
+@Public()
 @Controller()
 @ApiTags(ENDPOINTS.product)
-@Public()
 export class ProductController {
 
     constructor(
@@ -31,48 +30,41 @@ export class ProductController {
             pagination: handlePagination(query),
         }
 
-        const { errId, data } = await this.findService.findAll(requestData);
+        const { errId, data, total } = await this.findService.findAll(requestData);
 
-        return setResult(data, errId)
+        return setResult({ total, products: data }, errId)
     }
 
     @Get("/:id")
-    async getById(@Res() res: Response, @Param() param: ReqIdDto) {
+    async getById(@Param() param: ReqIdDto) {
 
         const requestData: IdReq = param;
 
         const { errId, data } = await this.findService.findById(requestData);
 
-        if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
-        
+        return setResult({ products: data }, errId)
 
-        return res.status(HttpStatus.OK).jsonp(setResult(data, null));
     }
 
     @Post("/filter")
-    async getByFilter(@Res() res: Response, @Body() body: FilterProductsDto) {
+    async getByFilter(@Body() body: FilterProductsDto) {
 
         const requestData: ProductsFilterReq = body
 
-        const { errId, data: products } = await this.findService.findByFilter(requestData);
+        const { errId, data } = await this.findService.findByFilter(requestData);
 
-        if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
-
-        return res.status(HttpStatus.OK).jsonp(setResult(products, null));
+        return setResult({ products: data }, errId)
 
     }
 
     @Get("category/:id")
-    async getCategoriesByProduct(@Res() res: Response, @Param() param: ReqIdDto) {
+    async getCategoriesByProduct(@Param() param: ReqIdDto) {
 
         const requestData: IdReq = param;
 
         const { errId, data } = await this.productCategoryService.getProductByCategoryId(requestData);
 
-        if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
-
-        return res.status(HttpStatus.OK).jsonp(setResult(data, null));
-
+        return setResult({ products: data }, errId)
     }
 
 }

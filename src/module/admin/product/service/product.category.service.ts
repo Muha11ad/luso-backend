@@ -4,7 +4,6 @@ import { ProductBaseService } from "./product.base.service";
 import { BaseResponse, IdReq, SuccessRes } from "@/shared/utils/types";
 import { ServiceExceptions } from "@/shared/exceptions/service.exception";
 import { ProductCategoryAddReq, ProductCategoryDeleteReq } from "../product.interface";
-import { REDIS_ENDPOINT_KEYS } from "@/shared/utils/consts";
 
 @Injectable()
 export class ProductCategoryService extends ProductBaseService {
@@ -28,14 +27,11 @@ export class ProductCategoryService extends ProductBaseService {
                 }))
             })
 
-            await this.redisProvider.del(REDIS_ENDPOINT_KEYS.productAll);
-            await this.redisProvider.del(REDIS_ENDPOINT_KEYS.productById + reqData.id);
-
             return { errId: null, data: { success: true } };
 
         } catch (error) {
 
-            return ServiceExceptions.handle(error, ProductCategoryService.name, 'addCategoryToProduct');
+            return ServiceExceptions.handle(error, ProductCategoryService.name, this.addCategoryToProduct.name);
 
         }
 
@@ -53,14 +49,11 @@ export class ProductCategoryService extends ProductBaseService {
                 where: { category_id: reqData.categoryId, product_id: reqData.id }
             })
 
-            await this.redisProvider.del(REDIS_ENDPOINT_KEYS.productAll);
-            await this.redisProvider.del(REDIS_ENDPOINT_KEYS.productById + reqData.id);
-
             return { errId: null, data: { success: true } };
 
         } catch (error) {
 
-            return ServiceExceptions.handle(error, ProductCategoryService.name, 'deleteCategoryFromProduct');
+            return ServiceExceptions.handle(error, ProductCategoryService.name, this.deleteCategoryFromProduct.name);
 
         }
 
@@ -76,14 +69,6 @@ export class ProductCategoryService extends ProductBaseService {
                 data: { views: { increment: 1 } }
             });
 
-            const cachedProducts: Product[] | null = await this.redisProvider.get(REDIS_ENDPOINT_KEYS.categoryById + reqData.id);
-
-            if (cachedProducts) {
-
-                return { errId: null, data: cachedProducts };
-
-            }
-
             const products = await this.database.productCategory.findMany({
                 where: { category_id: reqData.id },
                 select: {
@@ -98,12 +83,11 @@ export class ProductCategoryService extends ProductBaseService {
 
             const productToBeSent = products.map(p => p.product)
 
-            await this.redisProvider.set(REDIS_ENDPOINT_KEYS.categoryById + reqData.id, productToBeSent);
             return { errId: null, data: productToBeSent };
 
         } catch (error) {
 
-            return ServiceExceptions.handle(error, ProductCategoryService.name, 'getProductByCategoryId');
+            return ServiceExceptions.handle(error, ProductCategoryService.name, this.getProductByCategoryId.name);
 
         }
 
