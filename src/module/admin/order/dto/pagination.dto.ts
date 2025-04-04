@@ -8,12 +8,12 @@ export class PaginationDto {
     @IsNumber()
     @IsOptional()
     @Type(() => Number)
-    @ApiProperty({ type: Number, default: 1 })
+    @ApiProperty({ type: Number, default: 1, required: false })
         page: number;
     @Max(20)
     @IsNumber()
     @IsOptional()
     @Type(() => Number)
-    @ApiProperty({ type: Number, default: 10 })    
+    @ApiProperty({ type: Number, default: 10, required: false })    
         perPage: number;
 }

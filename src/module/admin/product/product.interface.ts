@@ -1,4 +1,4 @@
-import { TranslationType } from "@/shared/utils/types";
+import { PaginationType, TranslationType } from "@/shared/utils/types";
 
 export interface ProductCreateReq {
     name: string;
@@ -31,4 +31,9 @@ export interface ProductsFilterReq {
 
 export interface ProductDeleteImageReq {
     imageIds: string[];
+}
+
+
+export interface ProductGetAllReq {
+    pagination: PaginationType
 }

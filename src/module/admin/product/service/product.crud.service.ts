@@ -1,9 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { FolderName } from "@/shared/utils/enums";
-import { REDIS_ENDPOINT_KEYS } from "@/shared/utils/consts";
+import { DatabaseProvider } from "@/shared/providers";
 import { UploadService } from "../../upload/upload.service";
 import { ProductBaseService } from "./product.base.service";
-import { DatabaseProvider, RedisProvider } from "@/shared/providers";
 import { ProductCreateEntity, ProductUpdateEntity } from "../entity";
 import { BaseResponse, IdReq, SuccessRes } from "@/shared/utils/types";
 import { ServiceExceptions } from "@/shared/exceptions/service.exception";
@@ -15,9 +14,8 @@ export class ProductCrudService extends ProductBaseService {
     constructor(
         public database: DatabaseProvider,
         public uploadService: UploadService,
-        public redisProvider: RedisProvider
     ) {
-        super(database, redisProvider);
+        super(database);
     }
 
     public async create(reqData: ProductCreateReq): Promise<BaseResponse<SuccessRes>> {
@@ -32,13 +30,11 @@ export class ProductCrudService extends ProductBaseService {
 
             });
 
-            await this.redisProvider.del(REDIS_ENDPOINT_KEYS.productAll);
-
             return { errId: null, data: { success: true } };
 
         } catch (error) {
 
-            return ServiceExceptions.handle(error, ProductCrudService.name, 'create');
+            return ServiceExceptions.handle(error, ProductCrudService.name, this.create.name);
 
         }
 
@@ -57,14 +53,11 @@ export class ProductCrudService extends ProductBaseService {
                 data: productEntity.toPrisma()
             })
 
-            await this.redisProvider.del(REDIS_ENDPOINT_KEYS.productAll);
-            await this.redisProvider.del(REDIS_ENDPOINT_KEYS.productById + reqData.id);
-
             return { errId: null, data: { success: true } };
 
         } catch (error) {
 
-            return ServiceExceptions.handle(error, ProductCrudService.name, 'update');
+            return ServiceExceptions.handle(error, ProductCrudService.name, this.update.name);
 
         }
 
@@ -84,14 +77,11 @@ export class ProductCrudService extends ProductBaseService {
 
             await this.uploadService.deleteMultipleFiles({ fileNames: files, folder: FolderName.PRODUCT });
 
-            await this.redisProvider.del(REDIS_ENDPOINT_KEYS.productAll);
-            await this.redisProvider.del(REDIS_ENDPOINT_KEYS.productById + reqData)
-
             return { errId: null, data: { success: true } };
 
         } catch (error) {
 
-            return ServiceExceptions.handle(error, ProductCrudService.name, 'delete');
+            return ServiceExceptions.handle(error, ProductCrudService.name, this.delete.name);
 
         }
 
@@ -102,7 +92,7 @@ export class ProductCrudService extends ProductBaseService {
         try {
 
             let imageUrls = []
-            
+
 
             for (const id of reqData.imageIds) {
 
@@ -113,8 +103,6 @@ export class ProductCrudService extends ProductBaseService {
             }
 
             await this.uploadService.deleteMultipleFiles({ fileNames: imageUrls, folder: FolderName.PRODUCT });
-
-            await this.redisProvider.del(REDIS_ENDPOINT_KEYS.productAll);
 
             return { errId: null, data: { success: true } };
 
