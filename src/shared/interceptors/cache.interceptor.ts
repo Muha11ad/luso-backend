@@ -12,16 +12,12 @@ export class CustomCacheInterceptor implements NestInterceptor {
     ) { }
 
     async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
-        
         const request = context.switchToHttp().getRequest();
         const { method, params, query } = request;
 
-
-        // Get Cache Key from Decorators
         const cacheKey = this.reflector.get<string>('cacheGet', context.getHandler());
         const deleteKey = this.reflector.get<string>('cacheDelete', context.getHandler());
 
-        // Handle GET Request Caching
         if (method === 'GET' && cacheKey) {
             const fullCacheKey = this.generateCacheKey(cacheKey, params, query);
             const cachedResponse = await this.cacheManager.get(fullCacheKey);
@@ -35,13 +31,11 @@ export class CustomCacheInterceptor implements NestInterceptor {
 
             return next.handle().pipe(
                 tap(async (response) => {
-                    
                     await this.cacheManager.set(fullCacheKey, response);
                 }),
             );
         }
 
-        // Handle Cache Deletion for POST, PUT, DELETE Requests
         if (deleteKey) {
             return next.handle().pipe(
                 tap(async () => {
@@ -49,12 +43,11 @@ export class CustomCacheInterceptor implements NestInterceptor {
                 }),
             );
         }
-        map((response)=>{
-            return response;
-        })
+
+        // ✅ Fallback return to prevent returning undefined
+        return next.handle();
     }
 
-    // Generate dynamic cache key using request params and query
     private generateCacheKey(baseKey: string, params: any, query: any): string {
         let key = baseKey;
 
@@ -69,7 +62,6 @@ export class CustomCacheInterceptor implements NestInterceptor {
         return key;
     }
 
-    // Delete all cache keys that match a given prefix
     private async clearMatchingCache(deleteKey: string) {
         const keys: string[] = await this.cacheManager.store.keys(`${deleteKey}*`);
         for (const key of keys) {
