@@ -22,7 +22,7 @@ export class OrderController {
   ) { }
 
   @Get('all')
-  async getAllOrders(@Res() res: Response, @Query() query: PaginationDto) {
+  async getAllOrders(@Query() query: PaginationDto) {
 
     const reqData: OrderGetAllReq = {
       pagination: handlePagination(query)
@@ -30,28 +30,23 @@ export class OrderController {
 
     const { errId, data, total } = await this.findService.findAll(reqData);
 
-    if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
+    return setResult({ total, orders: data }, errId);
 
-    return res.status(HttpStatus.OK).jsonp(setResult({ orders: data, total }, null));
   }
 
   @Get(":id")
-  async getById(@Res() res: Response, @Param() param: ReqIdDto) {
+  async getById(@Param() param: ReqIdDto) {
 
     const requestData: OrderIdReq = param
 
     const { errId, data } = await this.findService.findById(requestData);
 
-    if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
-
-
-
-    return res.status(HttpStatus.OK).jsonp(setResult(data, null));
+    return setResult(data, errId);
 
   }
 
   @Get("user/:telegramId")
-  async getByUserId(@Res() res: Response, @Param() param: TelegramIdDto) {
+  async getByUserId(@Param() param: TelegramIdDto) {
 
     const requestData: OrderGetByUserIdReq = {
       userId: param.telegramId
@@ -59,58 +54,48 @@ export class OrderController {
 
     const { errId, data } = await this.findService.findByUserId(requestData);
 
-    if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
-
-    return res.status(HttpStatus.OK).jsonp(setResult(data, null));
+    return setResult(data, errId);
 
   }
 
   @Post()
-  async createOrder(@Res() res: Response, @Body() body: OrderCreateDto) {
+  async createOrder(@Body() body: OrderCreateDto) {
 
     const requestData: OrderCreateReq = body
 
     const { errId, data } = await this.lifecycleService.create(requestData);
 
-    if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
-
-    return res.status(HttpStatus.CREATED).jsonp(setResult(data, null));
+    return setResult(data, errId);
 
   }
 
   @Delete(":id")
-  async deleteOrder(@Res() res: Response, @Param() param: ReqIdDto) {
+  async deleteOrder(@Param() param: ReqIdDto) {
 
     const requestData: OrderIdReq = param
 
     const { errId, data } = await this.lifecycleService.delete(requestData);
 
-    if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
-
-
-
-    return res.status(HttpStatus.OK).jsonp(setResult(data, null));
+    return setResult(data, errId);
 
   }
 
   @Put(":id")
-  async updateOrder(@Res() res: Response, @Param() param: ReqIdDto, @Body() body: OrderUpdateDto) {
+  async updateOrder(@Param() param: ReqIdDto, @Body() body: OrderUpdateDto) {
 
     const requestData: OrderUpdateReq = {
       ...body,
       id: param.id
     }
 
-    const { errId, data: result } = await this.updateService.update(requestData);
+    const { errId, data } = await this.updateService.update(requestData);
 
-    if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
-
-    return res.status(HttpStatus.OK).jsonp(setResult(result, null));
+    return setResult(data, errId);
 
   }
 
   @Patch("status/:id")
-  async updateOrderStatus(@Res() res: Response, @Param() param: ReqIdDto, @Body() body: OrderStatusUpdateDto) {
+  async updateOrderStatus(@Param() param: ReqIdDto, @Body() body: OrderStatusUpdateDto) {
 
     const requestData: OrderUpdateStatusReq = {
       ...body,
@@ -119,9 +104,7 @@ export class OrderController {
 
     const { errId, data } = await this.updateService.updateStatus(requestData);
 
-    if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
-
-    return res.status(HttpStatus.OK).jsonp(setResult(data, null));
+    return setResult(data, errId);
 
   }
 
@@ -136,9 +119,7 @@ export class OrderController {
 
     const { errId, data } = await this.updateService.updateDetails(requestData);
 
-    if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
-
-    return res.status(HttpStatus.OK).jsonp(setResult(data, null));
+    return setResult(data, errId);
 
   }
 }

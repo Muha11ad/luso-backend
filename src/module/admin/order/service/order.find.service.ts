@@ -13,15 +13,6 @@ export class OrderFindService extends OrderBaseService {
 
         try {
 
-            const cachedData: CachedOrders | null = await this.redisProvider.get(REDIS_ENDPOINT_KEYS.ordersAll);
-
-            if (cachedData) {
-
-                return { errId: null, data: cachedData.orders, total: cachedData.total };
-
-            }
-
-
             const orders = await this.database.order.findMany({
                 include: {
                     OrderDetails: true
@@ -35,13 +26,6 @@ export class OrderFindService extends OrderBaseService {
             });
 
             const total = await this.database.order.count();
-
-            const cachingData = {
-                orders: orders,
-                total: total
-            }
-
-            await this.redisProvider.set(REDIS_ENDPOINT_KEYS.ordersAll, cachingData);
 
             return { errId: null, data: orders, total };
 

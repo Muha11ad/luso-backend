@@ -1,5 +1,5 @@
 import { User } from "@prisma/client";
-import { UserCreateReq } from "./user.interface";
+import { UserCreateReq, UserGetAllReq } from "./user.interface";
 import { DatabaseProvider } from "@/shared/providers";
 import { BadGatewayException, Injectable } from "@nestjs/common";
 import { ServiceExceptions } from "@/shared/exceptions/service.exception";
@@ -10,12 +10,22 @@ export class UserService {
 
     constructor(private readonly database: DatabaseProvider) { }
 
-    public async getAll(): Promise<BaseResponse<User[]>> {
+    public async getAll(reqData: UserGetAllReq): Promise<BaseResponse<User[]>> {
 
         try {
 
-            const users = await this.database.user.findMany({ orderBy: { created_at: 'desc' } });
-            return { errId: null, data: users };
+            const users = await this.database.user.findMany(
+                {
+                    orderBy: { created_at: 'desc' },
+
+                    take: reqData.pagination.limit,
+                    skip: reqData.pagination.offset,
+                }
+            );
+
+            const total = await this.database.user.count();
+
+            return { errId: null, data: users, total };
 
         } catch (error) {
 

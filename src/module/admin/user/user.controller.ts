@@ -1,12 +1,13 @@
 import { Response } from "express";
 import { UserService } from "./user.service";
 import { UserIdReq } from "@/shared/utils/types";
-import { UserCreateReq } from "./user.interface";
+import { UserCreateReq, UserGetAllReq } from "./user.interface";
 import { ENDPOINTS } from "@/shared/utils/consts";
-import { setResult } from "@/shared/utils/helpers";
+import { handlePagination, setResult } from "@/shared/utils/helpers";
 import { TelegramIdDto, UserCreateDto } from "./dto";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
-import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Res } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Query, Res } from "@nestjs/common";
+import { PaginationDto } from "../order/dto/pagination.dto";
 
 @Controller()
 @ApiBearerAuth()
@@ -16,13 +17,17 @@ export class UserController {
     constructor(private readonly userService: UserService) { }
 
     @Get('all')
-    async getAll(@Res() res: Response) {
+    async getAll(@Res() res: Response, @Query() query: PaginationDto) {
 
-        const { errId, data } = await this.userService.getAll();
+        const requestData: UserGetAllReq = {
+            pagination: handlePagination(query)
+        }
+
+        const { errId, data, total } = await this.userService.getAll(requestData);
 
         if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
 
-        return res.status(HttpStatus.OK).jsonp(setResult(data, null));
+        return res.status(HttpStatus.OK).jsonp(setResult({ users: data, total }, null));
 
     }
 

@@ -1,13 +1,13 @@
 import { Response } from "express";
 import { ReqIdDto } from "@/shared/dto";
 import { IdReq } from "@/shared/utils/types";
-import { CreateRecommendationDto } from "./dto";
 import { ENDPOINTS } from "@/shared/utils/consts";
-import { setResult } from "@/shared/utils/helpers";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+import { PaginationDto } from "../order/dto/pagination.dto";
 import { RecommendationService } from "./recommendation.service";
-import { RecommendationCreateReq } from "./recommendation.interface";
-import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Res } from "@nestjs/common";
+import { RecommendationGetAllReq } from "./recommendation.interface";
+import { handlePagination, setResult } from "@/shared/utils/helpers";
+import { Controller, Delete, Get, Param, Query, Res } from "@nestjs/common";
 
 @Controller()
 @ApiBearerAuth()
@@ -19,26 +19,15 @@ export class RecommendationController {
     ) { }
 
     @Get()
-    public async getAll(@Res() res: Response) {
+    public async getAll(@Query() query: PaginationDto) {
 
-        const { errId, data } = await this.recommendationService.getAll();
+        const reqData: RecommendationGetAllReq = {
+            pagination: handlePagination(query),
+        }
 
-        if (errId) return res.status(HttpStatus.BAD_REQUEST).json(setResult(null, errId));
+        const { errId, data, total } = await this.recommendationService.getAll(reqData);
 
-        return res.status(HttpStatus.OK).json(setResult(data, null));
-
-    }
-
-    @Post('generate')
-    public async generate(@Res() res: Response, @Body() body: CreateRecommendationDto) {
-
-        const reqData: RecommendationCreateReq = body;
-
-        const { errId, data } = await this.recommendationService.generate(reqData);
-
-        if (errId) return res.status(HttpStatus.BAD_REQUEST).json(setResult(null, errId));
-
-        return res.status(HttpStatus.CREATED).json(setResult(data, null));
+        return setResult({ total, recommendations: data }, errId)
 
     }
 
@@ -49,9 +38,7 @@ export class RecommendationController {
 
         const { errId, data } = await this.recommendationService.delete(reqData);
 
-        if (errId) return res.status(HttpStatus.BAD_REQUEST).json(setResult(null, errId));
-
-        return res.status(HttpStatus.OK).json(setResult(data, null));
+        return setResult(data, errId);
 
     }
 

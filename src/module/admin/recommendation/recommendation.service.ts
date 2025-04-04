@@ -2,10 +2,10 @@ import { Injectable } from "@nestjs/common";
 import { Recommendation } from "@prisma/client";
 import { DatabaseProvider } from "@/shared/providers";
 import { AiService } from "@/module/http/services/ai.service";
-import { RecommendationCreateReq } from "./recommendation.interface";
+import { RecommendationCreateReq, RecommendationGetAllReq } from "./recommendation.interface";
 import { RECOMMENDATION_EXCLUDED_USERS } from "@/shared/utils/consts";
 import { RecommendationGeneratorReq } from "@/module/http/http.types";
-import { BaseResponse, IdReq, SuccessRes } from "@/shared/utils/types";
+import { BaseResponse, IdReq, PaginationType, SuccessRes } from "@/shared/utils/types";
 import { ServiceExceptions } from "@/shared/exceptions/service.exception";
 
 @Injectable()
@@ -16,7 +16,7 @@ export class RecommendationService {
         private readonly database: DatabaseProvider,
     ) { }
 
-    public async getAll(): Promise<BaseResponse<Recommendation[]>> {
+    public async getAll(reqData: RecommendationGetAllReq): Promise<BaseResponse<Recommendation[]>> {
 
         try {
 
@@ -24,10 +24,14 @@ export class RecommendationService {
                 include: {
                     user: true,
                 },
-                orderBy: { created_at: 'desc' }
+                orderBy: { created_at: 'desc' },
+                take: reqData.pagination.limit,
+                skip: reqData.pagination.offset,
             });
 
-            return { errId: null, data: recommendations };
+            const total = await this.database.recommendation.count();
+
+            return { errId: null, data: recommendations, total };
 
         } catch (error) {
 
