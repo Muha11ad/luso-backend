@@ -4,15 +4,14 @@ import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { MyError } from "@/shared/utils/error";
 import { BaseResponse } from "@/shared/utils/types";
+import { DatabaseProvider} from "@/shared/providers";
 import { AuthTokens, AuthValidateReq } from "./auth.interface";
-import { DatabaseProvider, RedisProvider } from "@/shared/providers";
 import { ServiceExceptions } from "@/shared/exceptions/service.exception";
 
 @Injectable()
 export class AuthService {
 
   constructor(
-    private readonly redis: RedisProvider,
     private readonly config: ConfigService,
     private readonly jwtService: JwtService,
     private readonly database: DatabaseProvider,
