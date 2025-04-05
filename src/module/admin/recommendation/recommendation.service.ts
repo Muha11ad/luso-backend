@@ -2,11 +2,11 @@ import { Injectable } from "@nestjs/common";
 import { Recommendation } from "@prisma/client";
 import { DatabaseProvider } from "@/shared/providers";
 import { AiService } from "@/module/http/services/ai.service";
-import { RecommendationCreateReq, RecommendationGetAllReq } from "./recommendation.interface";
 import { RECOMMENDATION_EXCLUDED_USERS } from "@/shared/utils/consts";
 import { RecommendationGeneratorReq } from "@/module/http/http.types";
-import { BaseResponse, IdReq, PaginationType, SuccessRes } from "@/shared/utils/types";
+import { BaseResponse, IdReq, SuccessRes } from "@/shared/utils/types";
 import { ServiceExceptions } from "@/shared/exceptions/service.exception";
+import { RecommendationCreateReq, RecommendationGetAllReq } from "./recommendation.interface";
 
 @Injectable()
 export class RecommendationService {
@@ -96,7 +96,7 @@ export class RecommendationService {
 
         } catch (error) {
 
-            return ServiceExceptions.handle(error, RecommendationService.name, 'delete');
+            return ServiceExceptions.handle(error, RecommendationService.name, this.delete.name);
         }
 
     }
@@ -126,7 +126,7 @@ export class RecommendationService {
 
         } catch (error) {
 
-            return ServiceExceptions.handle(error, RecommendationService.name, 'create');
+            return ServiceExceptions.handle(error, RecommendationService.name, this.create.name);
 
         }
 

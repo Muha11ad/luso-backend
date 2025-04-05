@@ -2,9 +2,8 @@ import { Order } from "@prisma/client";
 import { Injectable } from "@nestjs/common";
 import { BaseResponse } from "@/shared/utils/types";
 import { OrderBaseService } from "./order.base.service";
-import { REDIS_ENDPOINT_KEYS } from "@/shared/utils/consts";
 import { ServiceExceptions } from "@/shared/exceptions/service.exception";
-import { CachedOrders, OrderGetAllReq, OrderGetByUserIdReq, OrderIdReq } from "../order.interface";
+import { OrderGetAllReq, OrderGetByUserIdReq, OrderIdReq } from "../order.interface";
 
 @Injectable()
 export class OrderFindService extends OrderBaseService {
@@ -20,7 +19,7 @@ export class OrderFindService extends OrderBaseService {
                 orderBy: {
                     created_at: 'desc'
                 },
-                skip: reqData.pagination.offset || undefined,
+                skip: reqData.pagination.offset,
                 take: reqData.pagination.limit,
 
             });

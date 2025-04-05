@@ -1,5 +1,4 @@
 import { Injectable } from "@nestjs/common";
-import { REDIS_ENDPOINT_KEYS } from "@/shared/utils/consts";
 import { CategoryBaseService } from "./category.base.service";
 import { BaseResponse, SuccessRes } from "@/shared/utils/types";
 import { CategoryCreateEntity, CategoryUpdateEntity } from "../entity";
@@ -21,13 +20,11 @@ export class CategoryCrudService extends CategoryBaseService {
 
       });
 
-      await this.redisProvider.del(REDIS_ENDPOINT_KEYS.categoryAll);
-
       return { errId: null, data: { success: true } };
 
     } catch (error) {
 
-      return ServiceExceptions.handle(error, CategoryCrudService.name, "create");
+      return ServiceExceptions.handle(error, CategoryCrudService.name, this.create.name);
 
     }
   }
@@ -47,14 +44,11 @@ export class CategoryCrudService extends CategoryBaseService {
         data: categoryEntity.toPrisma(),
       });
 
-      await this.redisProvider.del(REDIS_ENDPOINT_KEYS.categoryAll);
-      await this.redisProvider.del(REDIS_ENDPOINT_KEYS.categoryById + reqData.id);
-
       return { errId: null, data: { success: true } };
 
     } catch (error) {
 
-      return ServiceExceptions.handle(error, CategoryCrudService.name, "update");
+      return ServiceExceptions.handle(error, CategoryCrudService.name, this.update.name);
 
     }
   }
@@ -65,14 +59,11 @@ export class CategoryCrudService extends CategoryBaseService {
 
       await this.database.category.delete({ where: { id: reqData.id } });
 
-      await this.redisProvider.del(REDIS_ENDPOINT_KEYS.categoryAll);
-      await this.redisProvider.del(REDIS_ENDPOINT_KEYS.categoryById + reqData.id);
-
       return { errId: null, data: { success: true } };
 
     } catch (error) {
 
-      return ServiceExceptions.handle(error, CategoryCrudService.name, "delete");
+      return ServiceExceptions.handle(error, CategoryCrudService.name, this.delete.name);
 
     }
   }

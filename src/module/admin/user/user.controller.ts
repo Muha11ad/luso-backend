@@ -56,6 +56,7 @@ export class UserController {
     }
 
     @Delete(":telegramId")
+    @CacheDelete(REDIS_ENDPOINT_KEYS.userAll)
     async delete(@Param() param: TelegramIdDto) {
 
         const requestData: UserIdReq = { id: param.telegramId };

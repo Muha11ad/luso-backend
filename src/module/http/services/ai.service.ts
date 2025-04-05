@@ -74,7 +74,7 @@ export class AiService {
             `✅ Say that they can buy this product from our min-app nothing about link.\n\n` +
             `### Important Notes\n` +
             `- Address the client warmly and professionally.\n` +
-            `- Try to recommend more than 1 product from given list\n\n` +
+            `- Try to recommend more productы from given list\n\n` +
             `- If no suitable product is found, politely apologize and mention that the admins will be informed.\n\n` +
             `### Available Products\n` +
             `Analyze characterists, products and only recommend from the following list: ${JSON.stringify(reqData.products, null, 2)}\n` +

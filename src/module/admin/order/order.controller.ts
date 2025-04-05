@@ -23,8 +23,8 @@ export class OrderController {
   ) { }
 
   @Get('all')
-  @CacheKey(REDIS_ENDPOINT_KEYS.ordersAll)
   @UseInterceptors(CacheInterceptor)
+  @CacheKey(REDIS_ENDPOINT_KEYS.ordersAll)
   async getAllOrders(@Query() query: PaginationDto) {
 
     const reqData: OrderGetAllReq = {
@@ -44,7 +44,7 @@ export class OrderController {
 
     const { errId, data } = await this.findService.findById(requestData);
 
-    return setResult(data, errId);
+    return setResult({ orders: data }, errId);
 
   }
 
@@ -57,7 +57,7 @@ export class OrderController {
 
     const { errId, data } = await this.findService.findByUserId(requestData);
 
-    return setResult(data, errId);
+    return setResult({ orders: data }, errId);
 
   }
 
@@ -68,7 +68,7 @@ export class OrderController {
 
     const { errId, data } = await this.lifecycleService.create(requestData);
 
-    return setResult(data, errId);
+    return setResult({ orders: data }, errId);
 
   }
 
@@ -80,7 +80,7 @@ export class OrderController {
 
     const { errId, data } = await this.lifecycleService.delete(requestData);
 
-    return setResult(data, errId);
+    return setResult({ orders: data }, errId);
 
   }
 
@@ -95,7 +95,7 @@ export class OrderController {
 
     const { errId, data } = await this.updateService.update(requestData);
 
-    return setResult(data, errId);
+    return setResult({ orders: data }, errId);
 
   }
 
@@ -110,7 +110,7 @@ export class OrderController {
 
     const { errId, data } = await this.updateService.updateStatus(requestData);
 
-    return setResult(data, errId);
+    return setResult({ orders: data }, errId);
 
   }
 
@@ -126,7 +126,7 @@ export class OrderController {
 
     const { errId, data } = await this.updateService.updateDetails(requestData);
 
-    return setResult(data, errId);
+    return setResult({ orders: data }, errId);
 
   }
 }

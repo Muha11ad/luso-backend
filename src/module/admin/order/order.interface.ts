@@ -47,8 +47,3 @@ export interface OrderIdReq {
 export interface OrderGetByUserIdReq {
     userId: string;
 }
-
-export interface CachedOrders{
-    orders: Order[];
-    total: number;
-}

@@ -1,15 +1,17 @@
-import { Response } from "express";
 import { ApiTags } from "@nestjs/swagger";
 import { Public } from "@/shared/decorators";
-import { ENDPOINTS } from "@/shared/utils/consts";
-import { HttpStatus, Res } from "@nestjs/common";
 import { Controller, Get, } from "@nestjs/common";
-import { setResult } from "@/shared/utils/helpers";
+import { Query, UseInterceptors } from "@nestjs/common";
+import { CacheInterceptor, CacheKey } from "@nestjs/cache-manager";
+import { handlePagination, setResult } from "@/shared/utils/helpers";
 import { CategoryFindService } from "@/module/admin/category/service";
+import { PaginationDto } from "@/module/admin/order/dto/pagination.dto";
+import { ENDPOINTS, REDIS_ENDPOINT_KEYS } from "@/shared/utils/consts";
+import { CategoryGetAllReq } from "@/module/admin/category/category.interface";
 
+@Public()
 @Controller()
 @ApiTags(ENDPOINTS.category)
-@Public()
 export class CategoryController {
 
     constructor(
@@ -17,13 +19,17 @@ export class CategoryController {
     ) { }
 
     @Get('all')
-    async getAll(@Res() res: Response) {
+    @UseInterceptors(CacheInterceptor)
+    @CacheKey(REDIS_ENDPOINT_KEYS.categoryAll)
+    async getAll(@Query() query: PaginationDto) {
 
-        const { errId, data } = await this.findService.findAll();
+        const requestData: CategoryGetAllReq = {
+            pagination: handlePagination(query),
+        }
 
-        if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
+        const { errId, data, total } = await this.findService.findAll(requestData);
 
-        return res.status(HttpStatus.OK).send(setResult(data, null));
+        return setResult({ total, categories: data }, errId);
 
     }
 

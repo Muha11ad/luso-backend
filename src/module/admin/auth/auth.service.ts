@@ -4,11 +4,9 @@ import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { MyError } from "@/shared/utils/error";
 import { BaseResponse } from "@/shared/utils/types";
-import { JWT_CONFIG_KEYS } from "@/configs/jwt.config";
-import { REFRESH_TOKEN_KEY } from "@/shared/utils/consts";
+import { AuthTokens, AuthValidateReq } from "./auth.interface";
 import { DatabaseProvider, RedisProvider } from "@/shared/providers";
 import { ServiceExceptions } from "@/shared/exceptions/service.exception";
-import { AuthRefreshReq, AuthTokens, AuthValidateReq } from "./auth.interface";
 
 @Injectable()
 export class AuthService {
@@ -33,39 +31,13 @@ export class AuthService {
       const access = this.generateAccessToken(reqData.email);
       const refresh = this.generateRefreshToken(reqData.email);
 
-      await this.redis.set(REFRESH_TOKEN_KEY, refresh);
-
       return { errId: null, data: { access, refresh } };
 
     } catch (error) {
 
-      return ServiceExceptions.handle(error, AuthService.name, "validate");
+      return ServiceExceptions.handle(error, AuthService.name, this.validate.name);
 
     }
-  }
-
-  public async refreshToken(reqData: AuthRefreshReq): Promise<BaseResponse<string>> {
-
-    try {
-
-
-      const oldRefresh = await this.redis.get(REFRESH_TOKEN_KEY)
-
-      if (oldRefresh !== reqData.refreshToken) return { errId: MyError.UNAUTHORIZED.errId, data: null };
-      
-      const { email } = this.jwtService.verify(reqData.refreshToken, { secret: this.config.get(JWT_CONFIG_KEYS.refreshSecret) });
-
-      const access = this.generateAccessToken(email);
-
-      return { errId: null, data: access };
-
-
-    } catch (error) {
-
-      return ServiceExceptions.handle(error, AuthService.name, this.refreshToken.name);
-
-    }
-
   }
 
   private generateAccessToken(email: string): string {

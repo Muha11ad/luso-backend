@@ -1,13 +1,15 @@
-import { Response } from "express";
 import { ReqIdDto } from "@/shared/dto/id.dto";
-import { ENDPOINTS } from "@/shared/utils/consts";
-import { setResult } from "@/shared/utils/helpers";
+import { Param, Delete, Put } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
-import { Body, Controller, Get, Post, } from "@nestjs/common";
-import { Param, Delete, Put, HttpStatus, Res } from "@nestjs/common";
+import { PaginationDto } from "../order/dto/pagination.dto";
+import { CacheDelete } from "@/shared/decorators/cache.decorator";
+import { CacheInterceptor, CacheKey } from "@nestjs/cache-manager";
+import { handlePagination, setResult } from "@/shared/utils/helpers";
+import { ENDPOINTS, REDIS_ENDPOINT_KEYS } from "@/shared/utils/consts";
+import { Body, Controller, Get, Post, Query, UseInterceptors, } from "@nestjs/common";
 import { CategoryCrudService, CategoryFindService, CategoryProductService } from "./service";
 import { CategoryCreateDto, CategoryUpdateDto, AddProductToCategoryDto, DeleteProductFromCategoryDto } from "./dto";
-import { CategoryCreateReq, CategoryDeleteReq, CategoryProductAddReq, CategoryProductDeleteReq, CategoryUpdateReq } from "./category.interface";
+import { CategoryCreateReq, CategoryDeleteReq, CategoryGetAllReq, CategoryProductAddReq, CategoryProductDeleteReq, CategoryUpdateReq } from "./category.interface";
 
 @Controller()
 @ApiBearerAuth()
@@ -21,80 +23,83 @@ export class CategoryController {
     ) { }
 
     @Get('all')
-    async getAll(@Res() res: Response) {
+    @UseInterceptors(CacheInterceptor)
+    @CacheKey(REDIS_ENDPOINT_KEYS.categoryAll)
+    async getAll(@Query() query: PaginationDto) {
 
-        const { errId, data } = await this.findService.findAll();
+        const requestData: CategoryGetAllReq = {
+            pagination: handlePagination(query),
+        }
 
-        if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
+        const { errId, data, total } = await this.findService.findAll(requestData);
 
-        return res.status(HttpStatus.OK).jsonp(setResult(data, null));
+        return setResult({ total, categories: data }, errId);
 
     }
 
     @Post()
-    async create(@Res() res: Response, @Body() body: CategoryCreateDto) {
+    @CacheDelete(REDIS_ENDPOINT_KEYS.categoryAll)
+    async create(@Body() body: CategoryCreateDto) {
 
         const requestData: CategoryCreateReq = body;
 
         const { errId, data } = await this.crudService.create(requestData);
 
-        if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
-
-        return res.status(HttpStatus.CREATED).jsonp(setResult(data, null));
+        return setResult({ categories: data }, errId);
 
     }
 
     @Put(":id")
-    async updateCategory(@Res() res: Response, @Param() param: ReqIdDto, @Body() body: CategoryUpdateDto) {
+    @CacheDelete(REDIS_ENDPOINT_KEYS.categoryAll)
+    async updateCategory(@Param() param: ReqIdDto, @Body() body: CategoryUpdateDto) {
 
         const requestData: CategoryUpdateReq = { ...body, id: param.id, };
 
         const { errId, data } = await this.crudService.update(requestData);
 
-        if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
-
-        return res.status(HttpStatus.OK).jsonp(setResult(data, null));
-
+        return setResult({ categories: data }, errId);
     }
 
     @Delete(":id")
-    async deleteCategory(@Res() res: Response, @Param() param: ReqIdDto) {
+    @CacheDelete(REDIS_ENDPOINT_KEYS.categoryAll)
+    async deleteCategory(@Param() param: ReqIdDto) {
 
         const requestData: CategoryDeleteReq = param;
 
         const { errId, data } = await this.crudService.delete(requestData);
 
-        if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
-
-        return res.status(HttpStatus.OK).jsonp(setResult(data, null));
+        return setResult({ categories: data }, errId);
 
     }
 
     @Post("product/:id")
-    async addProductToCategory(@Res() res: Response, @Param() param: ReqIdDto, @Body() body: AddProductToCategoryDto
+    @CacheDelete(REDIS_ENDPOINT_KEYS.categoryAll)
+    async addProductToCategory(@Param() param: ReqIdDto, @Body() body: AddProductToCategoryDto
     ) {
 
-        const requestData: CategoryProductAddReq = { ...body, id: param.id, };
+        const requestData: CategoryProductAddReq = {
+            ...body,
+            id: param.id,
+        };
 
         const { errId, data } = await this.categoryProductService.addProductToCategory(requestData);
 
-        if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
-
-        return res.status(HttpStatus.CREATED).jsonp(setResult(data, null));
+        return setResult({ categories: data }, errId);
 
     }
 
     @Delete("product/:id")
-    async deleteProductFromCategory(@Res() res: Response, @Param() param: ReqIdDto, @Body() body: DeleteProductFromCategoryDto) {
+    @CacheDelete(REDIS_ENDPOINT_KEYS.categoryAll)
+    async deleteProductFromCategory(@Param() param: ReqIdDto, @Body() body: DeleteProductFromCategoryDto) {
 
-        const requestData: CategoryProductDeleteReq = { ...body, id: param.id, };
+        const requestData: CategoryProductDeleteReq = {
+            ...body,
+            id: param.id,
+        };
 
-        const { errId, data: result } = await this.categoryProductService.deleteProductFromCategory(requestData);
+        const { errId, data } = await this.categoryProductService.deleteProductFromCategory(requestData);
 
-        if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
-
-        return res.status(HttpStatus.OK).jsonp(setResult(result, null));
-
+        return setResult({ categories: data }, errId);
     }
 
 }

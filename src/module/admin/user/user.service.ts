@@ -1,6 +1,6 @@
 import { User } from "@prisma/client";
-import { UserCreateReq, UserGetAllReq } from "./user.interface";
 import { DatabaseProvider } from "@/shared/providers";
+import { UserCreateReq, UserGetAllReq } from "./user.interface";
 import { BadGatewayException, Injectable } from "@nestjs/common";
 import { ServiceExceptions } from "@/shared/exceptions/service.exception";
 import { BaseResponse, SuccessRes, UserIdReq } from "@/shared/utils/types";

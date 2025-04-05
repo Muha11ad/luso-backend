@@ -34,7 +34,7 @@ export class CategoryProductService extends CategoryBaseService {
 
         } catch (error) {
 
-            return ServiceExceptions.handle(error, CategoryProductService.name, "addProductToCategory");
+            return ServiceExceptions.handle(error, CategoryProductService.name, this.addProductToCategory.name);
 
         }
 
@@ -57,7 +57,7 @@ export class CategoryProductService extends CategoryBaseService {
 
         } catch (error) {
 
-            return ServiceExceptions.handle(error, CategoryProductService.name, "deleteProductFromCategory");
+            return ServiceExceptions.handle(error, CategoryProductService.name, this.deleteProductFromCategory.name);
 
         }
 

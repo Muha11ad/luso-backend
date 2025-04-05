@@ -16,3 +16,12 @@ export interface JWTDecoded {
     iat: number,
     exp: number,
 }
+export interface CachedAcessToken {
+    access: string,
+    exp: number;
+}
+
+export interface CachedRefreshToken {
+    refresh: string,
+    exp: number;
+}

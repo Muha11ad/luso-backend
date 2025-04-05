@@ -3,16 +3,30 @@ import * as bcrypt from "bcrypt";
 import { MyError } from "./error";
 import { FILE_FORMAT } from "./consts";
 import { BadRequestException } from "@nestjs/common";
-import { FileType, HttpResponse, PaginationType, TranslationType } from "./types";
 import { PaginationDto } from "@/module/admin/order/dto/pagination.dto";
+import { FileType, HttpResponse, PaginationType, TranslationType } from "./types";
 
-export function setResult(data: any, errorId: number): HttpResponse {
+export function setResult(data: any, errorId: number | null): HttpResponse {
 
-  if (!errorId) return { data: data, error: null, success: true };
+  if (errorId == null) {
+    return {
+      data: data,
+      error: null,
+      success: true,
+    };
+  }
 
   const { errId, errMsg, isFriendly } = MyError.getErrorByErrId(errorId);
 
-  return { data: null, error: { errId: errId, isFriendly: isFriendly, errMsg: data ?? errMsg }, success: false };
+  return {
+    data: null,
+    error: {
+      errId: errId,
+      isFriendly: isFriendly,
+      errMsg: errMsg,
+    },
+    success: false,
+  };
 }
 
 async function checkFileFormat(file: FileType): Promise<void> {

@@ -6,6 +6,6 @@ import { OrderBaseService, OrderFindService, OrderUpdateService, OrderLifecycleS
 @Module({
     imports: [ProvidersModule],
     controllers: [OrderController],
-    providers: [OrderBaseService, OrderFindService, OrderUpdateService, OrderLifecycleService,]
+    providers: [OrderBaseService, OrderFindService, OrderUpdateService, OrderLifecycleService]
 })
 export class AdminOrderModule { }

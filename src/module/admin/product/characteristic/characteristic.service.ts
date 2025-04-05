@@ -29,7 +29,7 @@ export class CharacteristicService {
 
         } catch (error) {
 
-            return ServiceExceptions.handle(error, CharacteristicService.name, "create");
+            return ServiceExceptions.handle(error, CharacteristicService.name, this.create.name);
 
         }
 
@@ -60,13 +60,12 @@ export class CharacteristicService {
 
         } catch (error) {
 
-            return ServiceExceptions.handle(error, CharacteristicService.name, "update");
+            return ServiceExceptions.handle(error, CharacteristicService.name, this.update.name);
 
         }
 
     }
 
-    // fix esli cho
     public async delete(reqData: IdReq): Promise<BaseResponse<SuccessRes>> {
 
         try {
@@ -79,7 +78,7 @@ export class CharacteristicService {
 
         } catch (error) {
 
-            return ServiceExceptions.handle(error, CharacteristicService.name, "delete");
+            return ServiceExceptions.handle(error, CharacteristicService.name, this.delete.name);
 
         }
 

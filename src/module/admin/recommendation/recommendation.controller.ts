@@ -41,7 +41,7 @@ export class RecommendationController {
 
         const { errId, data } = await this.recommendationService.delete(reqData);
 
-        return setResult(data, errId);
+        return setResult({ recommenadtions: data }, errId);
 
     }
 

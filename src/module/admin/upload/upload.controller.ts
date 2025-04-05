@@ -1,4 +1,3 @@
-import { Response } from "express";
 import { UploadService } from "./upload.service";
 import { FilesType } from "@/shared/utils/types";
 import { ENDPOINTS } from "@/shared/utils/consts";
@@ -10,7 +9,7 @@ import { FilesInterceptor } from "@nestjs/platform-express";
 import { ApiBearerAuth, ApiConsumes, ApiTags } from "@nestjs/swagger";
 import { DeleteMultipleFilesDto } from "./dto/delete-multiple-files.dto";
 import { UploadDeleteMultipleFilesReq, UploadMultipliFilesReq } from "./upload.interface";
-import { Body, Controller, Delete, HttpStatus, Param, Post, Res, UploadedFiles, UseInterceptors} from "@nestjs/common";
+import { Body, Controller, Delete, Param, Post, UploadedFiles, UseInterceptors } from "@nestjs/common";
 
 @Controller()
 @ApiBearerAuth()
@@ -23,7 +22,6 @@ export class UploadController {
     @ApiConsumes("multipart/form-data")
     @UseInterceptors(FilesInterceptor('images'))
     async uploadImages(
-        @Res() res: Response,
         @Param() param: UploadParamsDto,
         @Body() body: UploadImagesBodyDto,
         @UploadedFiles(new FileValidatePipe) images: FilesType,
@@ -36,14 +34,12 @@ export class UploadController {
 
         const { errId, data } = await this.uploadService.saveMultipleFiles(requestData);
 
-        if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
-
-        return res.status(HttpStatus.CREATED).jsonp(setResult(data, null));
+        return setResult({ uploads: data }, errId);
 
     }
 
     @Delete("image/:folder")
-    async deleteImages(@Res() res: Response, @Param() param: UploadParamsDto, @Body() body: DeleteMultipleFilesDto) {
+    async deleteImages(@Param() param: UploadParamsDto, @Body() body: DeleteMultipleFilesDto) {
 
         const requestData: UploadDeleteMultipleFilesReq = {
             folder: param.folder,
@@ -52,9 +48,7 @@ export class UploadController {
 
         const { errId, data } = await this.uploadService.deleteMultipleFiles(requestData);
 
-        if (errId) return res.status(HttpStatus.BAD_REQUEST).jsonp(setResult(null, errId));
-
-        return res.status(HttpStatus.OK).jsonp(setResult(data, null));
+        return setResult({ uploads: data }, errId);
 
     }
 

@@ -1,4 +1,4 @@
-import { TranslationType } from "@/shared/utils/types";
+import { PaginationType, TranslationType } from "@/shared/utils/types";
 
 export interface CategoryDeleteReq {
   id: string;
@@ -21,4 +21,8 @@ export interface CategoryProductAddReq {
 export interface CategoryProductDeleteReq {
   id: string,
   productIds: string[]
+}
+
+export interface CategoryGetAllReq {
+  pagination: PaginationType
 }
