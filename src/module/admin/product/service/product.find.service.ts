@@ -1,22 +1,20 @@
 import { Product } from "@prisma/client";
 import { Injectable } from "@nestjs/common";
 import { BaseResponse, IdReq } from "@/shared/utils/types";
+import { ProductsFilterReq } from "../product.interface";
 import { ProductBaseService } from "./product.base.service";
 import { ServiceExceptions } from "@/shared/exceptions/service.exception";
-import { ProductGetAllReq, ProductsFilterReq } from "../product.interface";
 
 @Injectable()
 export class ProductFindService extends ProductBaseService {
 
-    public async findAll(reqData: ProductGetAllReq): Promise<BaseResponse<Product[]>> {
+    public async findAll(): Promise<BaseResponse<Product[]>> {
 
         try {
 
             const products = await this.database.product.findMany({
 
                 include: { Characteristic: true, Images: true, Categories: true },
-                take: reqData.pagination.limit,
-                skip: reqData.pagination.offset,
 
             });
 

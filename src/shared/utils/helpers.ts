@@ -95,14 +95,18 @@ export function isPasswordValid(password: string, hashPassword: string): boolean
 
 export function handlePagination(query: PaginationDto): PaginationType {
 
+  // Check if page and perPage are provided in the query
+  if (query?.page == undefined && query?.perPage == undefined) {
+
+    return { limit: undefined, offset: undefined };
+
+  }
+
   query.page = Number(query.page) || 1;
   query.perPage = Number(query.perPage) || 10;
 
   const offset = query.perPage * (query.page - 1);
 
-  return {
-    limit: query.perPage,
-    offset: offset
-  };
+  return { limit: query.perPage, offset: offset };
 
 }

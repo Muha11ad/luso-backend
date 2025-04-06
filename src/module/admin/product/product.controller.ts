@@ -24,13 +24,9 @@ export class ProductController {
     @Get('all')
     @UseInterceptors(CacheInterceptor)
     @CacheKey(REDIS_ENDPOINT_KEYS.productAll)
-    async getAll(@Query() query: PaginationDto,) {
+    async getAll() {
 
-        const requestData: ProductGetAllReq = {
-            pagination: handlePagination(query),
-        }
-
-        const { errId, data, total } = await this.findService.findAll(requestData);
+        const { errId, data, total } = await this.findService.findAll();
 
         return setResult({ total, products: data }, errId);
 

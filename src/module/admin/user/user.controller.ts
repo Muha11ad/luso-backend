@@ -1,14 +1,12 @@
 import { UserService } from "./user.service";
+import { ENDPOINTS } from "@/shared/utils/consts";
 import { UserIdReq } from "@/shared/utils/types";
 import { TelegramIdDto, UserCreateDto } from "./dto";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { PaginationDto } from "../order/dto/pagination.dto";
 import { UserCreateReq, UserGetAllReq } from "./user.interface";
-import { CacheDelete } from "@/shared/decorators/cache.decorator";
-import { CacheInterceptor, CacheKey } from "@nestjs/cache-manager";
 import { handlePagination, setResult } from "@/shared/utils/helpers";
-import { ENDPOINTS, REDIS_ENDPOINT_KEYS } from "@/shared/utils/consts";
-import { Body, Controller, Delete, Get, Param, Post, Query, UseInterceptors } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Query, } from "@nestjs/common";
 
 @Controller()
 @ApiBearerAuth()
@@ -18,8 +16,6 @@ export class UserController {
     constructor(private readonly userService: UserService) { }
 
     @Get('all')
-    @UseInterceptors(CacheInterceptor)
-    @CacheKey(REDIS_ENDPOINT_KEYS.userAll)
     async getAll(@Query() query: PaginationDto) {
 
         const requestData: UserGetAllReq = {
@@ -44,7 +40,6 @@ export class UserController {
     }
 
     @Post()
-    @CacheDelete(REDIS_ENDPOINT_KEYS.userAll)
     async getOrCreate(@Body() body: UserCreateDto) {
 
         const requestData: UserCreateReq = body
@@ -56,7 +51,6 @@ export class UserController {
     }
 
     @Delete(":telegramId")
-    @CacheDelete(REDIS_ENDPOINT_KEYS.userAll)
     async delete(@Param() param: TelegramIdDto) {
 
         const requestData: UserIdReq = { id: param.telegramId };

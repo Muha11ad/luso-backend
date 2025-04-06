@@ -1,7 +1,6 @@
 import { ApiTags } from "@nestjs/swagger";
 import { Public } from "@/shared/decorators";
 import { UserCreateDto } from "../../admin/user";
-import { CacheKey } from "@nestjs/cache-manager";
 import { setResult } from "@/shared/utils/helpers";
 import { UserService } from "../../admin/user/user.service";
 import { Body, Controller, Post, } from "@nestjs/common";
@@ -16,7 +15,6 @@ export class UserController {
     constructor(private readonly userService: UserService) { }
 
     @Post()
-    @CacheKey(REDIS_ENDPOINT_KEYS.userAll)
     async getOrCreate(@Body() body: UserCreateDto) {
 
         const requestData: UserCreateReq = body

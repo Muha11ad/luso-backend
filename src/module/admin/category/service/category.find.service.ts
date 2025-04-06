@@ -8,15 +8,11 @@ import { CategoryGetAllReq } from "../category.interface";
 @Injectable()
 export class CategoryFindService extends CategoryBaseService {
 
-    async findAll(reqData: CategoryGetAllReq): Promise<BaseResponse<Category[]>> {
+    async findAll(): Promise<BaseResponse<Category[]>> {
 
         try {
 
-
-            const categories = await this.database.category.findMany({
-                skip: reqData.pagination.offset,
-                take: reqData.pagination.limit,
-            });
+            const categories = await this.database.category.findMany();
 
             const total = await this.database.category.count();
 

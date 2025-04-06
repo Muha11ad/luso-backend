@@ -2,14 +2,12 @@ import { ReqIdDto } from "@/shared/dto";
 import { ApiTags } from "@nestjs/swagger";
 import { IdReq } from "@/shared/utils/types";
 import { Public } from "@/shared/decorators";
+import { ENDPOINTS } from "@/shared/utils/consts";
+import { setResult } from "@/shared/utils/helpers";
 import { FilterProductsDto } from "@/module/admin/product/dto";
-import { CacheInterceptor, CacheKey } from "@nestjs/cache-manager";
-import { handlePagination, setResult } from "@/shared/utils/helpers";
-import { ENDPOINTS, REDIS_ENDPOINT_KEYS } from "@/shared/utils/consts";
-import { PaginationDto } from "@/module/admin/order/dto/pagination.dto";
+import { Get, Body, Post, Param, Controller } from "@nestjs/common";
+import { ProductsFilterReq } from "@/module/admin/product/product.interface";
 import { ProductCategoryService, ProductFindService } from "@/module/admin/product/service";
-import { ProductGetAllReq, ProductsFilterReq } from "@/module/admin/product/product.interface";
-import { Get, Body, Post, Param, Controller, UseInterceptors, Query } from "@nestjs/common";
 
 @Public()
 @Controller()
@@ -22,15 +20,9 @@ export class ProductController {
     ) { }
 
     @Get('all')
-    @UseInterceptors(CacheInterceptor)
-    @CacheKey(REDIS_ENDPOINT_KEYS.productAll)
-    async getAll(@Query() query: PaginationDto) {
+    async getAll() {
 
-        const requestData: ProductGetAllReq = {
-            pagination: handlePagination(query),
-        }
-
-        const { errId, data, total } = await this.findService.findAll(requestData);
+        const { errId, data, total } = await this.findService.findAll();
 
         return setResult({ total, products: data }, errId)
     }

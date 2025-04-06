@@ -29,7 +29,7 @@ export class OrderController {
 
     const { errId, data } = await this.findService.findByUserId(requestData);
 
-    return setResult({ users: data }, errId);
+    return setResult({ orders: data }, errId);
 
   }
 
@@ -41,7 +41,7 @@ export class OrderController {
 
     const { errId, data } = await this.lifecycleService.create(requestData);
 
-    return setResult({ users: data }, errId);
+    return setResult({ orders: data }, errId);
 
   }
 

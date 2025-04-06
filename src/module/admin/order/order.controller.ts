@@ -1,15 +1,14 @@
 import { ReqIdDto } from "@/shared/dto";
 import { TelegramIdDto } from "../user/dto";
-import { PaginationDto } from "./dto/pagination.dto";
+import { setResult } from "@/shared/utils/helpers";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { CacheDelete } from "@/shared/decorators/cache.decorator";
 import { CacheInterceptor, CacheKey } from "@nestjs/cache-manager";
-import { handlePagination, setResult } from "@/shared/utils/helpers";
 import { ENDPOINTS, REDIS_ENDPOINT_KEYS } from "@/shared/utils/consts";
 import { OrderFindService, OrderUpdateService, OrderLifecycleService } from "./service";
 import { OrderCreateDto, OrderUpdateDto, OrderStatusUpdateDto, OrderDetailsUpdateDto } from "./dto";
-import { Put, Get, Body, Post, Param, Delete, Controller, Res, Patch, Query, UseInterceptors } from "@nestjs/common";
-import { OrderCreateReq, OrderDetailsUpdateReq, OrderGetAllReq, OrderGetByUserIdReq, OrderIdReq, OrderUpdateReq, OrderUpdateStatusReq } from "./order.interface";
+import { Put, Get, Body, Post, Param, Delete, Controller, Patch, UseInterceptors } from "@nestjs/common";
+import { OrderCreateReq, OrderDetailsUpdateReq, OrderGetByUserIdReq, OrderIdReq, OrderUpdateReq, OrderUpdateStatusReq } from "./order.interface";
 
 @Controller()
 @ApiBearerAuth()
@@ -25,13 +24,9 @@ export class OrderController {
   @Get('all')
   @UseInterceptors(CacheInterceptor)
   @CacheKey(REDIS_ENDPOINT_KEYS.ordersAll)
-  async getAllOrders(@Query() query: PaginationDto) {
+  async getAllOrders() {
 
-    const reqData: OrderGetAllReq = {
-      pagination: handlePagination(query)
-    }
-
-    const { errId, data, total } = await this.findService.findAll(reqData);
+    const { errId, data, total } = await this.findService.findAll();
 
     return setResult({ total, orders: data }, errId);
 

@@ -8,7 +8,7 @@ import { OrderGetAllReq, OrderGetByUserIdReq, OrderIdReq } from "../order.interf
 @Injectable()
 export class OrderFindService extends OrderBaseService {
 
-    public async findAll(reqData: OrderGetAllReq): Promise<BaseResponse<Order[]>> {
+    public async findAll(): Promise<BaseResponse<Order[]>> {
 
         try {
 
@@ -19,8 +19,6 @@ export class OrderFindService extends OrderBaseService {
                 orderBy: {
                     created_at: 'desc'
                 },
-                skip: reqData.pagination.offset,
-                take: reqData.pagination.limit,
 
             });
 
