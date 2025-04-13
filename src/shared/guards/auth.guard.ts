@@ -9,6 +9,7 @@ import { DatabaseProvider } from "../providers";
 import { JWT_CONFIG_KEYS } from "@/configs/jwt.config";
 import { JWTDecoded } from "@/module/admin/auth/auth.interface";
 import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from "@nestjs/common";
+import { log } from "console";
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -30,7 +31,12 @@ export class AuthGuard implements CanActivate {
         const request = context.switchToHttp().getRequest<Request>();
         const response = context.switchToHttp().getResponse<Response>();
 
+        console.log("Request Headers:", request.headers);
+        console.log("Request Cookies:", request.cookies);
+
         const { accessToken, refreshToken } = this.extractTokens(request);
+
+        console.log("Access Token:", accessToken);
 
         if (!accessToken) {
 
@@ -48,30 +54,39 @@ export class AuthGuard implements CanActivate {
 
         } catch (error) {
 
+            console.error("Error during token verification:", error);
+
             throw new UnauthorizedException(error.message || MyError.INVALID_TOKEN.message);
 
         }
     }
 
     private extractTokens(request: Request): { accessToken: string | undefined; refreshToken: string | undefined } {
+
         let accessToken = request.headers["authorization"];
         let refreshToken: string | undefined;
 
-        if (!accessToken) {
-            accessToken = request.cookies[TOKEN_KEYS.acccessToken];
-            refreshToken = request.cookies[TOKEN_KEYS.refreshToken];
+        if (accessToken) {
+            console.log("Access Token from Header:", accessToken);
+            accessToken = accessToken.startsWith("Bearer ") ? accessToken.split(" ")[1] : accessToken;
+
         }
 
-        if (accessToken) {
-            accessToken = accessToken.startsWith("Bearer ") ? accessToken.split(" ")[1] : accessToken;
+        else if (!accessToken) {
+            console.log("Access Token from Cookies:", request.cookies[TOKEN_KEYS.acccessToken]);
+            accessToken = request.cookies[TOKEN_KEYS.acccessToken];
+            refreshToken = request.cookies[TOKEN_KEYS.refreshToken];
+        
         }
 
         return { accessToken, refreshToken };
     }
 
     private async verifyAccessToken(accessToken: string): Promise<JWTDecoded> {
+
         const accessSecret = this.config.get<string>(JWT_CONFIG_KEYS.accessSecret);
         return this.jwtService.verifyAsync<JWTDecoded>(accessToken, { secret: accessSecret });
+    
     }
 
     private async checkAdminEmail(decodedAccessToken: JWTDecoded): Promise<void> {
@@ -122,11 +137,11 @@ export class AuthGuard implements CanActivate {
         try {
 
             return await this.jwtService.verifyAsync<JWTDecoded>(refreshToken, { secret: refreshSecret });
-        
+
         } catch {
-        
+
             throw new UnauthorizedException(MyError.INVALID_TOKEN.message);
-        
+
         }
     }
 

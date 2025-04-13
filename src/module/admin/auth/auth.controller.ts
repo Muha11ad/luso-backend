@@ -1,12 +1,11 @@
 import { LoginDto } from "./dto";
-import { Response } from "express";
 import { Public } from "@/shared/decorators";
 import { AuthService } from "./auth.service";
+import { ENDPOINTS } from "@/shared/utils/consts";
 import { setResult } from "@/shared/utils/helpers";
 import { AuthValidateReq } from "./auth.interface";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
-import { ENDPOINTS, TOKEN_KEYS } from "@/shared/utils/consts";
-import { Body, Controller, Post, Res } from "@nestjs/common";
+import { Body, Controller, Post } from "@nestjs/common";
 
 @Controller()
 @ApiBearerAuth()
@@ -17,7 +16,7 @@ export class AuthController {
 
     @Public()
     @Post('login')
-    async login(@Res({ passthrough: true }) res: Response, @Body() body: LoginDto) {
+    async login(@Body() body: LoginDto) {
 
         const requestData: AuthValidateReq = body;
 
@@ -25,13 +24,10 @@ export class AuthController {
 
         if (errId) {
 
-            
+
             return setResult({ auth: null }, errId);
 
         }
-
-        res.cookie(TOKEN_KEYS.acccessToken, data.access)
-        res.cookie(TOKEN_KEYS.refreshToken, data.refresh)
 
         return setResult({ auth: data }, errId);
 
