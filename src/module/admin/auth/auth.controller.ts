@@ -25,26 +25,25 @@ export class AuthController {
 
         if (errId) {
 
-
-            return setResult({ auth: null }, errId);
-
+            return res.json(setResult({ auth: null }, errId)); 
+        
         }
 
         res.cookie(TOKEN_KEYS.acccessToken, data.access, {
             httpOnly: true,
             secure: true,
             sameSite: 'none',
-            maxAge: 1000 * 60 * 60 * 24, // a day
+            maxAge: 1000 * 60 * 60 * 24,
         });
 
         res.cookie(TOKEN_KEYS.refreshToken, data.refresh, {
             httpOnly: true,
             secure: true,
             sameSite: 'none',
-            maxAge: 1000 * 60 * 60 * 24 * 7, // a week
+            maxAge: 1000 * 60 * 60 * 24 * 7,
         });
 
-        return setResult({ auth: data }, errId);
+        return res.json(setResult({ auth: data }, null)); 
 
     }
 
