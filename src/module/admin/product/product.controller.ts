@@ -1,14 +1,15 @@
 import { ReqIdDto } from "@/shared/dto";
 import { IdReq } from "@/shared/utils/types";
+import { setResult } from "@/shared/utils/helpers";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
-import { PaginationDto } from "../order/dto/pagination.dto";
 import { CacheInterceptor, CacheKey } from "@nestjs/cache-manager";
-import { handlePagination, setResult } from "@/shared/utils/helpers";
+import { CacheDelete } from "@/shared/decorators/cache.decorator";
 import { ENDPOINTS, REDIS_ENDPOINT_KEYS } from "@/shared/utils/consts";
+import { CacheDeleteInterceptor } from "@/shared/interceptors/cache.delete.interceptor";
 import { ProductCrudService, ProductFindService, ProductCategoryService } from "./service";
 import { Put, Get, Body, Post, Param, Delete, Controller, Patch, Query, UseInterceptors } from "@nestjs/common";
 import { ProductCreateDto, ProductUpdateDto, FilterProductsDto, AddCategoryToProductDto, DeleteCategoryFromProductDto, DeleteImagesFromProductDto } from "./dto";
-import { ProductCategoryAddReq, ProductCategoryDeleteReq, ProductCreateReq, ProductDeleteImageReq, ProductGetAllReq, ProductsFilterReq, ProductUpdateReq } from "./product.interface";
+import { ProductCategoryAddReq, ProductCategoryDeleteReq, ProductCreateReq, ProductDeleteImageReq, ProductsFilterReq, ProductUpdateReq } from "./product.interface";
 
 @Controller()
 @ApiBearerAuth()
@@ -55,7 +56,8 @@ export class ProductController {
     }
 
     @Post()
-    @Delete(REDIS_ENDPOINT_KEYS.productAll)
+    @UseInterceptors(CacheDeleteInterceptor)
+    @CacheDelete(REDIS_ENDPOINT_KEYS.productAll)
     async create(@Body() body: ProductCreateDto) {
 
         const requestData: ProductCreateReq = body;
@@ -67,7 +69,8 @@ export class ProductController {
     }
 
     @Put("/:id")
-    @Delete(REDIS_ENDPOINT_KEYS.productAll)
+    @UseInterceptors(CacheDeleteInterceptor)
+    @CacheDelete(REDIS_ENDPOINT_KEYS.productAll)
     async update(@Param() param: ReqIdDto, @Body() body: ProductUpdateDto) {
 
         const reqData: ProductUpdateReq = {
@@ -82,7 +85,8 @@ export class ProductController {
     }
 
     @Delete("/:id")
-    @Delete(REDIS_ENDPOINT_KEYS.productAll)
+    @UseInterceptors(CacheDeleteInterceptor)
+    @CacheDelete(REDIS_ENDPOINT_KEYS.productAll)
     async delete(@Param() param: ReqIdDto) {
 
         const requestData: IdReq = param;
@@ -94,7 +98,8 @@ export class ProductController {
     }
 
     @Post("category/:id")
-    @Delete(REDIS_ENDPOINT_KEYS.productAll)
+    @UseInterceptors(CacheDeleteInterceptor)
+    @CacheDelete(REDIS_ENDPOINT_KEYS.productAll)
     async addCategoryToProduct(@Param() param: ReqIdDto, @Body() body: AddCategoryToProductDto) {
 
         const requestData: ProductCategoryAddReq = {
@@ -109,7 +114,8 @@ export class ProductController {
     }
 
     @Delete("category/:id")
-    @Delete(REDIS_ENDPOINT_KEYS.productAll)
+    @UseInterceptors(CacheDeleteInterceptor)
+    @CacheDelete(REDIS_ENDPOINT_KEYS.productAll)
     async deleteCategoryFromProduct(@Param() param: ReqIdDto, @Body() body: DeleteCategoryFromProductDto) {
 
         const requestData: ProductCategoryDeleteReq = {
@@ -124,7 +130,8 @@ export class ProductController {
     }
 
     @Get("category/:id")
-    @Delete(REDIS_ENDPOINT_KEYS.productAll)
+    @UseInterceptors(CacheDeleteInterceptor)
+    @CacheDelete(REDIS_ENDPOINT_KEYS.productAll)
     async getCategoriesByProduct(@Param() param: ReqIdDto) {
 
         const requestData: IdReq = param;
@@ -136,7 +143,8 @@ export class ProductController {
     }
     // this should be delete method, but in delete it is not working
     @Patch("images")
-    @Delete(REDIS_ENDPOINT_KEYS.productAll)
+    @UseInterceptors(CacheDeleteInterceptor)
+    @CacheDelete(REDIS_ENDPOINT_KEYS.productAll)
     async deleteImages(@Body() body: DeleteImagesFromProductDto) {
 
         const requestData: ProductDeleteImageReq = body;

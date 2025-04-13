@@ -69,11 +69,14 @@ export class ServiceExceptions {
 
         // Default handling
         if (e.errId) {
+            console.log(e);
             return {
                 errId: e.errId,
                 data: null
             };
+            
         }
+
 
         this.logger.error(`Service: [${serviceName}], method: [${methodName}], Error: ${e}`);
         throw e;

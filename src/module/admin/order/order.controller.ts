@@ -9,6 +9,7 @@ import { OrderFindService, OrderUpdateService, OrderLifecycleService } from "./s
 import { OrderCreateDto, OrderUpdateDto, OrderStatusUpdateDto, OrderDetailsUpdateDto } from "./dto";
 import { Put, Get, Body, Post, Param, Delete, Controller, Patch, UseInterceptors } from "@nestjs/common";
 import { OrderCreateReq, OrderDetailsUpdateReq, OrderGetByUserIdReq, OrderIdReq, OrderUpdateReq, OrderUpdateStatusReq } from "./order.interface";
+import { CacheDeleteInterceptor } from "@/shared/interceptors/cache.delete.interceptor";
 
 @Controller()
 @ApiBearerAuth()
@@ -57,6 +58,8 @@ export class OrderController {
   }
 
   @Post()
+  @UseInterceptors(CacheDeleteInterceptor)
+  @CacheDelete(REDIS_ENDPOINT_KEYS.ordersAll)
   async createOrder(@Body() body: OrderCreateDto) {
 
     const requestData: OrderCreateReq = body
@@ -68,6 +71,7 @@ export class OrderController {
   }
 
   @Delete(":id")
+  @UseInterceptors(CacheDeleteInterceptor)
   @CacheDelete(REDIS_ENDPOINT_KEYS.ordersAll)
   async deleteOrder(@Param() param: ReqIdDto) {
 
@@ -80,6 +84,7 @@ export class OrderController {
   }
 
   @Put(":id")
+  @UseInterceptors(CacheDeleteInterceptor)
   @CacheDelete(REDIS_ENDPOINT_KEYS.ordersAll)
   async updateOrder(@Param() param: ReqIdDto, @Body() body: OrderUpdateDto) {
 
@@ -95,6 +100,7 @@ export class OrderController {
   }
 
   @Patch("status/:id")
+  @UseInterceptors(CacheDeleteInterceptor)
   @CacheDelete(REDIS_ENDPOINT_KEYS.ordersAll)
   async updateOrderStatus(@Param() param: ReqIdDto, @Body() body: OrderStatusUpdateDto) {
 
@@ -110,6 +116,7 @@ export class OrderController {
   }
 
   @Put(":id/details")
+  @UseInterceptors(CacheDeleteInterceptor)
   @CacheDelete(REDIS_ENDPOINT_KEYS.ordersAll)
   async updateOrderDetails(@Param() param: ReqIdDto, @Body() body: OrderDetailsUpdateDto
   ) {

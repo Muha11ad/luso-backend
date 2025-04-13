@@ -4,10 +4,11 @@ import { setResult } from "@/shared/utils/helpers";
 import { TelegramIdDto } from "@/module/admin/user/dto";
 import { OrderCreateDto } from "@/module/admin/order/dto";
 import { CacheDelete } from "@/shared/decorators/cache.decorator";
-import { Body, Controller, Get, Param, Post, } from "@nestjs/common";
 import { ENDPOINTS, REDIS_ENDPOINT_KEYS } from "@/shared/utils/consts";
+import { Body, Controller, Get, Param, Post, UseInterceptors, } from "@nestjs/common";
 import { OrderFindService, OrderLifecycleService } from "@/module/admin/order/service";
 import { OrderCreateReq, OrderGetByUserIdReq } from "@/module/admin/order/order.interface";
+import { CacheDeleteInterceptor } from "@/shared/interceptors/cache.delete.interceptor";
 
 @Public()
 @Controller()
@@ -34,6 +35,7 @@ export class OrderController {
   }
 
   @Post()
+  @UseInterceptors(CacheDeleteInterceptor)
   @CacheDelete(REDIS_ENDPOINT_KEYS.ordersAll)
   async createOrder(@Body() body: OrderCreateDto) {
 

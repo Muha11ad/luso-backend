@@ -1,11 +1,11 @@
 import { ApiTags } from "@nestjs/swagger";
 import { Public } from "@/shared/decorators";
 import { UserCreateDto } from "../../admin/user";
+import { ENDPOINTS} from "@/shared/utils/consts";
 import { setResult } from "@/shared/utils/helpers";
 import { UserService } from "../../admin/user/user.service";
 import { Body, Controller, Post, } from "@nestjs/common";
 import { UserCreateReq } from "../../admin/user/user.interface";
-import { ENDPOINTS, REDIS_ENDPOINT_KEYS } from "@/shared/utils/consts";
 
 @Public()
 @Controller()

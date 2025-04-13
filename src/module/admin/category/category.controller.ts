@@ -5,7 +5,8 @@ import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { CacheDelete } from "@/shared/decorators/cache.decorator";
 import { CacheInterceptor, CacheKey } from "@nestjs/cache-manager";
 import { ENDPOINTS, REDIS_ENDPOINT_KEYS } from "@/shared/utils/consts";
-import { Body, Controller, Get, Post, Query, UseInterceptors, } from "@nestjs/common";
+import { Body, Controller, Get, Post,UseInterceptors, } from "@nestjs/common";
+import { CacheDeleteInterceptor } from "@/shared/interceptors/cache.delete.interceptor";
 import { CategoryCrudService, CategoryFindService, CategoryProductService } from "./service";
 import { CategoryCreateDto, CategoryUpdateDto, AddProductToCategoryDto, DeleteProductFromCategoryDto } from "./dto";
 import { CategoryCreateReq, CategoryDeleteReq, CategoryProductAddReq, CategoryProductDeleteReq, CategoryUpdateReq } from "./category.interface";
@@ -33,6 +34,7 @@ export class CategoryController {
     }
 
     @Post()
+    @UseInterceptors(CacheDeleteInterceptor)
     @CacheDelete(REDIS_ENDPOINT_KEYS.categoryAll)
     async create(@Body() body: CategoryCreateDto) {
 
@@ -45,6 +47,7 @@ export class CategoryController {
     }
 
     @Put(":id")
+    @UseInterceptors(CacheDeleteInterceptor)
     @CacheDelete(REDIS_ENDPOINT_KEYS.categoryAll)
     async updateCategory(@Param() param: ReqIdDto, @Body() body: CategoryUpdateDto) {
 
@@ -56,6 +59,7 @@ export class CategoryController {
     }
 
     @Delete(":id")
+    @UseInterceptors(CacheDeleteInterceptor)
     @CacheDelete(REDIS_ENDPOINT_KEYS.categoryAll)
     async deleteCategory(@Param() param: ReqIdDto) {
 
@@ -68,6 +72,7 @@ export class CategoryController {
     }
 
     @Post("product/:id")
+    @UseInterceptors(CacheDeleteInterceptor)
     @CacheDelete(REDIS_ENDPOINT_KEYS.categoryAll)
     async addProductToCategory(@Param() param: ReqIdDto, @Body() body: AddProductToCategoryDto
     ) {
@@ -84,6 +89,7 @@ export class CategoryController {
     }
 
     @Delete("product/:id")
+    @UseInterceptors(CacheDeleteInterceptor)
     @CacheDelete(REDIS_ENDPOINT_KEYS.categoryAll)
     async deleteProductFromCategory(@Param() param: ReqIdDto, @Body() body: DeleteProductFromCategoryDto) {
 
