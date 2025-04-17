@@ -35,11 +35,13 @@ export class OrderController {
 
 
   @Get("total")
+  @UseInterceptors(CacheInterceptor)
+  @CacheKey(REDIS_ENDPOINT_KEYS.ordersTotal)
   async getTotalOrders() {
 
     const { errId, data } = await this.findService.getTotalOrders();
 
-    return setResult({ total: data }, errId);
+    return setResult({ orders: data }, errId);
 
   }
 
@@ -69,7 +71,7 @@ export class OrderController {
   
   @Post()
   @UseInterceptors(CacheDeleteInterceptor)
-  @CacheDelete(REDIS_ENDPOINT_KEYS.ordersAll)
+  @CacheDelete(REDIS_ENDPOINT_KEYS.ordersAll, REDIS_ENDPOINT_KEYS.ordersTotal)
   async createOrder(@Body() body: OrderCreateDto) {
 
     const requestData: OrderCreateReq = body
@@ -82,7 +84,7 @@ export class OrderController {
 
   @Delete(":id")
   @UseInterceptors(CacheDeleteInterceptor)
-  @CacheDelete(REDIS_ENDPOINT_KEYS.ordersAll)
+  @CacheDelete(REDIS_ENDPOINT_KEYS.ordersAll, REDIS_ENDPOINT_KEYS.ordersTotal)
   async deleteOrder(@Param() param: ReqIdDto) {
 
     const requestData: OrderIdReq = param
@@ -95,7 +97,7 @@ export class OrderController {
 
   @Put(":id")
   @UseInterceptors(CacheDeleteInterceptor)
-  @CacheDelete(REDIS_ENDPOINT_KEYS.ordersAll)
+  @CacheDelete(REDIS_ENDPOINT_KEYS.ordersAll, REDIS_ENDPOINT_KEYS.ordersTotal)
   async updateOrder(@Param() param: ReqIdDto, @Body() body: OrderUpdateDto) {
 
     const requestData: OrderUpdateReq = {
@@ -111,7 +113,7 @@ export class OrderController {
 
   @Patch("status/:id")
   @UseInterceptors(CacheDeleteInterceptor)
-  @CacheDelete(REDIS_ENDPOINT_KEYS.ordersAll)
+  @CacheDelete(REDIS_ENDPOINT_KEYS.ordersAll, REDIS_ENDPOINT_KEYS.ordersTotal)
   async updateOrderStatus(@Param() param: ReqIdDto, @Body() body: OrderStatusUpdateDto) {
 
     const requestData: OrderUpdateStatusReq = {
@@ -127,7 +129,7 @@ export class OrderController {
 
   @Put(":id/details")
   @UseInterceptors(CacheDeleteInterceptor)
-  @CacheDelete(REDIS_ENDPOINT_KEYS.ordersAll)
+  @CacheDelete(REDIS_ENDPOINT_KEYS.ordersAll, REDIS_ENDPOINT_KEYS.ordersTotal)
   async updateOrderDetails(@Param() param: ReqIdDto, @Body() body: OrderDetailsUpdateDto
   ) {
 

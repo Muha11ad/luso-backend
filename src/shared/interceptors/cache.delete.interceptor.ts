@@ -15,7 +15,7 @@ export class CacheDeleteInterceptor implements NestInterceptor {
 
     intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
 
-        const cacheKey = this.reflector.get<string>('cacheDelete', context.getHandler());
+        const cacheKey = this.reflector.get<string[]>('cacheDelete', context.getHandler());
 
         return next.handle().pipe(
         
@@ -23,7 +23,13 @@ export class CacheDeleteInterceptor implements NestInterceptor {
         
                 if (cacheKey) {
         
-                    await this.cacheManager.del(cacheKey);
+                    const keys = Array.isArray(cacheKey) ? cacheKey : [cacheKey];
+                    
+                    for (const key of keys) {
+
+                        await this.cacheManager.del(key);
+                    
+                    }
         
                 }
         

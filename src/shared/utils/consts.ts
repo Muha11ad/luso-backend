@@ -15,6 +15,7 @@ export const REDIS_ENDPOINT_KEYS = {
     productById: "api/product",
     categoryById: "api/category",
     productAll: "api/product/all",
+    ordersTotal: "api/order/total",
     categoryAll: "api/category/all",
     recommendationAll: "api/recommendation/all",
 }

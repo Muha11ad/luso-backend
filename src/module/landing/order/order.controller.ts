@@ -36,7 +36,7 @@ export class OrderController {
 
   @Post()
   @UseInterceptors(CacheDeleteInterceptor)
-  @CacheDelete(REDIS_ENDPOINT_KEYS.ordersAll)
+  @CacheDelete(REDIS_ENDPOINT_KEYS.ordersAll, REDIS_ENDPOINT_KEYS.ordersTotal)
   async createOrder(@Body() body: OrderCreateDto) {
 
     const requestData: OrderCreateReq = body

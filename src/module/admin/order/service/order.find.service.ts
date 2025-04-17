@@ -1,9 +1,10 @@
-import { Order, OrderStatus } from "@prisma/client";
+import { Order } from "@prisma/client";
 import { Injectable } from "@nestjs/common";
 import { BaseResponse } from "@/shared/utils/types";
+import { ORDERE_TOTAL_QUERY } from "../order.queries";
 import { OrderBaseService } from "./order.base.service";
 import { ServiceExceptions } from "@/shared/exceptions/service.exception";
-import { OrderGetAllReq, OrderGetByUserIdReq, OrderGetTotalRes, OrderIdReq } from "../order.interface";
+import { OrderGetByUserIdReq, OrderGetTotalRes, OrderIdReq } from "../order.interface";
 
 @Injectable()
 export class OrderFindService extends OrderBaseService {
@@ -84,16 +85,7 @@ export class OrderFindService extends OrderBaseService {
 
         try {
 
-            const result = await this.database.$queryRaw<Array<OrderGetTotalRes>>`
-                SELECT 
-                    COUNT(o.id)::int AS "ordersCount",
-                    SUM(od.quantity)::int AS "soldProducts",
-                    SUM(CASE WHEN o.status != 'Payed' THEN o.total_price ELSE 0 END)::int AS "waitingPayments",
-                    SUM(CASE WHEN o.status != 'Canceled' THEN o.total_price ELSE 0 END)::int AS "totalPayment",
-                    SUM(CASE WHEN o.user_id != '968954832' THEN od.product_price * 0.2 ELSE 0 END)::int AS "mimsShare"
-                FROM "Order" o
-                LEFT JOIN "OrderDetails" od ON o.id = od.order_id
-            `;
+            const result = await this.database.$queryRaw<Array<OrderGetTotalRes>>(ORDERE_TOTAL_QUERY);
 
             return { errId: null, data: result[0] };
 
