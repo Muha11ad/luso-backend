@@ -5,11 +5,11 @@ import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { CacheDelete } from "@/shared/decorators/cache.decorator";
 import { CacheInterceptor, CacheKey } from "@nestjs/cache-manager";
 import { ENDPOINTS, REDIS_ENDPOINT_KEYS } from "@/shared/utils/consts";
+import { CacheDeleteInterceptor } from "@/shared/interceptors/cache.delete.interceptor";
 import { OrderFindService, OrderUpdateService, OrderLifecycleService } from "./service";
 import { OrderCreateDto, OrderUpdateDto, OrderStatusUpdateDto, OrderDetailsUpdateDto } from "./dto";
 import { Put, Get, Body, Post, Param, Delete, Controller, Patch, UseInterceptors } from "@nestjs/common";
 import { OrderCreateReq, OrderDetailsUpdateReq, OrderGetByUserIdReq, OrderIdReq, OrderUpdateReq, OrderUpdateStatusReq } from "./order.interface";
-import { CacheDeleteInterceptor } from "@/shared/interceptors/cache.delete.interceptor";
 
 @Controller()
 @ApiBearerAuth()
@@ -30,6 +30,16 @@ export class OrderController {
     const { errId, data, total } = await this.findService.findAll();
 
     return setResult({ total, orders: data }, errId);
+
+  }
+
+
+  @Get("total")
+  async getTotalOrders() {
+
+    const { errId, data } = await this.findService.getTotalOrders();
+
+    return setResult({ total: data }, errId);
 
   }
 
@@ -56,7 +66,7 @@ export class OrderController {
     return setResult({ orders: data }, errId);
 
   }
-
+  
   @Post()
   @UseInterceptors(CacheDeleteInterceptor)
   @CacheDelete(REDIS_ENDPOINT_KEYS.ordersAll)
@@ -131,4 +141,6 @@ export class OrderController {
     return setResult({ orders: data }, errId);
 
   }
+  
+
 }

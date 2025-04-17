@@ -47,3 +47,11 @@ export interface OrderIdReq {
 export interface OrderGetByUserIdReq {
     userId: string;
 }
+
+export interface OrderGetTotalRes {
+    mimsShare: number;
+    ordersCount: number;
+    totalPayment: number;
+    soldProducts: number;
+    waitingPayments: number;
+}

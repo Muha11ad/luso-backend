@@ -1,9 +1,9 @@
-import { Order } from "@prisma/client";
+import { Order, OrderStatus } from "@prisma/client";
 import { Injectable } from "@nestjs/common";
 import { BaseResponse } from "@/shared/utils/types";
 import { OrderBaseService } from "./order.base.service";
 import { ServiceExceptions } from "@/shared/exceptions/service.exception";
-import { OrderGetAllReq, OrderGetByUserIdReq, OrderIdReq } from "../order.interface";
+import { OrderGetAllReq, OrderGetByUserIdReq, OrderGetTotalRes, OrderIdReq } from "../order.interface";
 
 @Injectable()
 export class OrderFindService extends OrderBaseService {
@@ -75,6 +75,32 @@ export class OrderFindService extends OrderBaseService {
         } catch (error) {
 
             return ServiceExceptions.handle(error, OrderFindService.name, this.findByUserId.name);
+
+        }
+
+    }
+
+    public async getTotalOrders(): Promise<BaseResponse<OrderGetTotalRes>> {
+
+        try {
+
+            const result = await this.database.$queryRaw<Array<OrderGetTotalRes>>`
+                SELECT 
+                    COUNT(o.id)::int AS "ordersCount",
+                    SUM(od.quantity)::int AS "soldProducts",
+                    SUM(CASE WHEN o.status != 'Payed' THEN o.total_price ELSE 0 END)::int AS "waitingPayments",
+                    SUM(CASE WHEN o.status != 'Canceled' THEN o.total_price ELSE 0 END)::int AS "totalPayment",
+                    SUM(CASE WHEN o.user_id != '968954832' THEN od.product_price * 0.2 ELSE 0 END)::int AS "mimsShare"
+                FROM "Order" o
+                LEFT JOIN "OrderDetails" od ON o.id = od.order_id
+            `;
+
+            return { errId: null, data: result[0] };
+
+
+        } catch (error) {
+
+            return ServiceExceptions.handle(error, OrderFindService.name, this.getTotalOrders.name);
 
         }
 

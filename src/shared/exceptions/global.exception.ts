@@ -18,6 +18,9 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         let message = exception.message;
 
         if (exception instanceof BadRequestException) {
+            
+            console.log(exception);
+            
             const response = exception.getResponse() as any;
             errId = response.errId || MyError.BAD_REQUEST.errId;
             status = HttpStatus.BAD_REQUEST;
