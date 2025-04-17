@@ -49,6 +49,7 @@ export interface OrderGetByUserIdReq {
 }
 
 export interface OrderGetTotalRes {
+    payed: number;
     mimsShare: number;
     ordersCount: number;
     totalPayment: number;

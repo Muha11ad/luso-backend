@@ -39,7 +39,7 @@ export class OrderController {
   @CacheKey(REDIS_ENDPOINT_KEYS.ordersTotal)
   async getTotalOrders() {
 
-    const { errId, data } = await this.findService.getTotalOrders();
+    const { errId, data } = await this.findService.findTotalOrders();
 
     return setResult({ orders: data }, errId);
 

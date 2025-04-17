@@ -81,18 +81,23 @@ export class OrderFindService extends OrderBaseService {
 
     }
 
-    public async getTotalOrders(): Promise<BaseResponse<OrderGetTotalRes>> {
+    public async findTotalOrders(): Promise<BaseResponse<OrderGetTotalRes>> {
 
         try {
 
             const result = await this.database.$queryRaw<Array<OrderGetTotalRes>>(ORDERE_TOTAL_QUERY);
 
-            return { errId: null, data: result[0] };
+            const total: OrderGetTotalRes = {
+                ...result[0],
+                payed: result[0].totalPayment - result[0].waitingPayments
+            }
+
+            return { errId: null, data: total };
 
 
         } catch (error) {
 
-            return ServiceExceptions.handle(error, OrderFindService.name, this.getTotalOrders.name);
+            return ServiceExceptions.handle(error, OrderFindService.name, this.findTotalOrders.name);
 
         }
 
