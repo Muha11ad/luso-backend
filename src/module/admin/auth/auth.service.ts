@@ -5,7 +5,7 @@ import { ConfigService } from "@nestjs/config";
 import { MyError } from "@/shared/utils/error";
 import { TOKEN_KEYS } from "@/shared/utils/consts";
 import { BaseResponse } from "@/shared/utils/types";
-import { AuthTokens, AuthValidateReq } from "./auth.interface";
+import { AuthTokens, AuthValidateReq, CachedAcessToken } from "./auth.interface";
 import { DatabaseProvider, RedisProvider } from "@/shared/providers";
 import { ServiceExceptions } from "@/shared/exceptions/service.exception";
 
@@ -30,20 +30,8 @@ export class AuthService {
 
       if (!comparePassword) return { errId: MyError.INVALID_PASSWORD.errId, data: null };
 
-      let access = await this.redisService.get<string>(TOKEN_KEYS.acccessToken);
-      let refresh = await this.redisService.get<string>(TOKEN_KEYS.refreshToken);
-
-      if (access) {
-        
-        return { errId: null, data: { access, refresh } };
-
-      }
-
-      access = this.generateAccessToken(reqData.email);
-      refresh = this.generateRefreshToken(reqData.email);
-
-      await this.redisService.setex(TOKEN_KEYS.acccessToken, access, 60 * 60 * 23);
-      await this.redisService.setex(TOKEN_KEYS.refreshToken, refresh, 60 * 60 * 24 * 6);
+      let access = this.generateAccessToken(reqData.email);
+      let refresh = this.generateRefreshToken(reqData.email);
 
       return { errId: null, data: { access, refresh } };
 
