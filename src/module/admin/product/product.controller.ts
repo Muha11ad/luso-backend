@@ -5,11 +5,13 @@ import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { CacheInterceptor, CacheKey } from "@nestjs/cache-manager";
 import { CacheDelete } from "@/shared/decorators/cache.decorator";
 import { ENDPOINTS, REDIS_ENDPOINT_KEYS } from "@/shared/utils/consts";
+import { ProductUpdateAvailableDto } from "./dto/update-product-available.dto";
 import { CacheDeleteInterceptor } from "@/shared/interceptors/cache.delete.interceptor";
 import { ProductCrudService, ProductFindService, ProductCategoryService } from "./service";
 import { Put, Get, Body, Post, Param, Delete, Controller, Patch, Query, UseInterceptors } from "@nestjs/common";
 import { ProductCreateDto, ProductUpdateDto, FilterProductsDto, AddCategoryToProductDto, DeleteCategoryFromProductDto, DeleteImagesFromProductDto } from "./dto";
-import { ProductCategoryAddReq, ProductCategoryDeleteReq, ProductCreateReq, ProductDeleteImageReq, ProductsFilterReq, ProductUpdateReq } from "./product.interface";
+import { ProductCategoryAddReq, ProductCategoryDeleteReq, ProductCreateReq, ProductDeleteImageReq, ProductsFilterReq, ProductUpdateAvailableReq, ProductUpdateDiscountReq, ProductUpdateReq } from "./product.interface";
+import { ProductUpdateDiscountDto } from "./dto/update-product-discount.dto";
 
 @Controller()
 @ApiBearerAuth()
@@ -155,5 +157,26 @@ export class ProductController {
 
     }
 
+    @Patch('available')
+    async setAvailable(@Body() body: ProductUpdateAvailableDto) {
+
+        const requestData: ProductUpdateAvailableReq = body;
+
+        const { errId, data } = await this.crudService.setAvailable(requestData);
+
+        return setResult({ products: data }, errId);
+
+    }
+
+    @Patch('discount')
+    async setDiscount(@Body() body: ProductUpdateDiscountDto) {
+
+        const requestData: ProductUpdateDiscountReq = body
+
+        const { errId, data } = await this.crudService.setDiscount(requestData);
+
+        return setResult({ products: data }, errId);
+
+    }
 }
 

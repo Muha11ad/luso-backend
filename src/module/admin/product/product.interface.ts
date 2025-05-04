@@ -13,6 +13,16 @@ export interface ProductUpdateReq extends Partial<ProductCreateReq> {
     id: string;
 }
 
+export interface ProductUpdateAvailableReq {
+    id: string;
+    available: boolean;
+}
+
+export interface ProductUpdateDiscountReq {
+    id: string;
+    discount: number;
+}
+
 export interface ProductCategoryAddReq {
     id: string;
     categoryIds: string[];

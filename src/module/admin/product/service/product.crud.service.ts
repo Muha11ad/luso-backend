@@ -6,7 +6,7 @@ import { ProductBaseService } from "./product.base.service";
 import { ProductCreateEntity, ProductUpdateEntity } from "../entity";
 import { BaseResponse, IdReq, SuccessRes } from "@/shared/utils/types";
 import { ServiceExceptions } from "@/shared/exceptions/service.exception";
-import { ProductCreateReq, ProductDeleteImageReq, ProductUpdateReq } from "../product.interface";
+import { ProductCreateReq, ProductDeleteImageReq, ProductUpdateAvailableReq, ProductUpdateDiscountReq, ProductUpdateReq } from "../product.interface";
 
 @Injectable()
 export class ProductCrudService extends ProductBaseService {
@@ -114,4 +114,39 @@ export class ProductCrudService extends ProductBaseService {
 
     }
 
+    public async setAvailable(reqData: ProductUpdateAvailableReq): Promise<BaseResponse<SuccessRes>> {
+
+        try {
+
+            await this.database.product.update({
+                where: { id: reqData.id },
+                data: { available: reqData.available }
+            })
+
+            return { errId: null, data: { success: true } };
+
+        } catch (error) {
+
+            return ServiceExceptions.handle(error, ProductCrudService.name, this.setAvailable.name);
+
+        }
+    }
+
+    public async setDiscount(reqData: ProductUpdateDiscountReq): Promise<BaseResponse<SuccessRes>> {
+
+        try {
+
+            await this.database.product.update({
+                where: { id: reqData.id },
+                data: { discount: reqData.discount }
+            })
+
+            return { errId: null, data: { success: true } };
+
+        } catch (error) {
+
+            return ServiceExceptions.handle(error, ProductCrudService.name, this.setDiscount.name);
+
+        }
+    }
 }
