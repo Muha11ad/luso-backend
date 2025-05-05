@@ -15,7 +15,6 @@ export interface ProductUpdateReq extends Partial<ProductCreateReq> {
 
 export interface ProductUpdateAvailableReq {
     id: string;
-    available: boolean;
 }
 
 export interface ProductUpdateDiscountReq {

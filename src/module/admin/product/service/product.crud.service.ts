@@ -121,15 +121,9 @@ export class ProductCrudService extends ProductBaseService {
 
             const existingProduct = await this.database.product.findUniqueOrThrow({ where: { id: reqData.id } });
 
-            if (existingProduct.available === reqData.available) {
-
-                return { errId: MyError.PRODUCT_INVALID_AVAILABILTY.errId, data: { success: false } };
-
-            }
-
             await this.database.product.update({
                 where: { id: reqData.id },
-                data: { available: reqData.available }
+                data: { available: !existingProduct.available }
             })
 
             return { errId: null, data: { success: true } };
@@ -150,17 +144,6 @@ export class ProductCrudService extends ProductBaseService {
             if(reqData.discount > existingProduct.price) {
 
                 return { errId: MyError.PRODUCT_INVALID_DISCOUNT.errId, data: { success: false } };
-
-            }
-
-            if(reqData.discount < 0) {
-
-                await this.database.product.update({
-                    where: { id: reqData.id },
-                    data: { discount: 0 }
-                })
-
-                return { errId: null, data: { success: true } };
 
             }
 
