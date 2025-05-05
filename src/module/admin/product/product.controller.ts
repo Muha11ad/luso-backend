@@ -158,6 +158,8 @@ export class ProductController {
     }
 
     @Patch('available')
+    @UseInterceptors(CacheDeleteInterceptor)
+    @CacheDelete(REDIS_ENDPOINT_KEYS.productAll)
     async setAvailable(@Body() body: ProductUpdateAvailableDto) {
 
         const requestData: ProductUpdateAvailableReq = body;
@@ -169,6 +171,8 @@ export class ProductController {
     }
 
     @Patch('discount')
+    @UseInterceptors(CacheDeleteInterceptor)
+    @CacheDelete(REDIS_ENDPOINT_KEYS.productAll)
     async setDiscount(@Body() body: ProductUpdateDiscountDto) {
 
         const requestData: ProductUpdateDiscountReq = body

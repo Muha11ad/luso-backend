@@ -1,8 +1,9 @@
 import { Injectable } from "@nestjs/common";
+import { MyError } from "@/shared/utils/error";
 import { FolderName } from "@/shared/utils/enums";
 import { DatabaseProvider } from "@/shared/providers";
-import { UploadService } from "../../upload/upload.service";
 import { ProductBaseService } from "./product.base.service";
+import { UploadService } from "../../upload/upload.service";
 import { ProductCreateEntity, ProductUpdateEntity } from "../entity";
 import { BaseResponse, IdReq, SuccessRes } from "@/shared/utils/types";
 import { ServiceExceptions } from "@/shared/exceptions/service.exception";
@@ -118,6 +119,14 @@ export class ProductCrudService extends ProductBaseService {
 
         try {
 
+            const existingProduct = await this.database.product.findUniqueOrThrow({ where: { id: reqData.id } });
+
+            if (existingProduct.available === reqData.available) {
+
+                return { errId: MyError.PRODUCT_INVALID_AVAILABILTY.errId, data: { success: false } };
+
+            }
+
             await this.database.product.update({
                 where: { id: reqData.id },
                 data: { available: reqData.available }
@@ -136,9 +145,30 @@ export class ProductCrudService extends ProductBaseService {
 
         try {
 
+            const existingProduct = await this.database.product.findUniqueOrThrow({ where: { id: reqData.id } });
+
+            if(reqData.discount > existingProduct.price) {
+
+                return { errId: MyError.PRODUCT_INVALID_DISCOUNT.errId, data: { success: false } };
+
+            }
+
+            if(reqData.discount < 0) {
+
+                await this.database.product.update({
+                    where: { id: reqData.id },
+                    data: { discount: 0 }
+                })
+
+                return { errId: null, data: { success: true } };
+
+            }
+
+            const calculateDiscountPercent = ((existingProduct.price - reqData.discount) / existingProduct.price) * 100;
+
             await this.database.product.update({
                 where: { id: reqData.id },
-                data: { discount: reqData.discount }
+                data: { discount: calculateDiscountPercent }
             })
 
             return { errId: null, data: { success: true } };

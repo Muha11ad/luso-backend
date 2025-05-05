@@ -29,7 +29,10 @@ export class MyError {
   public static TOKEN_EXPIRED = new MyError(220, false, "Token expired");
   public static TOKEN_NOT_PROVIDED = new MyError(220, false, "Token not provided");
   
-
+  // Product-specific errors
+  public static PRODUCT_NOT_FOUND = new MyError(301, true, "Product not found");
+  public static PRODUCT_INVALID_DISCOUNT = new MyError(302, true, "Discount is invalid");
+  public static PRODUCT_INVALID_AVAILABILTY = new MyError(303, true, "Product invalid availability");
   
   constructor(public readonly errId: number, public readonly isFriendly: boolean, public readonly message: string) { }
 
