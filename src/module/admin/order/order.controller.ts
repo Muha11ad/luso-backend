@@ -145,4 +145,17 @@ export class OrderController {
   }
   
 
+  @Delete(":id/details")
+  @UseInterceptors(CacheDeleteInterceptor)
+  @CacheDelete(REDIS_ENDPOINT_KEYS.ordersAll, REDIS_ENDPOINT_KEYS.ordersTotal)
+  async deleteOrderDetails(@Param() param: ReqIdDto) {
+
+    const requestData: OrderIdReq = param
+
+    const { errId, data } = await this.lifecycleService.deleteDetails(requestData);
+
+    return setResult({ orders: data }, errId);
+
+  }
+
 }

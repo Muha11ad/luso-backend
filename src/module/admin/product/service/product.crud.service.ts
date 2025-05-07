@@ -7,7 +7,7 @@ import { UploadService } from "../../upload/upload.service";
 import { ProductCreateEntity, ProductUpdateEntity } from "../entity";
 import { BaseResponse, IdReq, SuccessRes } from "@/shared/utils/types";
 import { ServiceExceptions } from "@/shared/exceptions/service.exception";
-import { ProductCreateReq, ProductDeleteImageReq, ProductUpdateAvailableReq, ProductUpdateDiscountReq, ProductUpdateReq } from "../product.interface";
+import { ProductCreateReq, ProductDeleteImageReq, ProductUpdateDiscountReq, ProductUpdateReq } from "../product.interface";
 
 @Injectable()
 export class ProductCrudService extends ProductBaseService {
@@ -115,7 +115,7 @@ export class ProductCrudService extends ProductBaseService {
 
     }
 
-    public async setAvailable(reqData: ProductUpdateAvailableReq): Promise<BaseResponse<SuccessRes>> {
+    public async setAvailable(reqData: IdReq): Promise<BaseResponse<SuccessRes>> {
 
         try {
 

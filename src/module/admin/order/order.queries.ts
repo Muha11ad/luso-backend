@@ -27,3 +27,4 @@ SELECT
 FROM order_stats o
 LEFT JOIN order_detail_stats od_stats ON o.id = od_stats.id
 `
+export const ORDER_DELETE: TemplateStringsArray | Sql = sqltag``

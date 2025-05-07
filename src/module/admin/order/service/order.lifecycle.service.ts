@@ -43,7 +43,7 @@ export class OrderLifecycleService extends OrderBaseService {
 
         } catch (error) {
 
-            return ServiceExceptions.handle(error, OrderLifecycleService.name, 'create');
+            return ServiceExceptions.handle(error, OrderLifecycleService.name, this.create.name);
 
         }
 
@@ -53,7 +53,29 @@ export class OrderLifecycleService extends OrderBaseService {
 
         try {
 
-            await this.database.order.findUniqueOrThrow({ where: { id: reqData.id } });
+            const order = await this.database.order.findUniqueOrThrow({
+                where: { id: reqData.id },
+                select: {
+                    OrderDetails: {
+                        select: {
+                            product: {
+                                select: {
+                                    id: true,
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            for(const detail of order.OrderDetails) {
+
+                await this.database.product.update({
+                    where: { id: detail.product.id },
+                    data: { sold: { decrement: 1 } }
+                });
+            
+            }
 
             await this.database.order.delete({
                 where: {
@@ -65,7 +87,43 @@ export class OrderLifecycleService extends OrderBaseService {
 
         } catch (error) {
 
-            return ServiceExceptions.handle(error, OrderLifecycleService.name, 'delete');
+            return ServiceExceptions.handle(error, OrderLifecycleService.name, this.delete.name);
+
+        }
+
+    }
+
+    public async deleteDetails(reqData: OrderIdReq): Promise<BaseResponse<SuccessRes>> {
+
+        try {
+
+            const orderDetails = await this.database.orderDetails.findUniqueOrThrow({
+                where: { id: reqData.id },
+                select: {
+                    product: {
+                        select: {
+                            id: true,
+                        }
+                    }
+                }
+            });
+
+            await this.database.product.update({
+                where: { id: orderDetails.product.id },
+                data: { sold: { decrement: 1 } }
+            });
+
+            await this.database.orderDetails.delete({
+                where: {
+                    id: reqData.id
+                }
+            });
+
+            return { errId: null, data: { success: true } };
+
+        } catch (error) {
+
+            return ServiceExceptions.handle(error, OrderLifecycleService.name, this.deleteDetails.name);
 
         }
 

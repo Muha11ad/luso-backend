@@ -5,13 +5,12 @@ import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { CacheInterceptor, CacheKey } from "@nestjs/cache-manager";
 import { CacheDelete } from "@/shared/decorators/cache.decorator";
 import { ENDPOINTS, REDIS_ENDPOINT_KEYS } from "@/shared/utils/consts";
-import { ProductUpdateAvailableDto } from "./dto/update-product-available.dto";
+import { ProductUpdateDiscountDto } from "./dto/update-product-discount.dto";
 import { CacheDeleteInterceptor } from "@/shared/interceptors/cache.delete.interceptor";
 import { ProductCrudService, ProductFindService, ProductCategoryService } from "./service";
-import { Put, Get, Body, Post, Param, Delete, Controller, Patch, Query, UseInterceptors } from "@nestjs/common";
+import { Put, Get, Body, Post, Param, Delete, Controller, Patch, UseInterceptors } from "@nestjs/common";
 import { ProductCreateDto, ProductUpdateDto, FilterProductsDto, AddCategoryToProductDto, DeleteCategoryFromProductDto, DeleteImagesFromProductDto } from "./dto";
-import { ProductCategoryAddReq, ProductCategoryDeleteReq, ProductCreateReq, ProductDeleteImageReq, ProductsFilterReq, ProductUpdateAvailableReq, ProductUpdateDiscountReq, ProductUpdateReq } from "./product.interface";
-import { ProductUpdateDiscountDto } from "./dto/update-product-discount.dto";
+import { ProductCategoryAddReq, ProductCategoryDeleteReq, ProductCreateReq, ProductDeleteImageReq, ProductsFilterReq, ProductUpdateDiscountReq, ProductUpdateReq } from "./product.interface";
 
 @Controller()
 @ApiBearerAuth()
@@ -157,12 +156,12 @@ export class ProductController {
 
     }
 
-    @Patch('available')
+    @Patch('available/:id')
     @UseInterceptors(CacheDeleteInterceptor)
     @CacheDelete(REDIS_ENDPOINT_KEYS.productAll)
-    async setAvailable(@Body() body: ProductUpdateAvailableDto) {
+    async setAvailable(@Param() param: ReqIdDto) {
 
-        const requestData: ProductUpdateAvailableReq = body;
+        const requestData: IdReq = param;
 
         const { errId, data } = await this.crudService.setAvailable(requestData);
 
