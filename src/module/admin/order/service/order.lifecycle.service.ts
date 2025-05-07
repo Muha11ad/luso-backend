@@ -100,9 +100,15 @@ export class OrderLifecycleService extends OrderBaseService {
             const orderDetails = await this.database.orderDetails.findUniqueOrThrow({
                 where: { id: reqData.id },
                 select: {
+                    total_price: true,
                     product: {
                         select: {
                             id: true,
+                        }
+                    },
+                    order: {
+                        select: {
+                            id: true
                         }
                     }
                 }
@@ -118,6 +124,20 @@ export class OrderLifecycleService extends OrderBaseService {
                     id: reqData.id
                 }
             });
+
+            await this.database.order.update({
+                where: { id: orderDetails.order.id },
+                data: {
+                    OrderDetails: {
+                        delete: {
+                            id: reqData.id
+                        }
+                    },
+                    total_price: {
+                        decrement: orderDetails.total_price
+                    }
+                }
+            })
 
             return { errId: null, data: { success: true } };
 
