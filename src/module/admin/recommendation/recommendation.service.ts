@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import { MyError } from "@/shared/utils/error";
 import { Recommendation } from "@prisma/client";
 import { DatabaseProvider } from "@/shared/providers";
 import { AiService } from "@/module/http/services/ai.service";
@@ -44,6 +45,14 @@ export class RecommendationService {
     public async generate(reqData: RecommendationCreateReq): Promise<BaseResponse<string>> {
 
         try {
+
+            const user = await this.database.user.findUnique({ where: { telegram_id: reqData.userId } });
+
+            if(!user) {
+
+                return { errId: MyError.NOT_FOUND.errId , data: null };
+
+            }
 
             const products = await this.database.product.findMany({
                 select: {
@@ -106,8 +115,6 @@ export class RecommendationService {
         try {
 
             if (RECOMMENDATION_EXCLUDED_USERS.has(reqData.userId)) return { errId: null, data: { success: true } };
-
-            await this.database.user.findUniqueOrThrow({ where: { telegram_id: reqData.userId } });
 
             await this.database.recommendation.create({
 

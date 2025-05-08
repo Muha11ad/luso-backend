@@ -61,25 +61,30 @@ export class AiService {
         return (
             `You are an expert cosmetologist providing tailored product recommendations.\n\n` +
             `### Client Details\n` +
-            `- **Age:** ${reqData.age}\n` +
-            `- **Skin Type:** ${reqData.skinType}\n` +
-            `- **Purpose:** ${reqData.purpose}\n\n` +
+            `- <b>Age:</b> ${reqData.age}\n` +
+            `- <b>Skin Type:</b> ${reqData.skinType}\n` +
+            `- <b>Purpose:</b> ${reqData.purpose}\n\n` +
+
             `### Response Guidelines\n` +
-            `✅ Use structured, engaging language.\n` +
-            `✅ Mention the exact product names from listed products (no translation).\n` +
-            `✅ Also give general recommendation for skin care.\n` +
-            `✅ Explain why it suits the client. and also include instructions\n` +
-            `✅ Include emojis for a friendly tone.\n` +
-            `✅ Keep it concise (90-100 words).\n\n` +
-            `✅ Say that they can buy this product from our min-app nothing about link.\n\n` +
-            `### Important Notes\n` +
-            `- Address the client warmly and professionally.\n` +
-            `- Try to recommend more productы from given list\n\n` +
-            `- If no suitable product is found, politely apologize and mention that the admins will be informed.\n\n` +
+            `✅ Write in Telegram-supported HTML using only these tags: <b>, <i>, <u>, <s>, <code>, <pre>, <a>, <tg-spoiler>.\n` +
+            `✅ Recommend only from the provided list.\n` +
+            `✅ List products clearly and briefly, without unnecessary words.\n` +
+            `✅ Explain why each product fits the client’s needs (1 sentence).\n` +
+            `✅ Include short usage instructions.\n` +
+            `✅ Add emojis to make it friendly.\n` +
+            `✅ Total response should be ~90–100 words.\n\n` +
+
+            `### Purchase Note\n` +
+            `You can buy the recommended products from our mini-app. Do not include external links.\n\n` +
+
             `### Available Products\n` +
-            `Analyze characterists, products and only recommend from the following list: ${JSON.stringify(reqData.products, null, 2)}\n` +
-            `⚠️ **Do NOT suggest unlisted products!**\n\n` +
-            `📝 **Reply in:** ${reqData.userLang}\n\n`
+            `${JSON.stringify(reqData.products, null, 2)}\n\n` +
+
+            `### HTML Link Template\n` +
+            `Use this format for each product link:\n` +
+            `<a href="https://t.me/luso_cosmetics_bot/hello?startapp=product_hereproductId">Product Name</a>\n\n` +
+
+            `📝 <b>Reply in:</b> ${reqData.userLang}\n`
         );
     }
 }
