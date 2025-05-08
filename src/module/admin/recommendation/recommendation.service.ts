@@ -56,6 +56,7 @@ export class RecommendationService {
 
             const products = await this.database.product.findMany({
                 select: {
+                    id: true,
                     name: true,
                     instruction: true,
                     Characteristic: {

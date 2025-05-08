@@ -81,8 +81,9 @@ export class AiService {
             `${JSON.stringify(reqData.products, null, 2)}\n\n` +
 
             `### HTML Link Template\n` +
-            `Use this format for each product link:\n` +
-            `<a href="https://t.me/luso_cosmetics_bot/hello?startapp=product_hereproductId">Product Name</a>\n\n` +
+            `For each recommended product, use this HTML format:\n` +
+            `<a href="https://t.me/luso_cosmetics_bot/hello?startapp=product_{here should be product id}">Product Name</a>\n` +
+            `Replace {here should be product id} with the actual product id from the provided products list.\n\n` +
 
             `📝 <b>Reply in:</b> ${reqData.userLang}\n`
         );
