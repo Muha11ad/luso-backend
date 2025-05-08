@@ -5,7 +5,6 @@ export class OrderCreateEntity {
 
     constructor(
         private readonly data: OrderCreateReq,
-        private readonly isFirtstOrder: Boolean
     ) { }
 
     private orderDetailsWithTotalPrice(){
@@ -25,7 +24,7 @@ export class OrderCreateEntity {
             0
         );
 
-        return this.isFirtstOrder ? Math.round(total_price * 0.6) : total_price;
+        return total_price;
         
     }
 

@@ -12,13 +12,12 @@ export class OrderLifecycleService extends OrderBaseService {
 
         try {
 
-            const user = await this.database.user.findUniqueOrThrow({ where: { telegram_id: reqData.userId }, select: { orders: true } });
+            await this.database.user.findUniqueOrThrow({ where: { telegram_id: reqData.userId }, select: { orders: true } });
 
             const cacheProductNames = await this.checkProductExists(reqData.orderDetails);
 
-            const userHasOrder: Boolean = user.orders.length === 0;
 
-            const newOrder = new OrderCreateEntity(reqData, userHasOrder);
+            const newOrder = new OrderCreateEntity(reqData);
 
             await this.database.$transaction(async (tx) => {
 
